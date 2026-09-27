@@ -100,8 +100,11 @@ PluginSettings {
         SectionTitle {
             text: I18n.trFor("emojiPicker", "Appearance")
             icon: "palette"
-            showReset: pickerSize.isDirty
-            onResetClicked: pickerSize.resetToDefault()
+            showReset: pickerSize.isDirty || defaultSkinTone.isDirty
+            onResetClicked: {
+                pickerSize.resetToDefault();
+                defaultSkinTone.resetToDefault();
+            }
         }
 
         SelectionSettingPlus {
@@ -114,6 +117,24 @@ PluginSettings {
                 { label: I18n.trFor("emojiPicker", "Compact (500 px)"), value: "500" },
                 { label: I18n.trFor("emojiPicker", "Comfortable (560 px)"), value: "560" },
                 { label: I18n.trFor("emojiPicker", "Large (620 px)"), value: "620" }
+            ]
+        }
+
+        Separator {}
+
+        SelectionSettingPlus {
+            id: defaultSkinTone
+            settingKey: "defaultSkinTone"
+            label: I18n.trFor("emojiPicker", "Skin Tone")
+            description: I18n.trFor("emojiPicker", "Default skin tone modifier for people and hand emojis.")
+            defaultValue: "default"
+            options: [
+                { label: "✋ " + I18n.trFor("emojiPicker", "Yellow"), value: "default" },
+                { label: "✋🏻 " + I18n.trFor("emojiPicker", "Light"), value: "1" },
+                { label: "✋🏼 " + I18n.trFor("emojiPicker", "Medium-Light"), value: "2" },
+                { label: "✋🏽 " + I18n.trFor("emojiPicker", "Medium"), value: "3" },
+                { label: "✋🏾 " + I18n.trFor("emojiPicker", "Medium-Dark"), value: "4" },
+                { label: "✋🏿 " + I18n.trFor("emojiPicker", "Dark"), value: "5" }
             ]
         }
     }

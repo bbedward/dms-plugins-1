@@ -30,6 +30,13 @@ PluginComponent {
     readonly property bool pasteByDefault: (root.pluginData?.defaultAction ?? "copy") === "paste"
     readonly property bool showCopyToast: root.pluginData?.showCopyToast ?? true
 
+    function getStoredSkinTone() {
+        const stored = String(root.pluginData?.defaultSkinTone ?? "default");
+        return stored === "0" ? "default" : stored;
+    }
+
+    property string activeSkinTone: root.getStoredSkinTone()
+
     property var allEntries: []
     property var recentEmojis: []
     property string query: ""
@@ -55,11 +62,38 @@ PluginComponent {
         "symbols": "emoji_symbols",
         "flags": "flag"
     })
+
+    function stripSkinTone(emoji) {
+        if (!emoji)
+            return "";
+        return emoji.replace(/[\u{1F3FB}-\u{1F3FF}]/gu, "");
+    }
+
+    function findEntry(emoji) {
+        if (!emoji)
+            return null;
+        const stripped = root.stripSkinTone(emoji);
+        return root.allEntries.find(entry => entry.emoji === emoji || entry.emoji === stripped || (entry.variants && entry.variants.indexOf(emoji) >= 0));
+    }
+
+    function setSkinTone(tone) {
+        root.activeSkinTone = String(tone);
+    }
+
+    function effectiveEmoji(entry) {
+        if (!entry)
+            return "";
+        if (root.activeSkinTone === "default" || !entry.variants)
+            return entry.emoji;
+        const toneIdx = Number(root.activeSkinTone) - 1;
+        return (toneIdx >= 0 && toneIdx < entry.variants.length) ? (entry.variants[toneIdx] || entry.emoji) : entry.emoji;
+    }
+
     readonly property var visibleEntries: {
         const q = root.query.trim().toLowerCase();
         let source = root.allEntries;
         if (!q && root.selectedCategory === "recent") {
-            source = root.recentEmojis.map(emoji => root.allEntries.find(entry => entry.emoji === emoji)).filter(entry => entry);
+            source = root.recentEmojis.map(emoji => root.findEntry(emoji)).filter(Boolean);
         } else if (!q) {
             source = root.allEntries.filter(entry => entry.category === root.selectedCategory);
         }
@@ -68,7 +102,8 @@ PluginComponent {
         return root.allEntries.filter(entry => {
             if (root.selectedCategory !== "recent" && entry.category !== root.selectedCategory)
                 return false;
-            const haystack = [entry.name, entry.emoji].concat(entry.keywords || []).join(" ").toLowerCase();
+            const currentEmoji = root.effectiveEmoji(entry);
+            const haystack = [entry.name, entry.emoji, currentEmoji].concat(entry.keywords || []).join(" ").toLowerCase();
             return haystack.includes(q);
         });
     }
@@ -104,6 +139,7 @@ PluginComponent {
         if (!screen)
             return "No active screen";
         root.loadData();
+        root.activeSkinTone = root.getStoredSkinTone();
         root.clearQueue();
         pickerModal.targetScreen = screen;
         root.query = "";
@@ -121,8 +157,9 @@ PluginComponent {
     function saveRecentSequence(emojis) {
         let next = root.recentEmojis.slice();
         for (const emoji of emojis) {
-            next = next.filter(item => item !== emoji);
-            next.unshift(emoji);
+            const base = root.stripSkinTone(emoji);
+            next = next.filter(item => item !== base && item !== emoji);
+            next.unshift(base);
         }
         next = next.slice(0, root.recentLimit);
         root.recentEmojis = next;
@@ -148,7 +185,7 @@ PluginComponent {
 
     function appendCurrent() {
         const entry = root.visibleEntries[root.selectedIndex];
-        return entry ? root.appendEmoji(entry.emoji) : false;
+        return entry ? root.appendEmoji(root.effectiveEmoji(entry)) : false;
     }
 
     function removeLastQueued() {
@@ -193,7 +230,7 @@ PluginComponent {
         }
         const entry = root.visibleEntries[root.selectedIndex];
         if (entry)
-            root.commitSingleEmoji(entry.emoji, paste);
+            root.commitSingleEmoji(root.effectiveEmoji(entry), paste);
     }
 
     function handleEnter(event) {
@@ -363,6 +400,7 @@ PluginComponent {
 
                 RowLayout {
                     Layout.fillWidth: true
+                    spacing: Theme.spacingS
 
                     StyledText {
                         text: I18n.trFor("emojiPicker", "Emoji Picker")
@@ -370,6 +408,49 @@ PluginComponent {
                         font.pixelSize: Theme.fontSizeLarge
                         font.weight: Font.Medium
                         Layout.fillWidth: true
+                    }
+
+                    Row {
+                        spacing: 2
+
+                        Repeater {
+                            model: [
+                                { tone: "default", icon: "✋" },
+                                { tone: "1", icon: "✋🏻" },
+                                { tone: "2", icon: "✋🏼" },
+                                { tone: "3", icon: "✋🏽" },
+                                { tone: "4", icon: "✋🏾" },
+                                { tone: "5", icon: "✋🏿" }
+                            ]
+
+                            Rectangle {
+                                id: toneBtn
+                                required property var modelData
+                                width: 28
+                                height: 28
+                                radius: Theme.cornerRadius
+                                readonly property bool isSelected: root.activeSkinTone === modelData.tone
+                                color: isSelected ? Theme.withAlpha(Theme.primary, 0.22) : (toneMouse.containsMouse ? Theme.surfaceContainerHigh : "transparent")
+                                border.width: isSelected ? 1 : 0
+                                border.color: Theme.primary
+
+                                StyledText {
+                                    anchors.centerIn: parent
+                                    text: toneBtn.modelData.icon
+                                    font.family: "Noto Color Emoji"
+                                    font.pixelSize: 14
+                                    color: Theme.surfaceText
+                                }
+
+                                MouseArea {
+                                    id: toneMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.setSkinTone(toneBtn.modelData.tone)
+                                }
+                            }
+                        }
                     }
 
                     DankActionButton {
@@ -523,7 +604,7 @@ PluginComponent {
 
                             StyledText {
                                 anchors.centerIn: parent
-                                text: root.displayEmoji(modelData.emoji)
+                                text: root.displayEmoji(root.effectiveEmoji(delegateItem.modelData))
                                 font.family: "Noto Color Emoji"
                                 font.pixelSize: 32
                                 color: Theme.surfaceText
@@ -545,11 +626,12 @@ PluginComponent {
                                         emojiGrid.hoveredIndex = -1;
                                 }
                                 onClicked: mouse => {
+                                    const emojiToCommit = root.effectiveEmoji(delegateItem.modelData);
                                     if (mouse.button === Qt.LeftButton && (mouse.modifiers & Qt.ShiftModifier)) {
-                                        root.appendEmoji(modelData.emoji);
+                                        root.appendEmoji(emojiToCommit);
                                         return;
                                     }
-                                    root.commitSingleEmoji(modelData.emoji, (mouse.button === Qt.RightButton) !== root.pasteByDefault);
+                                    root.commitSingleEmoji(emojiToCommit, (mouse.button === Qt.RightButton) !== root.pasteByDefault);
                                 }
                             }
                         }
