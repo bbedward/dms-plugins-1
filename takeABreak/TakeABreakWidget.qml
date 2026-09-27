@@ -62,7 +62,9 @@ PluginComponent {
             var escaped = json.replace(/\"/g, '\\"');
             Proc.runCommand("takeABreak.writeStats", ["sh", "-c",
                 "mkdir -p \"$(dirname \"" + file + "\")\" && printf '%s' \"" + escaped + "\" > \"" + file + "\""
-            ]);
+            ], () => {
+                pluginRoot.getStats();
+            });
         });
     }
 
@@ -120,21 +122,26 @@ PluginComponent {
     readonly property var masterInstance: (isActiveInstance) ? pluginRoot : PluginService.getGlobalVar(pluginId, "instance")
 
     // Control Center Integration
-    ccWidgetIcon: "self_improvement"
+    ccWidgetIcon: {
+        const master = pluginRoot.masterInstance;
+        if (master && master.isPaused) return "pause";
+        return "self_improvement";
+    }
     ccWidgetPrimaryText: I18n.tr("Take a Break")
     ccWidgetSecondaryText: {
         const master = pluginRoot.masterInstance;
         if (!master) return "";
+        if (master.isPaused) return I18n.tr("Paused");
         
         let total = master.isBreakActive ? master.breakTimeRemaining : master.timeToNextBreak;
         let m = Math.floor(total / 60);
         let s = total % 60;
         let timeStr = `${m}:${s < 10 ? '0' : ''}${s}`;
         
-        return master.isBreakActive ? I18n.tr("Active: ") + timeStr : timeStr;
+        return master.isBreakActive ? I18n.tr("Break: %1").arg(timeStr) : timeStr;
     }
     ccWidgetIsActive: masterInstance ? !masterInstance.isPaused : true
-    ccDetailHeight: 360
+    ccDetailHeight: 310
 
     function setPaused(paused) {
         const master = pluginRoot.masterInstance;
@@ -155,156 +162,416 @@ PluginComponent {
     }
 
     ccDetailContent: Component {
-        Rectangle {
+        Item {
             id: detailRoot
-            readonly property var master: pluginRoot.masterInstance
 
-            radius: Theme.cornerRadius
-            color: Theme.nestedSurface
-            border.color: Theme.outlineMedium
-            border.width: Theme.layerOutlineWidth
-            implicitHeight: detailColumn.implicitHeight + Theme.spacingM * 2
+            readonly property var master: pluginRoot.masterInstance
+            readonly property var statsData: detailRoot.master?._stats ?? pluginRoot._stats
+            readonly property bool isBreak: !!(detailRoot.master && (detailRoot.master.isBreakActive || detailRoot.master.isPreWarning))
+            readonly property bool isPaused: !!(detailRoot.master && detailRoot.master.isPaused)
+
+            implicitHeight: contentColumn.implicitHeight
+
+            function refreshStats() {
+                if (detailRoot.master && typeof detailRoot.master.getStats === "function") {
+                    detailRoot.master.getStats();
+                } else {
+                    pluginRoot.getStats();
+                }
+            }
+
+            Component.onCompleted: {
+                detailRoot.refreshStats();
+            }
 
             Column {
-                id: detailColumn
-                anchors.fill: parent
-                anchors.margins: Theme.spacingM
-                spacing: Theme.spacingS
+                id: contentColumn
+                anchors.left: parent.left
+                anchors.right: parent.right
+                spacing: Theme.spacingM
 
-                Row {
+                // Hero Status & Timer Card
+                Rectangle {
                     width: parent.width
-                    spacing: Theme.spacingS
+                    height: 116
+                    radius: Theme.cornerRadius
+                    color: detailRoot.isBreak
+                        ? Theme.withAlpha(Theme.primary, 0.12)
+                        : Theme.surfaceContainerHigh
+                    border.color: detailRoot.isBreak
+                        ? Theme.withAlpha(Theme.primary, 0.4)
+                        : Theme.withAlpha(Theme.outline, 0.12)
+                    border.width: 1
+
+                    Behavior on color { ColorAnimation { duration: Theme.shortDuration } }
+                    Behavior on border.color { ColorAnimation { duration: Theme.shortDuration } }
 
                     Column {
-                        width: parent.width - headerControls.width - parent.spacing
+                        id: heroColumn
+                        anchors.fill: parent
+                        anchors.margins: Theme.spacingM
                         spacing: Theme.spacingXS
 
-                        StyledText {
-                            text: I18n.tr("Take a Break")
-                            font.pixelSize: Theme.fontSizeLarge
-                            font.weight: Font.Medium
-                            color: Theme.surfaceText
+                        // Top row: Status info & Cycle indicator
+                        Item {
+                            width: parent.width
+                            height: 20
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: Theme.spacingXS
+
+                                DankIcon {
+                                    name: {
+                                        if (detailRoot.isPaused) return "pause_circle";
+                                        if (detailRoot.isBreak) return "self_improvement";
+                                        if (detailRoot.master?.isPreWarning) return "notifications_active";
+                                        return "timer";
+                                    }
+                                    size: Theme.iconSizeSmall
+                                    color: detailRoot.isBreak ? Theme.primary : (detailRoot.master?.isPreWarning ? Theme.warning : Theme.surfaceVariantText)
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                StyledText {
+                                    text: {
+                                        if (!detailRoot.master) return "";
+                                        if (detailRoot.isPaused) return I18n.tr("Paused");
+                                        if (detailRoot.master.isBreakActive) {
+                                            return detailRoot.master.nextBreakType === 1
+                                                ? I18n.tr("Short Break Active")
+                                                : I18n.tr("Long Break Active");
+                                        }
+                                        if (detailRoot.master.isPreWarning) {
+                                            return I18n.tr("Break Incoming");
+                                        }
+                                        return detailRoot.master.nextBreakType === 1
+                                            ? I18n.tr("Next: Short Break")
+                                            : I18n.tr("Next: Long Break");
+                                    }
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    font.weight: Font.Medium
+                                    color: detailRoot.isBreak ? Theme.primary : (detailRoot.master?.isPreWarning ? Theme.warning : Theme.surfaceVariantText)
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            // Cycle indicators
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 5
+
+                                Repeater {
+                                    model: (detailRoot.master?.shortBreaksBeforeLong ?? 3)
+
+                                    Rectangle {
+                                        required property int index
+                                        readonly property bool isCompleted: (detailRoot.master?.completedShortBreaks ?? 0) > index
+                                        readonly property bool isCurrent: (detailRoot.master?.completedShortBreaks ?? 0) === index && !(detailRoot.master?.isBreakActive && detailRoot.master?.nextBreakType === 2)
+
+                                        width: isCurrent ? 16 : 6
+                                        height: 6
+                                        radius: 3
+                                        color: (isCompleted || isCurrent) ? Theme.primary : Theme.withAlpha(Theme.surfaceVariantText, 0.3)
+                                        opacity: (isCompleted || isCurrent) ? 1.0 : 0.6
+
+                                        Behavior on width { NumberAnimation { duration: Theme.shortDuration } }
+                                        Behavior on color { ColorAnimation { duration: Theme.shortDuration } }
+                                    }
+                                }
+
+                                Rectangle {
+                                    readonly property bool isLongBreak: (detailRoot.master?.nextBreakType === 2)
+                                    width: 16
+                                    height: 6
+                                    radius: 3
+                                    color: isLongBreak ? Theme.primary : Theme.withAlpha(Theme.surfaceVariantText, 0.3)
+                                    opacity: isLongBreak ? 1.0 : 0.6
+
+                                    Behavior on color { ColorAnimation { duration: Theme.shortDuration } }
+                                }
+                            }
                         }
 
-                        StyledText {
-                            text: {
-                                if (!detailRoot.master)
-                                    return "";
-                                if (detailRoot.master.isPaused)
-                                    return I18n.tr("Paused");
-                                if (detailRoot.master.isBreakActive)
-                                    return detailRoot.master.nextBreakType === 1 ? I18n.tr("Short Break Active") : I18n.tr("Long Break Active");
-                                return detailRoot.master.nextBreakType === 1 ? I18n.tr("Next: Short Break") : I18n.tr("Next: Long Break");
+                        // Big Countdown Text
+                        Item {
+                            width: parent.width
+                            height: 48
+
+                            StyledText {
+                                anchors.centerIn: parent
+                                text: {
+                                    if (!detailRoot.master) return "0:00";
+                                    const total = detailRoot.master.isBreakActive
+                                        ? detailRoot.master.breakTimeRemaining
+                                        : detailRoot.master.timeToNextBreak;
+                                    const m = Math.floor(total / 60);
+                                    const s = total % 60;
+                                    return `${m}:${s < 10 ? "0" : ""}${s}`;
+                                }
+                                font.pixelSize: 36
+                                font.weight: Font.Bold
+                                isMonospace: true
+                                color: {
+                                    if (detailRoot.isPaused) return Theme.surfaceVariantText;
+                                    if (detailRoot.isBreak) return Theme.primary;
+                                    return Theme.surfaceText;
+                                }
                             }
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.surfaceVariantText
+                        }
+
+                        // Progress Bar Track & Fill
+                        Rectangle {
+                            width: parent.width
+                            height: 4
+                            radius: 2
+                            color: Theme.surfaceContainerHighest
+                            clip: true
+
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                radius: 2
+                                color: detailRoot.isBreak
+                                    ? Theme.primary
+                                    : (detailRoot.isPaused ? Theme.surfaceVariantText : Theme.primary)
+
+                                width: {
+                                    if (!detailRoot.master || detailRoot.isPaused) return 0;
+                                    let pct = 0;
+                                    if (detailRoot.master.isBreakActive) {
+                                        const duration = detailRoot.master.nextBreakType === 1
+                                            ? detailRoot.master.shortBreakDuration
+                                            : detailRoot.master.longBreakDuration * 60;
+                                        pct = duration > 0 ? (detailRoot.master.breakTimeRemaining / duration) : 0;
+                                    } else {
+                                        const interval = detailRoot.master.shortBreakInterval * 60;
+                                        pct = interval > 0 ? 1 - (detailRoot.master.timeToNextBreak / interval) : 0;
+                                    }
+                                    return parent.width * Math.max(0, Math.min(1, pct));
+                                }
+
+                                Behavior on width {
+                                    NumberAnimation { duration: 250; easing.type: Easing.OutQuad }
+                                }
+                            }
                         }
                     }
+                }
+
+                // Primary Actions Row
+                Row {
+                    width: parent.width
+                    spacing: Theme.spacingM
+
+                    DankButton {
+                        width: (parent.width - parent.spacing) / 2
+                        buttonHeight: 38
+                        iconName: detailRoot.isBreak ? "snooze" : (detailRoot.isPaused ? "play_arrow" : "pause")
+                        text: detailRoot.isBreak ? I18n.tr("Snooze 5m") : (detailRoot.isPaused ? I18n.tr("Resume") : I18n.tr("Pause"))
+                        backgroundColor: (!detailRoot.isBreak && detailRoot.isPaused) ? Theme.primary : Theme.surfaceContainerHigh
+                        textColor: (!detailRoot.isBreak && detailRoot.isPaused) ? Theme.onPrimary : Theme.surfaceText
+                        onClicked: {
+                            if (detailRoot.isBreak) {
+                                if (detailRoot.master) detailRoot.master.snoozeBreak();
+                            } else {
+                                pluginRoot.togglePaused();
+                            }
+                        }
+                    }
+
+                    DankButton {
+                        width: (parent.width - parent.spacing) / 2
+                        buttonHeight: 38
+                        iconName: detailRoot.isBreak ? "skip_next" : "self_improvement"
+                        text: detailRoot.isBreak ? I18n.tr("Skip") : I18n.tr("Take Break")
+                        backgroundColor: detailRoot.isBreak ? Theme.primary : Theme.surfaceContainerHigh
+                        textColor: detailRoot.isBreak ? Theme.onPrimary : Theme.surfaceText
+                        enabled: detailRoot.isBreak || !detailRoot.isPaused
+                        onClicked: {
+                            if (detailRoot.isBreak) {
+                                if (detailRoot.master) detailRoot.master.skipBreak();
+                            } else {
+                                if (detailRoot.master) detailRoot.master.startBreak();
+                            }
+                        }
+                    }
+                }
+
+                // Statistics & Health Metrics Card
+                Rectangle {
+                    width: parent.width
+                    height: 64
+                    radius: Theme.cornerRadius
+                    color: Theme.surfaceContainer
+                    border.color: Theme.withAlpha(Theme.outline, 0.12)
+                    border.width: 1
 
                     Row {
-                        id: headerControls
-                        spacing: Theme.spacingXS
+                        anchors.fill: parent
+                        anchors.margins: Theme.spacingS
 
-                        DankActionButton {
-                            iconName: "settings"
-                            buttonSize: 28
-                            iconSize: 16
-                            iconColor: Theme.surfaceVariantText
-                            tooltipText: I18n.tr("Settings")
-                            tooltipSide: "bottom"
-                            onClicked: PopoutService.openSettingsWithTab("plugins")
+                        // Tile 1: Adherence Rate
+                        Item {
+                            width: (parent.width - 2) / 3
+                            height: parent.height
+
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 2
+
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: {
+                                        const s = detailRoot.statsData;
+                                        if (!s || s.todayRate < 0) return "—";
+                                        return s.todayRate + "%";
+                                    }
+                                    font.pixelSize: Theme.fontSizeMedium
+                                    font.weight: Font.Bold
+                                    color: {
+                                        const s = detailRoot.statsData;
+                                        if (!s || s.todayRate < 0) return Theme.surfaceVariantText;
+                                        return s.todayRate >= 80 ? Theme.success : (s.todayRate >= 50 ? Theme.warning : Theme.error);
+                                    }
+                                }
+
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: I18n.tr("Adherence")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    color: Theme.surfaceVariantText
+                                }
+                            }
                         }
 
-                        DankActionButton {
-                            iconName: detailRoot.master?.isPaused ? "play_arrow" : "pause"
-                            iconColor: detailRoot.master?.isPaused ? Theme.primary : Theme.surfaceVariantText
-                            buttonSize: 28
-                            iconSize: 16
-                            tooltipText: detailRoot.master?.isPaused ? I18n.tr("Resume") : I18n.tr("Pause")
-                            tooltipSide: "bottom"
-                            onClicked: pluginRoot.togglePaused()
+                        // Divider 1
+                        Rectangle {
+                            width: 1
+                            height: parent.height - Theme.spacingS
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: Theme.withAlpha(Theme.outline, 0.12)
                         }
+
+                        // Tile 2: Today Breaks
+                        Item {
+                            width: (parent.width - 2) / 3
+                            height: parent.height
+
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 2
+
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: {
+                                        const s = detailRoot.statsData;
+                                        if (!s || s.todayRate < 0) return "0 / 0";
+                                        return s.todayCompleted + " / " + s.todayTotal;
+                                    }
+                                    font.pixelSize: Theme.fontSizeMedium
+                                    font.weight: Font.Bold
+                                    color: Theme.surfaceText
+                                }
+
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: I18n.tr("Today Done")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    color: Theme.surfaceVariantText
+                                }
+                            }
+                        }
+
+                        // Divider 2
+                        Rectangle {
+                            width: 1
+                            height: parent.height - Theme.spacingS
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: Theme.withAlpha(Theme.outline, 0.12)
+                        }
+
+                        // Tile 3: This Week
+                        Item {
+                            width: (parent.width - 2) / 3
+                            height: parent.height
+
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 2
+
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: {
+                                        const s = detailRoot.statsData;
+                                        if (!s || s.weekRate < 0) return "0";
+                                        return String(s.weekCompleted);
+                                    }
+                                    font.pixelSize: Theme.fontSizeMedium
+                                    font.weight: Font.Bold
+                                    color: Theme.primary
+                                }
+
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: I18n.tr("This Week")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    color: Theme.surfaceVariantText
+                                }
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: detailRoot.refreshStats()
                     }
                 }
 
-                StatusDisplay {
-                    width: parent.width
-                    iconName: detailRoot.master ? (detailRoot.master.isPaused ? "pause_circle" : "timer") : "timer"
-                    title: {
-                        if (!detailRoot.master) return "";
-                        if (detailRoot.master.isPaused) return I18n.tr("Paused");
-                        if (detailRoot.master.isBreakActive)
-                            return detailRoot.master.nextBreakType === 1 ? I18n.tr("Short Break Active") : I18n.tr("Long Break Active");
-                        return detailRoot.master.nextBreakType === 1 ? I18n.tr("Next: Short Break") : I18n.tr("Next: Long Break");
-                    }
-                    subtitle: {
-                        if (!detailRoot.master) return "0:00";
-                        const total = detailRoot.master.isBreakActive ? detailRoot.master.breakTimeRemaining : detailRoot.master.timeToNextBreak;
-                        const minutes = Math.floor(total / 60);
-                        const seconds = total % 60;
-                        return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-                    }
-                    active: detailRoot.master ? detailRoot.master.isBreakActive : false
-                    progress: {
-                        if (!detailRoot.master || detailRoot.master.isPaused) return -1;
-                        if (detailRoot.master.isBreakActive) {
-                            const duration = detailRoot.master.nextBreakType === 1 ? detailRoot.master.shortBreakDuration : detailRoot.master.longBreakDuration * 60;
-                            return duration > 0 ? detailRoot.master.breakTimeRemaining / duration : -1;
-                        }
-                        const interval = detailRoot.master.shortBreakInterval * 60;
-                        return interval > 0 ? 1 - (detailRoot.master.timeToNextBreak / interval) : -1;
-                    }
-                }
-
+                // Secondary Utility Row
                 Row {
                     width: parent.width
-                    spacing: Theme.spacingS
+                    spacing: Theme.spacingM
 
                     DankButton {
-                        text: detailRoot.master?.isPaused ? I18n.tr("Resume") : I18n.tr("Pause")
-                        iconName: detailRoot.master?.isPaused ? "play_arrow" : "pause"
+                        width: (parent.width - parent.spacing * 2) / 3
+                        buttonHeight: 32
+                        iconName: "more_time"
+                        text: I18n.tr("+5m")
                         backgroundColor: Theme.surfaceContainerHigh
                         textColor: Theme.surfaceText
-                        width: (parent.width - parent.spacing) / 2
-                        buttonHeight: 36
-                        onClicked: pluginRoot.togglePaused()
+                        enabled: !detailRoot.isBreak && !detailRoot.isPaused
+                        onClicked: {
+                            if (detailRoot.master)
+                                detailRoot.master.timeToNextBreak += 300;
+                        }
                     }
 
                     DankButton {
-                        text: I18n.tr("Reset Session")
+                        width: (parent.width - parent.spacing * 2) / 3
+                        buttonHeight: 32
                         iconName: "refresh"
+                        text: I18n.tr("Reset")
                         backgroundColor: Theme.surfaceContainerHigh
                         textColor: Theme.surfaceText
-                        width: (parent.width - parent.spacing) / 2
-                        buttonHeight: 36
-                        onClicked: if (detailRoot.master) detailRoot.master.resetSession()
-                    }
-                }
-
-                Row {
-                    width: parent.width
-                    spacing: Theme.spacingS
-
-                    DankButton {
-                        text: I18n.tr("Snooze 5m")
-                        iconName: "snooze"
-                        backgroundColor: Theme.surfaceContainerHigh
-                        textColor: Theme.surfaceText
-                        width: (parent.width - parent.spacing) / 2
-                        buttonHeight: 36
-                        enabled: detailRoot.master ? (detailRoot.master.isPreWarning || detailRoot.master.isBreakActive) : false
-                        onClicked: if (detailRoot.master) detailRoot.master.snoozeBreak()
+                        onClicked: {
+                            if (detailRoot.master)
+                                detailRoot.master.resetSession();
+                        }
                     }
 
                     DankButton {
-                        text: I18n.tr("Skip")
-                        iconName: "skip_next"
+                        width: (parent.width - parent.spacing * 2) / 3
+                        buttonHeight: 32
+                        iconName: "settings"
+                        text: I18n.tr("Settings")
                         backgroundColor: Theme.surfaceContainerHigh
                         textColor: Theme.surfaceText
-                        width: (parent.width - parent.spacing) / 2
-                        buttonHeight: 36
-                        enabled: detailRoot.master ? (detailRoot.master.isPreWarning || detailRoot.master.isBreakActive) : false
-                        onClicked: if (detailRoot.master) detailRoot.master.skipBreak()
+                        onClicked: PopoutService.openSettingsWithTab("plugins")
                     }
                 }
             }
