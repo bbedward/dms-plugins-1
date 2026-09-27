@@ -23,6 +23,35 @@ def clean_commit_msg(msg):
         return cleaned[0].upper() + cleaned[1:]
     return msg
 
+author_cache = {}
+
+def get_author_credit(commit_hash, author_name, author_email):
+    if "hthienloc" in author_name.lower() or "huynhloc" in author_email.lower():
+        return ""
+
+    if author_email in author_cache:
+        login = author_cache[author_email]
+        if login and login.lower() == "hthienloc":
+            return ""
+        return f" by @{login}" if login else f" by {author_name}"
+
+    try:
+        res = subprocess.run(
+            ["gh", "api", f"repos/:owner/:repo/commits/{commit_hash}", "--jq", ".author.login"],
+            capture_output=True, text=True, timeout=5
+        )
+        login = res.stdout.strip()
+        if login and login != "null":
+            author_cache[author_email] = login
+            if login.lower() == "hthienloc":
+                return ""
+            return f" by @{login}"
+    except Exception:
+        pass
+
+    author_cache[author_email] = None
+    return f" by {author_name}"
+
 def determine_bump_type(commits):
     has_breaking = False
     has_feat = False
@@ -75,16 +104,16 @@ for plugin_dir in sorted(Path(".").iterdir()):
     range_spec = f"{last_bump}..HEAD" if last_bump else "HEAD"
 
     # Retrieve commits in plugin_dir since last bump
-    raw_log = git_cmd("log", range_spec, "--format=%H %an %s", "--", str(plugin_dir))
+    raw_log = git_cmd("log", range_spec, "--format=%H%x1f%an%x1f%ae%x1f%s", "--", str(plugin_dir))
     if not raw_log:
         continue
 
     relevant_commits = []
     for line in raw_log.splitlines():
-        parts = line.split(" ", 2)
-        if len(parts) < 3:
+        parts = line.split("\x1f")
+        if len(parts) < 4:
             continue
-        h, author, subject = parts
+        h, author, email, subject = parts
         # Skip github-actions bot commits and release bump commits
         if "github-actions" in author.lower() or subject.startswith("chore(release):"):
             continue
@@ -92,12 +121,12 @@ for plugin_dir in sorted(Path(".").iterdir()):
         # Check if the commit modified files other than plugin.json
         files = git_cmd("diff-tree", "--no-commit-id", "--name-only", "-r", h, "--", str(plugin_dir)).splitlines()
         if any(f.strip() != str(manifest) for f in files if f.strip()):
-            relevant_commits.append(subject)
+            relevant_commits.append((h, author, email, subject))
 
     if not relevant_commits:
         continue
 
-    bump_type = determine_bump_type(relevant_commits)
+    bump_type = determine_bump_type([c[3] for c in relevant_commits])
     if not bump_type:
         continue
 
@@ -121,11 +150,13 @@ for plugin_dir in sorted(Path(".").iterdir()):
     display_name = data.get("name") or plugin_dir.name
     plugin_notes = [f"### {display_name} ({current_ver} -> {next_ver})\n"]
     seen_commits = set()
-    for commit_msg in relevant_commits:
-        cleaned = clean_commit_msg(commit_msg)
-        if cleaned not in seen_commits:
-            seen_commits.add(cleaned)
-            plugin_notes.append(f"- {cleaned}\n")
+    for h, author, email, subject in relevant_commits:
+        cleaned = clean_commit_msg(subject)
+        credit = get_author_credit(h, author, email)
+        entry = f"{cleaned}{credit}"
+        if entry not in seen_commits:
+            seen_commits.add(entry)
+            plugin_notes.append(f"- {entry}\n")
     plugin_notes.append("\n")
     release_notes.extend(plugin_notes)
 
