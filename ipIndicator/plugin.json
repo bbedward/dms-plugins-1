@@ -2,7 +2,7 @@
   "id": "ipIndicator",
   "name": "IP Indicator",
   "description": "Display public IP address, ISP, and location with a privacy-focused toggle.",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "license": "GPL-3.0",
   "author": "Loc Huynh",
   "icon": "public",
