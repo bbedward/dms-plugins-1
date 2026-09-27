@@ -7,3 +7,4 @@ __pycache__/
 *.bak
 *~
 .bump-summary.txt
+.bump-release-notes.md

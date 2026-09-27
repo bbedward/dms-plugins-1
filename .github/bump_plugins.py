@@ -54,6 +54,7 @@ def bump(parts, bump_type):
     return parts
 
 updated = []
+release_notes = []
 
 for plugin_dir in sorted(Path(".").iterdir()):
     if not plugin_dir.is_dir() or plugin_dir.name.startswith("."):
@@ -111,9 +112,17 @@ for plugin_dir in sorted(Path(".").iterdir()):
     updated.append(f"{plugin_dir.name} ({current_ver} -> {next_ver})")
     print(f"[{bump_type.upper()}] {plugin_dir.name}: {current_ver} -> {next_ver}")
 
+    plugin_notes = [f"### {plugin_dir.name} ({current_ver} -> {next_ver})\n"]
+    for commit_msg in relevant_commits:
+        plugin_notes.append(f"- {commit_msg}\n")
+    plugin_notes.append("\n")
+    release_notes.extend(plugin_notes)
+
 if updated:
     summary = "\n".join(updated)
     Path(".bump-summary.txt").write_text(summary + "\n", encoding="utf-8")
+    notes_body = "".join(release_notes).strip() + "\n"
+    Path(".bump-release-notes.md").write_text(notes_body, encoding="utf-8")
     print(f"Updated:\n{summary}")
 else:
     print("No plugins require version bump.")
