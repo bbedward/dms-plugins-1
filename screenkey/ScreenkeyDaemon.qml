@@ -61,6 +61,7 @@ PluginComponent {
     readonly property int historyLimit: root.pluginData.historyLimit ?? 1
     readonly property string bgColorMode: root.pluginData.bgColorMode ?? "default"
     readonly property string bgColorCustom: root.pluginData.bgColorCustom ?? "#1e2326"
+    readonly property bool clickThrough: root.pluginData.clickThrough ?? true
     property var historyList: []
 
     // Output state

@@ -25,6 +25,12 @@ PanelWindow {
     WlrLayershell.exclusiveZone: -1
     exclusionMode: ExclusionMode.Ignore
 
+    mask: (daemon && daemon.clickThrough === false) ? null : emptyMask
+
+    Region {
+        id: emptyMask
+    }
+
     WlrLayershell.margins {
         left: daemon ? daemon.marginSize : 24
         right: daemon ? daemon.marginSize : 24

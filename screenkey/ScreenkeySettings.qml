@@ -80,9 +80,10 @@ print(json.dumps(devs))
         SectionTitle {
             text: I18n.tr("General Settings")
             icon: "tune"
-            showReset: enabledSetting.isDirty || fadeTimeoutSetting.isDirty || fontSizeSetting.isDirty
+            showReset: enabledSetting.isDirty || clickThroughSetting.isDirty || fadeTimeoutSetting.isDirty || fontSizeSetting.isDirty
             onResetClicked: {
                 enabledSetting.resetToDefault();
+                clickThroughSetting.resetToDefault();
                 fadeTimeoutSetting.resetToDefault();
                 fontSizeSetting.resetToDefault();
             }
@@ -92,6 +93,16 @@ print(json.dumps(devs))
             id: enabledSetting
             settingKey: "visualizerEnabled"
             label: I18n.tr("Enable Visualizer")
+            defaultValue: true
+        }
+
+        Separator {}
+
+        ToggleSettingPlus {
+            id: clickThroughSetting
+            settingKey: "clickThrough"
+            label: I18n.tr("Click-through")
+            description: I18n.tr("Allow mouse clicks to pass through the overlay to underlying windows")
             defaultValue: true
         }
 
