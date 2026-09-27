@@ -110,7 +110,7 @@ PluginComponent {
         }
         root.runDefaultAction("middleClickAction");
     }
-    ccDetailHeight: 240
+    ccDetailHeight: 245
 
     ccDetailContent: Component {
         CaptureDetail {
