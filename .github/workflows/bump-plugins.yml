@@ -50,6 +50,6 @@ jobs:
             TAG="${TAG}.${{ github.run_number }}"
           fi
           gh release create "$TAG" \
-            --title "Release $TAG" \
+            --title "$TAG" \
             --notes-file .bump-release-notes.md
           rm -f .bump-release-notes.md

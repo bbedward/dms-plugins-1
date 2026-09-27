@@ -17,6 +17,12 @@ def parse_semver(ver_str):
         parts.append(0)
     return parts[:3]
 
+def clean_commit_msg(msg):
+    cleaned = re.sub(r"^(?:[a-zA-Z0-9_-]+\s+)?(?:[a-zA-Z0-9_-]+(?:\([^)]*\))?!*:\s*)", "", msg).strip()
+    if cleaned:
+        return cleaned[0].upper() + cleaned[1:]
+    return msg
+
 def determine_bump_type(commits):
     has_breaking = False
     has_feat = False
@@ -112,9 +118,14 @@ for plugin_dir in sorted(Path(".").iterdir()):
     updated.append(f"{plugin_dir.name} ({current_ver} -> {next_ver})")
     print(f"[{bump_type.upper()}] {plugin_dir.name}: {current_ver} -> {next_ver}")
 
-    plugin_notes = [f"### {plugin_dir.name} ({current_ver} -> {next_ver})\n"]
+    display_name = data.get("name") or plugin_dir.name
+    plugin_notes = [f"### {display_name} ({current_ver} -> {next_ver})\n"]
+    seen_commits = set()
     for commit_msg in relevant_commits:
-        plugin_notes.append(f"- {commit_msg}\n")
+        cleaned = clean_commit_msg(commit_msg)
+        if cleaned not in seen_commits:
+            seen_commits.add(cleaned)
+            plugin_notes.append(f"- {cleaned}\n")
     plugin_notes.append("\n")
     release_notes.extend(plugin_notes)
 
