@@ -63,11 +63,11 @@ for plugin_dir in sorted(Path(".").iterdir()):
     if not manifest.exists():
         continue
 
-    # Commit gần nhất sửa plugin.json
+    # Latest commit modifying plugin.json
     last_bump = git_cmd("log", "-n", "1", "--format=%H", "--", str(manifest))
     range_spec = f"{last_bump}..HEAD" if last_bump else "HEAD"
 
-    # Lấy các commit trong plugin_dir kể từ lần bump trước
+    # Retrieve commits in plugin_dir since last bump
     raw_log = git_cmd("log", range_spec, "--format=%H %an %s", "--", str(plugin_dir))
     if not raw_log:
         continue
@@ -78,11 +78,11 @@ for plugin_dir in sorted(Path(".").iterdir()):
         if len(parts) < 3:
             continue
         h, author, subject = parts
-        # Bỏ qua commit của github-actions bot và commit bump
+        # Skip github-actions bot commits and release bump commits
         if "github-actions" in author.lower() or subject.startswith("chore(release):"):
             continue
 
-        # Kiểm tra commit có thực sự thay đổi file nào khác ngoài plugin.json không
+        # Check if the commit modified files other than plugin.json
         files = git_cmd("diff-tree", "--no-commit-id", "--name-only", "-r", h, "--", str(plugin_dir)).splitlines()
         if any(f.strip() != str(manifest) for f in files if f.strip()):
             relevant_commits.append(subject)
@@ -112,8 +112,8 @@ for plugin_dir in sorted(Path(".").iterdir()):
     print(f"[{bump_type.upper()}] {plugin_dir.name}: {current_ver} -> {next_ver}")
 
 if updated:
-    summary = ", ".join(updated)
-    Path(".bump-summary.txt").write_text(summary, encoding="utf-8")
-    print(f"Updated: {summary}")
+    summary = "\n".join(updated)
+    Path(".bump-summary.txt").write_text(summary + "\n", encoding="utf-8")
+    print(f"Updated:\n{summary}")
 else:
     print("No plugins require version bump.")
