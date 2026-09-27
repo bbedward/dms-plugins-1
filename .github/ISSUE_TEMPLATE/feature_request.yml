@@ -1,0 +1,63 @@
+name: Feature Request
+description: Suggest an idea or enhancement for a plugin
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!TIP]
+        > Before submitting, please check existing plugins and open issues. Ensure your plugins are up to date.
+
+  - type: dropdown
+    id: target
+    attributes:
+      label: Target Plugin
+      description: Select an existing plugin or choose New Plugin Idea
+      options:
+        - New Plugin Idea
+        - activateLinux
+        - ambientSound
+        - bongoCat
+        - breathing
+        - caffeine
+        - desktopWidgetToggle
+        - emojiPicker
+        - handMirror
+        - hiddenBar
+        - hydrate
+        - ipIndicator
+        - kaomojiPicker
+        - lutrisLauncher
+        - mediaDownloader
+        - niriDS
+        - ocrScanner
+        - quickCapture
+        - screenkey
+        - takeABreak
+        - timer
+        - typingSounds
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Feature Description
+      description: Detailed description of what you want to add or change
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation & Use Case
+      description: Why is this feature needed and what real-world problem does it solve
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / Visual References
+      description: Drag and drop UI sketches, screenshots, or examples if applicable

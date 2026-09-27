@@ -1,0 +1,117 @@
+name: Bug Report
+description: Report an issue or unexpected behavior in a plugin
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!IMPORTANT]
+        > Before submitting, please make sure you are running the latest version of both DankMaterialShell and the affected plugin.
+
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Affected Plugin
+      description: Select the plugin where the issue occurred
+      options:
+        - activateLinux
+        - ambientSound
+        - bongoCat
+        - breathing
+        - caffeine
+        - desktopWidgetToggle
+        - emojiPicker
+        - handMirror
+        - hiddenBar
+        - hydrate
+        - ipIndicator
+        - kaomojiPicker
+        - lutrisLauncher
+        - mediaDownloader
+        - niriDS
+        - ocrScanner
+        - quickCapture
+        - screenkey
+        - takeABreak
+        - timer
+        - typingSounds
+        - Other / Core
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Clear and concise description of what went wrong
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the issue
+      placeholder: |
+        1. Open plugin...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should have happened instead
+    validations:
+      required: true
+
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin Version
+      description: Version of the affected plugin (from plugin.json or settings)
+      placeholder: "e.g. 5.5.0 or git main"
+    validations:
+      required: true
+
+  - type: input
+    id: dms_version
+    attributes:
+      label: DMS Version / Commit
+      description: Version or git commit hash of DankMaterialShell
+      placeholder: "e.g. 0.9.5 or commit 1a2b3c4"
+    validations:
+      required: true
+
+  - type: input
+    id: compositor
+    attributes:
+      label: Compositor / Window Manager
+      description: Compositor or window manager in use
+      placeholder: "e.g. Niri, Hyprland, Sway"
+    validations:
+      required: true
+
+  - type: input
+    id: distro
+    attributes:
+      label: Linux Distribution
+      description: Distribution name and version
+      placeholder: "e.g. Arch Linux, Fedora 41"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant output from terminal or journalctl
+      render: shell
+
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshots or Screen Recordings
+      description: Drag and drop relevant images or video clips here
