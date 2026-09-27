@@ -63,6 +63,38 @@ PluginComponent {
         "flags": "flag"
     })
 
+    readonly property var skinToneOptions: [
+        "✋  Default",
+        "✋🏻  Light",
+        "✋🏼  Medium-Light",
+        "✋🏽  Medium",
+        "✋🏾  Medium-Dark",
+        "✋🏿  Dark"
+    ]
+    readonly property var skinToneValues: ["default", "1", "2", "3", "4", "5"]
+    readonly property var skinToneIcons: ({
+        "default": "✋",
+        "1": "✋🏻",
+        "2": "✋🏼",
+        "3": "✋🏽",
+        "4": "✋🏾",
+        "5": "✋🏿"
+    })
+
+    function skinToneIcon(tone) {
+        return root.skinToneIcons[tone] || "✋";
+    }
+
+    function skinToneToOption(tone) {
+        const idx = root.skinToneValues.indexOf(tone);
+        return idx >= 0 ? root.skinToneOptions[idx] : root.skinToneOptions[0];
+    }
+
+    function optionToSkinTone(option) {
+        const idx = root.skinToneOptions.indexOf(option);
+        return idx >= 0 ? root.skinToneValues[idx] : "default";
+    }
+
     function stripSkinTone(emoji) {
         if (!emoji)
             return "";
@@ -390,6 +422,24 @@ PluginComponent {
                         searchField.selectAll();
                     });
                 }
+                function onClosed() {
+                    skinToneDropdown.closeDropdownMenu();
+                }
+            }
+
+            DankDropdown {
+                id: skinToneDropdown
+                showTrigger: false
+                popupAnchorItem: skinToneBtn
+                popupWidth: 180
+                alignPopupRight: true
+                focusReturnTarget: searchField
+                options: root.skinToneOptions
+                currentValue: root.skinToneToOption(root.activeSkinTone)
+                onValueChanged: value => {
+                    root.setSkinTone(root.optionToSkinTone(value));
+                    searchField.forceActiveFocus();
+                }
             }
 
             ColumnLayout {
@@ -410,49 +460,6 @@ PluginComponent {
                         Layout.fillWidth: true
                     }
 
-                    Row {
-                        spacing: 2
-
-                        Repeater {
-                            model: [
-                                { tone: "default", icon: "✋" },
-                                { tone: "1", icon: "✋🏻" },
-                                { tone: "2", icon: "✋🏼" },
-                                { tone: "3", icon: "✋🏽" },
-                                { tone: "4", icon: "✋🏾" },
-                                { tone: "5", icon: "✋🏿" }
-                            ]
-
-                            Rectangle {
-                                id: toneBtn
-                                required property var modelData
-                                width: 28
-                                height: 28
-                                radius: Theme.cornerRadius
-                                readonly property bool isSelected: root.activeSkinTone === modelData.tone
-                                color: isSelected ? Theme.withAlpha(Theme.primary, 0.22) : (toneMouse.containsMouse ? Theme.surfaceContainerHigh : "transparent")
-                                border.width: isSelected ? 1 : 0
-                                border.color: Theme.primary
-
-                                StyledText {
-                                    anchors.centerIn: parent
-                                    text: toneBtn.modelData.icon
-                                    font.family: "Noto Color Emoji"
-                                    font.pixelSize: 14
-                                    color: Theme.surfaceText
-                                }
-
-                                MouseArea {
-                                    id: toneMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: root.setSkinTone(toneBtn.modelData.tone)
-                                }
-                            }
-                        }
-                    }
-
                     DankActionButton {
                         iconName: "close"
                         buttonSize: 30
@@ -463,31 +470,64 @@ PluginComponent {
                     }
                 }
 
-                DankTextField {
-                    id: searchField
+                RowLayout {
                     Layout.fillWidth: true
-                    placeholderText: root.selectedCategory === "recent" || !root.categoryNames[root.selectedCategory]
-                        ? I18n.trFor("emojiPicker", "Search emoji")
-                        : I18n.trFor("emojiPicker", "Search in %1").arg(I18n.tr(root.categoryNames[root.selectedCategory]))
-                    text: root.query
-                    onTextChanged: {
-                        root.query = text;
-                        root.selectedIndex = 0;
-                    }
-                    ignoreUpDownKeys: true
-                    keyForwardTargets: [searchField]
-                    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Down) {
-                            pickerView.focusSelectedCategory();
-                            event.accepted = true;
-                            return;
+                    spacing: Theme.spacingS
+
+                    DankTextField {
+                        id: searchField
+                        Layout.fillWidth: true
+                        placeholderText: root.selectedCategory === "recent" || !root.categoryNames[root.selectedCategory]
+                            ? I18n.trFor("emojiPicker", "Search emoji")
+                            : I18n.trFor("emojiPicker", "Search in %1").arg(I18n.tr(root.categoryNames[root.selectedCategory]))
+                        text: root.query
+                        onTextChanged: {
+                            root.query = text;
+                            root.selectedIndex = 0;
                         }
-                        if (root.handleEnter(event))
-                            return;
-                        root.handleQueueBackspace(event, searchField.text.length === 0);
+                        ignoreUpDownKeys: true
+                        keyForwardTargets: [searchField]
+                        Keys.onPressed: event => {
+                            if (event.key === Qt.Key_Down) {
+                                pickerView.focusSelectedCategory();
+                                event.accepted = true;
+                                return;
+                            }
+                            if (root.handleEnter(event))
+                                return;
+                            root.handleQueueBackspace(event, searchField.text.length === 0);
+                        }
+                        Keys.onTabPressed: {
+                            pickerView.focusSelectedCategory();
+                        }
                     }
-                    Keys.onTabPressed: {
-                        pickerView.focusSelectedCategory();
+
+                    Rectangle {
+                        id: skinToneBtn
+                        Layout.preferredWidth: Theme.iconButtonSize
+                        Layout.preferredHeight: Theme.iconButtonSize
+                        radius: Theme.cornerRadiusXS
+                        color: skinToneBtnMouse.containsMouse || skinToneDropdown.menuVisible
+                            ? Theme.surfaceContainerHigh
+                            : Theme.chipSurface
+                        border.width: 1
+                        border.color: skinToneDropdown.menuVisible ? Theme.primary : Theme.outlineVariant
+
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: root.skinToneIcon(root.activeSkinTone)
+                            font.family: "Noto Color Emoji"
+                            font.pixelSize: 20
+                            color: Theme.surfaceText
+                        }
+
+                        MouseArea {
+                            id: skinToneBtnMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: skinToneDropdown.openDropdownMenu()
+                        }
                     }
                 }
 

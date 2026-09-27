@@ -129,7 +129,7 @@ PluginSettings {
             description: I18n.trFor("emojiPicker", "Default skin tone modifier for people and hand emojis.")
             defaultValue: "default"
             options: [
-                { label: "✋ " + I18n.trFor("emojiPicker", "Yellow"), value: "default" },
+                { label: "✋ " + I18n.trFor("emojiPicker", "Default"), value: "default" },
                 { label: "✋🏻 " + I18n.trFor("emojiPicker", "Light"), value: "1" },
                 { label: "✋🏼 " + I18n.trFor("emojiPicker", "Medium-Light"), value: "2" },
                 { label: "✋🏽 " + I18n.trFor("emojiPicker", "Medium"), value: "3" },
