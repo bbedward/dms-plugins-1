@@ -29,6 +29,7 @@ PluginComponent {
     }
     readonly property bool pasteByDefault: (root.pluginData?.defaultAction ?? "copy") === "paste"
     readonly property bool showCopyToast: root.pluginData?.showCopyToast ?? true
+    readonly property bool showHints: root.pluginData?.showHints ?? true
 
     function getStoredSkinTone() {
         const stored = String(root.pluginData?.defaultSkinTone ?? "default");
@@ -63,31 +64,16 @@ PluginComponent {
         "flags": "flag"
     })
 
-    readonly property var skinToneOptions: [
-        "✋  Default",
-        "✋🏻  Light",
-        "✋🏼  Medium-Light",
-        "✋🏽  Medium",
-        "✋🏾  Medium-Dark",
-        "✋🏿  Dark"
-    ]
+    readonly property var skinToneOptions: ["✋", "✋🏻", "✋🏼", "✋🏽", "✋🏾", "✋🏿"]
     readonly property var skinToneValues: ["default", "1", "2", "3", "4", "5"]
-    readonly property var skinToneIcons: ({
-        "default": "✋",
-        "1": "✋🏻",
-        "2": "✋🏼",
-        "3": "✋🏽",
-        "4": "✋🏾",
-        "5": "✋🏿"
-    })
 
     function skinToneIcon(tone) {
-        return root.skinToneIcons[tone] || "✋";
+        const idx = root.skinToneValues.indexOf(tone);
+        return idx >= 0 ? root.skinToneOptions[idx] : "✋";
     }
 
     function skinToneToOption(tone) {
-        const idx = root.skinToneValues.indexOf(tone);
-        return idx >= 0 ? root.skinToneOptions[idx] : root.skinToneOptions[0];
+        return root.skinToneIcon(tone);
     }
 
     function optionToSkinTone(option) {
@@ -431,7 +417,7 @@ PluginComponent {
                 id: skinToneDropdown
                 showTrigger: false
                 popupAnchorItem: skinToneBtn
-                popupWidth: 180
+                popupWidth: 68
                 alignPopupRight: true
                 focusReturnTarget: searchField
                 options: root.skinToneOptions
@@ -445,36 +431,14 @@ PluginComponent {
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: Theme.spacingM
-                anchors.bottomMargin: footerBar.height + Theme.spacingXS
+                anchors.bottomMargin: root.showHints ? (footerBar.height + Theme.spacingXS) : 0
                 spacing: Theme.spacingS
 
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: Theme.spacingS
 
-                    StyledText {
-                        text: I18n.trFor("emojiPicker", "Emoji Picker")
-                        color: Theme.surfaceText
-                        font.pixelSize: Theme.fontSizeLarge
-                        font.weight: Font.Medium
-                        Layout.fillWidth: true
-                    }
-
-                    DankActionButton {
-                        iconName: "close"
-                        buttonSize: 30
-                        iconSize: 18
-                        iconColor: Theme.surfaceVariantText
-                        tooltipText: I18n.trFor("emojiPicker", "Close")
-                        onClicked: root.closePicker()
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Theme.spacingS
-
-                    DankTextField {
+                    DankSearchField {
                         id: searchField
                         Layout.fillWidth: true
                         placeholderText: root.selectedCategory === "recent" || !root.categoryNames[root.selectedCategory]
@@ -504,9 +468,9 @@ PluginComponent {
 
                     Rectangle {
                         id: skinToneBtn
-                        Layout.preferredWidth: Theme.iconButtonSize
-                        Layout.preferredHeight: Theme.iconButtonSize
-                        radius: Theme.cornerRadiusXS
+                        Layout.preferredWidth: searchField.height
+                        Layout.preferredHeight: searchField.height
+                        radius: height / 2
                         color: skinToneBtnMouse.containsMouse || skinToneDropdown.menuVisible
                             ? Theme.surfaceContainerHigh
                             : Theme.chipSurface
@@ -706,7 +670,8 @@ PluginComponent {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                height: 36
+                height: 40
+                visible: root.showHints
                 clip: true
 
                 Rectangle {
@@ -722,7 +687,7 @@ PluginComponent {
                     anchors.rightMargin: Theme.spacingM
                     anchors.verticalCenter: parent.verticalCenter
                     layoutDirection: I18n.isRtl ? Qt.RightToLeft : Qt.LeftToRight
-                    spacing: Theme.spacingL
+                    spacing: Theme.spacingM
 
                     Repeater {
                         model: [
@@ -734,27 +699,21 @@ PluginComponent {
                             { keys: "Esc", label: root.queuedEmojis.length > 0 ? I18n.trFor("emojiPicker", "Clear") : I18n.trFor("emojiPicker", "Close"), shown: true }
                         ]
 
-                        // Keys in bold primary text, label dimmed, so each combination reads as one unit.
                         Row {
                             required property var modelData
                             visible: modelData.shown
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: Theme.spacingXS
 
-                            StyledText {
-                                id: hintKeys
+                            DankKeycap {
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: parent.modelData.keys
-                                font.pixelSize: Theme.fontSizeSmall
-                                font.weight: Font.Bold
-                                color: Theme.surfaceText
                             }
 
-                            // Baseline-aligned: the arrow/return glyphs come from a fallback font with other metrics.
                             StyledText {
-                                anchors.baseline: hintKeys.baseline
+                                anchors.verticalCenter: parent.verticalCenter
                                 text: parent.modelData.label.toLocaleLowerCase()
-                                font.pixelSize: Theme.fontSizeSmall - 1
+                                font.pixelSize: Theme.fontSizeSmall
                                 color: Theme.surfaceVariantText
                             }
                         }

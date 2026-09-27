@@ -100,10 +100,11 @@ PluginSettings {
         SectionTitle {
             text: I18n.trFor("emojiPicker", "Appearance")
             icon: "palette"
-            showReset: pickerSize.isDirty || defaultSkinTone.isDirty
+            showReset: pickerSize.isDirty || defaultSkinTone.isDirty || showHints.isDirty
             onResetClicked: {
                 pickerSize.resetToDefault();
                 defaultSkinTone.resetToDefault();
+                showHints.resetToDefault();
             }
         }
 
@@ -136,6 +137,16 @@ PluginSettings {
                 { label: "✋🏾 " + I18n.trFor("emojiPicker", "Medium-Dark"), value: "4" },
                 { label: "✋🏿 " + I18n.trFor("emojiPicker", "Dark"), value: "5" }
             ]
+        }
+
+        Separator {}
+
+        ToggleSettingPlus {
+            id: showHints
+            settingKey: "showHints"
+            label: I18n.trFor("emojiPicker", "Keyboard Hints")
+            description: I18n.trFor("emojiPicker", "Show keyboard navigation hints at the bottom of the picker.")
+            defaultValue: true
         }
     }
 
