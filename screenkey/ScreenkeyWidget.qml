@@ -3,12 +3,10 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Io
 import qs.Common
 import qs.Widgets
 import qs.Services
 import qs.Modules.Plugins
-import "./dms-common"
 
 PluginComponent {
     id: root

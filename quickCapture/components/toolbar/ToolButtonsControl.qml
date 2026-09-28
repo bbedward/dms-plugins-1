@@ -1,6 +1,5 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
 import "../core/Constants.js" as Constants
 
 Item {

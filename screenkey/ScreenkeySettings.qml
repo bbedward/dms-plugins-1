@@ -3,8 +3,6 @@ import QtQuick.Controls
 import Quickshell
 import qs.Common
 import qs.Modules.Plugins
-import qs.Services
-import qs.Widgets
 import "./dms-common"
 
 PluginSettings {

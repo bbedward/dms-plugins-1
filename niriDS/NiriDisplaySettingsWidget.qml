@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell
-import qs.Common
 import qs.Services
 import qs.Modules.Plugins
 import "."

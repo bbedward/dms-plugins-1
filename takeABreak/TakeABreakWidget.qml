@@ -2,12 +2,10 @@ import QtQuick
 import QtMultimedia
 import Quickshell
 import Quickshell.Io
-import Quickshell.Wayland
 import qs.Common
 import qs.Widgets
 import qs.Modules.Plugins
 import qs.Services
-import "./dms-common"
 
 PluginComponent {
     id: pluginRoot

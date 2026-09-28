@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
 import Quickshell
-import Quickshell.Wayland
 import qs.Common
 import qs.Widgets
 import qs.Services

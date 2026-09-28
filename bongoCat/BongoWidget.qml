@@ -3,7 +3,6 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import Quickshell.X11
-import Quickshell.Wayland
 import qs.Common
 import qs.Widgets
 import qs.Services

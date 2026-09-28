@@ -1,8 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
 import qs.Modules.Plugins
-import Quickshell.Io
 import "./dms-common"
 
 PluginSettings {

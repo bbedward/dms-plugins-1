@@ -3,8 +3,6 @@ import QtQuick
 import QtQuick.Controls
 import qs.Common
 import qs.Modules.Plugins
-import qs.Services
-import qs.Widgets
 
 PluginSettings {
     id: root
