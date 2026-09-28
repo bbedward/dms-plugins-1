@@ -17,8 +17,9 @@ picker clears it.
 | Right click | Copy/paste clicked emoji and close | Copy/paste clicked emoji and close |
 | Shift+left click | Append clicked emoji and stay open | Append clicked emoji and stay open |
 | Shift+Enter | Append focused emoji and stay open | Append focused emoji and stay open |
-| Enter | Copy focused emoji and close | Copy the queued sequence and close |
-| Ctrl+Enter | Copy/paste focused emoji and close | Copy/paste the queued sequence and close |
+| Enter / Ctrl+C | Copy focused emoji and close | Copy the queued sequence and close |
+| Ctrl+Enter / Ctrl+V | Copy/paste focused emoji and close | Copy/paste the queued sequence and close |
+| Ctrl+F | Focus search bar and select all query | Focus search bar and select all query |
 | Backspace | Edit the search query normally | Remove the last queued emoji when the grid is focused or the search query is empty |
 | Escape | Close without changing clipboard | Discard the queue and keep the picker open |
 

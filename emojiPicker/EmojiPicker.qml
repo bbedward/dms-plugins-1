@@ -374,7 +374,32 @@ PluginComponent {
                 }
             }
 
+            function handleCommonShortcuts(event) {
+                if (!(event.modifiers & Qt.ControlModifier) || (event.modifiers & (Qt.ShiftModifier | Qt.AltModifier | Qt.MetaModifier)))
+                    return false;
+
+                if (event.key === Qt.Key_F) {
+                    searchField.forceActiveFocus();
+                    searchField.selectAll();
+                    event.accepted = true;
+                    return true;
+                }
+                if (event.key === Qt.Key_C) {
+                    root.commitCurrent(false);
+                    event.accepted = true;
+                    return true;
+                }
+                if (event.key === Qt.Key_V) {
+                    root.commitCurrent(true);
+                    event.accepted = true;
+                    return true;
+                }
+                return false;
+            }
+
             Keys.onPressed: event => {
+                if (pickerView.handleCommonShortcuts(event))
+                    return;
                 const category = pickerView.categoryForShortcut(event);
                 if (category) {
                     pickerView.selectCategory(category);
@@ -452,6 +477,8 @@ PluginComponent {
                         ignoreUpDownKeys: true
                         keyForwardTargets: [searchField]
                         Keys.onPressed: event => {
+                            if (pickerView.handleCommonShortcuts(event))
+                                return;
                             if (event.key === Qt.Key_Down) {
                                 pickerView.focusSelectedCategory();
                                 event.accepted = true;
@@ -642,6 +669,8 @@ PluginComponent {
                     }
 
                     Keys.onPressed: event => {
+                        if (pickerView.handleCommonShortcuts(event))
+                            return;
                         if (root.handleEnter(event))
                             return;
                         if (root.handleQueueBackspace(event, true))

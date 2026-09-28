@@ -30,8 +30,9 @@ dms ipc call emojiPicker close
 | Right click | Copy and paste emoji |
 | Shift+left click | Add emoji to the composition queue |
 | Shift+Enter | Add selected emoji to the composition queue |
-| Enter | Copy queued emojis, or the selected emoji when the queue is empty |
-| Ctrl+Enter | Copy and paste queued emojis, or the selected emoji when the queue is empty |
+| Enter / Ctrl+C | Copy queued emojis, or the selected emoji when the queue is empty |
+| Ctrl+Enter / Ctrl+V | Copy and paste queued emojis, or the selected emoji when the queue is empty |
+| Ctrl+F | Return focus to the search bar and select all search text |
 | Backspace | Remove the last queued emoji when the grid is focused or search is empty |
 | Typing anywhere | Focus search and type into it |
 | Down / Tab from search | Focus the selected category |
