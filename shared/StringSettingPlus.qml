@@ -1,7 +1,7 @@
 import QtQuick
-import QtQuick.Dialogs
 import qs.Common
 import qs.Widgets
+import qs.Modals.FileBrowser
 
 Item {
     id: root
@@ -187,25 +187,27 @@ Item {
                 backgroundColor: Theme.surfaceContainerHigh
                 textColor: Theme.primary
                 onClicked: {
-                    if (root.isDirectory) folderDialog.open();
-                    else fileDialog.open();
+                    browserModal.open();
                 }
             }
         }
 
         DankTooltipV2 { id: sharedTooltip }
 
-        FolderDialog {
-            id: folderDialog
-            title: I18n.tr("Select Directory")
-            onAccepted: { textField.text = root._cleanPath(selectedFolder); root.commit(); }
-        }
-        
-        FileDialog {
-            id: fileDialog
-            title: I18n.tr("Select File")
-            nameFilters: root.fileExtensions
-            onAccepted: { textField.text = root._cleanPath(selectedFile); root.commit(); }
+        FileBrowserSurfaceModal {
+            id: browserModal
+            browserTitle: root.isDirectory ? (root.label || I18n.tr("Select Directory")) : (root.label || I18n.tr("Select File"))
+            browserType: root.isDirectory ? "folder_picker" : "file_picker"
+            folderMode: root.isDirectory
+            saveMode: false
+            fileExtensions: root.isDirectory ? [] : root.fileExtensions
+            revealPath: root.value !== "" ? root.value : ""
+            onAccepted: paths => {
+                if (paths && paths.length > 0) {
+                    textField.text = root._cleanPath(paths[0]);
+                    root.commit();
+                }
+            }
         }
     }
 }
