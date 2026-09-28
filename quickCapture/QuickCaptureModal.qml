@@ -4,6 +4,7 @@ import Quickshell
 import qs.Common
 import qs.Widgets
 import qs.Modals.Common
+import qs.Modals.FileBrowser
 import qs.Services
 import "components/core"
 import "components/dialogs"

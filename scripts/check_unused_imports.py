@@ -74,7 +74,7 @@ KNOWN_MODULE_SYMBOLS: Dict[str, Set[str]] = {
         "DankModal", "DankModalHost", "ModalBackground"
     },
     "qs.Modals.FileBrowser": {
-        "DankFileBrowser", "FileBrowserModal"
+        "DankFileBrowser", "FileBrowserModal", "FileBrowserSurfaceModal"
     },
     "qs.Modules.Settings.Widgets": {
         "SettingsCard", "SectionTitle", "ToggleSetting", "SelectionSetting", "SliderSetting"
@@ -116,6 +116,8 @@ def load_dms_tree_symbols():
                 "qs.Common": qs_dir / "Common",
                 "qs.Services": qs_dir / "Services",
                 "qs.Modules.Plugins": qs_dir / "Modules/Plugins",
+                "qs.Modals.Common": qs_dir / "Modals/Common",
+                "qs.Modals.FileBrowser": qs_dir / "Modals/FileBrowser",
             }
             for mod_name, mod_dir in mapping.items():
                 if mod_dir.is_dir():

@@ -60,12 +60,16 @@ _GT_LOCALE_MAP = {
 TABLE_START = "<!-- TRANSLATIONS_TABLE_START -->"
 TABLE_END   = "<!-- TRANSLATIONS_TABLE_END -->"
 
+EXCLUDED_PLUGINS = {
+    "quickCapture",  # Managed externally via POEditor
+}
+
 def info(msg):    print(f"\033[94m{msg}\033[0m")
 def success(msg): print(f"\033[92m{msg}\033[0m")
 def warn(msg):    print(f"\033[93mWarning: {msg}\033[0m", file=sys.stderr)
 def error(msg):   print(f"\033[91mError: {msg}\033[0m", file=sys.stderr); sys.exit(1)
 
-def discover_plugins() -> dict[str, Path]:
+def discover_plugins(include_excluded: bool = False) -> dict[str, Path]:
     """Find all plugin directories that contain plugin.json."""
     plugins = {}
     for p in sorted(REPO_ROOT.iterdir()):
@@ -75,6 +79,8 @@ def discover_plugins() -> dict[str, Path]:
                 plugin_id = manifest.get("id", p.name)
             except Exception:
                 plugin_id = p.name
+            if not include_excluded and (plugin_id in EXCLUDED_PLUGINS or p.name in EXCLUDED_PLUGINS):
+                continue
             plugins[plugin_id] = p
     return plugins
 
