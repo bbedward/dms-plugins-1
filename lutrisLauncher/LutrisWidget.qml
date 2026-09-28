@@ -4,7 +4,7 @@ import Quickshell
 import qs.Common
 import qs.Widgets
 import qs.Modules.Plugins
-import "./dms-common"
+import "./shared"
 
 PluginComponent {
     id: root

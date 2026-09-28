@@ -14,10 +14,11 @@ dms-plugins/
 │   ├── plugin.json           # Required: Plugin manifest & metadata
 │   ├── <MainComponent>.qml   # Required: Plugin entrypoint
 │   ├── <Plugin>Settings.qml  # Optional: Settings card in DMS Settings
-│   ├── dms-common/           # Optional: Shared DMS utility components
+│   ├── shared/               # Optional: Shared DMS utility components
 │   ├── docs/                 # Optional: Specifications & architecture notes
 │   ├── translations/         # Optional: Localized UI strings (.json)
 │   └── README.md             # Required: Plugin documentation & shortcuts
+├── shared/                   # Canonical source for shared UI components
 ├── scripts/                  # Repository maintenance & tooling scripts
 └── README.md                 # Root catalog of all plugins
 ```

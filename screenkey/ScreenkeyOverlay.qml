@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import qs.Common
 import qs.Widgets
-import "./dms-common"
+import "./shared"
 
 PanelWindow {
     id: overlayWindow

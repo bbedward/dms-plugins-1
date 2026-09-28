@@ -6,7 +6,7 @@ import qs.Services
 import qs.Widgets
 import qs.Modules.Plugins
 import qs.Modals.FileBrowser
-import "./dms-common"
+import "./shared"
 
 PluginComponent {
     id: pluginRoot

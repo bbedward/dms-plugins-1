@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import "../../dms-common"
+import "../../shared"
 
 SettingsGroup {
     id: root

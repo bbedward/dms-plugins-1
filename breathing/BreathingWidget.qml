@@ -5,7 +5,7 @@ import qs.Common
 import qs.Services
 import qs.Widgets
 import qs.Modules.Plugins
-import "./dms-common"
+import "./shared"
 
 
 PluginComponent {

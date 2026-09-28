@@ -1,4 +1,4 @@
-import "./dms-common"
+import "./shared"
 import QtQuick
 import QtQuick.Controls
 import qs.Common

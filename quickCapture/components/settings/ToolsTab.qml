@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import "../../dms-common"
+import "../../shared"
 import "../core/Constants.js" as Constants
 import "../core/Defaults.js" as Defaults
 

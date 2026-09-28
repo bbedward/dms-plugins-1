@@ -84,7 +84,7 @@ def _clean_str(s: str) -> str:
 def get_plugin_qml_files(plugin_dir: Path) -> list[Path]:
     return [
         q for q in sorted(plugin_dir.rglob("*.qml"))
-        if "dms-common" not in q.parts and ".git" not in q.parts
+        if "shared" not in q.parts and "dms-common" not in q.parts and ".git" not in q.parts
     ]
 
 def extract_plugin_strings(plugin_dir: Path, plugin_id: str) -> tuple[list[str], list[dict]]:

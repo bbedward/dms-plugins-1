@@ -1,6 +1,6 @@
 pragma ComponentBehavior: Bound
 
-import "./dms-common"
+import "./shared"
 import QtQuick
 import Quickshell
 import Quickshell.Io

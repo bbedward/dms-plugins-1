@@ -2,7 +2,7 @@ import QtQuick
 import qs.Common
 import qs.Services
 import qs.Widgets
-import "../../dms-common"
+import "../../shared"
 import "../core/Constants.js" as Constants
 
 SettingsGroup {

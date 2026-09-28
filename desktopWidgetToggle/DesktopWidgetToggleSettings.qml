@@ -1,6 +1,6 @@
 pragma ComponentBehavior: Bound
 
-import "./dms-common"
+import "./shared"
 import QtQuick
 import qs.Common
 import qs.Widgets

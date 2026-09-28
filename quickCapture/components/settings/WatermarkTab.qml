@@ -1,7 +1,7 @@
 import QtQuick
 import qs.Common
 import qs.Widgets
-import "../../dms-common"
+import "../../shared"
 import "../core/Defaults.js" as Defaults
 
 SettingsGroup {

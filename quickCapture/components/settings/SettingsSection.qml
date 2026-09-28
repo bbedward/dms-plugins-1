@@ -1,7 +1,7 @@
 import QtQuick
 import qs.Common
 import qs.Widgets
-import "../../dms-common"
+import "../../shared"
 
 StyledRect {
     id: root

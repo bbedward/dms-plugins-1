@@ -17,7 +17,7 @@ dms-quick-capture/
 │   ├── floating/                    # Float window service and window instance
 │   ├── history/                     # Recent edits carousel
 │   └── misc/                        # Radial menu, magnifier, warning dialog
-├── dms-common/                      # Shared DMS UI primitives (sliders, toggles, settings cards)
+├── shared/                          # Shared DMS UI primitives (sliders, toggles, settings cards)
 ├── docs/                            # Documentation
 ├── scripts/                         # Dev utilities (palette generator, i18n extractor)
 ├── translations/                    # Localization files

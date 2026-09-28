@@ -2,7 +2,7 @@ import QtQuick
 import qs.Common
 import qs.Modules.Plugins
 import qs.Widgets
-import "./dms-common"
+import "./shared"
 
 PluginSettings {
     id: root
