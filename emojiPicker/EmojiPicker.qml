@@ -9,6 +9,7 @@ import qs.Modals.Common
 import qs.Modules.Plugins
 import qs.Services
 import qs.Widgets
+import "./shared"
 import "emoji-data.js" as EmojiData
 
 PluginComponent {
