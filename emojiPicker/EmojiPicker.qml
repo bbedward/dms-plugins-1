@@ -445,7 +445,6 @@ PluginComponent {
                 popupAnchorItem: skinToneBtn
                 popupWidth: 68
                 alignPopupRight: true
-                focusReturnTarget: searchField
                 options: root.skinToneOptions
                 currentValue: root.skinToneToOption(root.activeSkinTone)
                 onValueChanged: value => {
