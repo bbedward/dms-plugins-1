@@ -122,11 +122,6 @@ DankModal {
                 anchors.margins: Theme.spacingL
                 spacing: Theme.spacingL
 
-                HeaderRow {
-                    title: I18n.tr("Display Settings")
-                    onCloseClicked: () => close()
-                }
-
                 // Section 1: Display Profiles
                 Column {
                     id: profileSection

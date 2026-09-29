@@ -38,30 +38,19 @@ Rectangle {
         color: Theme.surfaceText
         anchors.left: parent.left
         anchors.leftMargin: Theme.spacingL * 2 + Theme.iconSize
-        anchors.right: shortcutBadge.left
+        anchors.right: shortcutKeycap.visible ? shortcutKeycap.left : parent.right
         anchors.rightMargin: Theme.spacingL
         anchors.verticalCenter: parent.verticalCenter
+        elide: Text.ElideRight
     }
 
-    Rectangle {
-        id: shortcutBadge
+    DankKeycap {
+        id: shortcutKeycap
         visible: root.shortcut !== ""
-        width: shortcutLabel.implicitWidth + Theme.spacingM * 2
-        height: shortcutLabel.implicitHeight + Theme.spacingS
-        radius: Theme.cornerRadius / 2
-        color: Theme.withAlpha(Theme.surfaceVariant, 0.5)
+        text: root.shortcut
         anchors.right: parent.right
         anchors.rightMargin: Theme.spacingL
         anchors.verticalCenter: parent.verticalCenter
-
-        StyledText {
-            id: shortcutLabel
-            text: root.shortcut
-            font.pixelSize: Theme.fontSizeSmall
-            color: Theme.surfaceText
-            opacity: 0.6
-            anchors.centerIn: parent
-        }
     }
 
     MouseArea {
