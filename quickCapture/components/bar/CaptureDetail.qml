@@ -187,7 +187,7 @@ Item {
                     columns: 4
                     onTriggered: {
                         if (root.daemon)
-                            root.daemon.capture(modelData.value, "edit");
+                            root.daemon.capture(modelData.value, "edit", "", true);
                     }
                 }
             }
@@ -307,7 +307,7 @@ Item {
                         height: 72
                         onTriggered: {
                             if (root.daemon)
-                                root.daemon.record(modelData.value);
+                                root.daemon.record(modelData.value, "", true);
                         }
                     }
                 }

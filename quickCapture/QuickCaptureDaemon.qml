@@ -37,6 +37,7 @@ PluginComponent {
     property string pendingCaptureMode: ""
     property string pendingOutputName: ""
     property bool waitingForControlCenterClose: false
+    property bool pendingFromControlCenter: false
 
     function savePluginData(key, value) {
         pluginService.savePluginData(pluginId, key, value);
@@ -65,21 +66,22 @@ PluginComponent {
         });
     }
 
-    function capture(mode, action, outputName) {
+    function capture(mode, action, outputName, fromControlCenter) {
         switch (mode) {
         case "clipboard":
-            fromClipboard(action);
+            fromClipboard(action, fromControlCenter);
             return;
         case "selectFile":
-            selectImage(action);
+            selectImage(action, fromControlCenter);
             return;
         default:
-            triggerCapture(mode, action, outputName);
+            triggerCapture(mode, action, outputName, fromControlCenter);
         }
     }
 
-    function record(mode, geometry) {
-        closeControlCenter();
+    function record(mode, geometry, fromControlCenter) {
+        if (fromControlCenter && root.hideControlCenter)
+            closeControlCenter();
         recorder.startRecording(mode || "screen", geometry || "");
     }
 
@@ -121,7 +123,7 @@ PluginComponent {
         return [Proc.dmsBin, "screenshot", mode, "--no-clipboard", "--dir", "/tmp", "--filename", filename, "--format", "png", "--cursor", cursor, "--no-notify", "--json"].concat(modeFlags(mode));
     }
 
-    function triggerCapture(mode, action, outputName) {
+    function triggerCapture(mode, action, outputName, fromControlCenter) {
         const finalMode = mode || Defaults.get(pluginData, "middleClickAction");
         if (!root.allowedModes.includes(finalMode)) {
             console.warn("quickCapture: rejected screenshot mode", finalMode);
@@ -134,8 +136,9 @@ PluginComponent {
         root.pendingCaptureAction = action || "edit";
         root.pendingCaptureMode = finalMode;
         root.pendingOutputName = outputName || "";
+        root.pendingFromControlCenter = !!fromControlCenter;
 
-        if (!root.hideControlCenter) {
+        if (!fromControlCenter || !root.hideControlCenter) {
             startActualCapture();
             return;
         }
@@ -170,6 +173,7 @@ PluginComponent {
             try {
                 meta = JSON.parse((stdout || "").trim());
             } catch (e) {
+                root.pendingFromControlCenter = false;
                 captureActions.notifyError((stdout && stdout.trim()) || fallback);
                 return;
             }
@@ -178,19 +182,22 @@ PluginComponent {
                 openCaptured(meta.path, action, meta.width, meta.height);
                 return;
             }
+            root.pendingFromControlCenter = false;
             if (meta.status !== "aborted")
                 captureActions.notifyError(meta.message || meta.error || fallback);
         }, 0, timeout);
     }
 
-    function selectImage(action) {
-        closeControlCenter();
+    function selectImage(action, fromControlCenter) {
+        if (fromControlCenter && root.hideControlCenter)
+            closeControlCenter();
         fileBrowserModal.captureAction = action || "edit";
         fileBrowserModal.open();
     }
 
-    function fromClipboard(action) {
-        closeControlCenter();
+    function fromClipboard(action, fromControlCenter) {
+        if (fromControlCenter && root.hideControlCenter)
+            closeControlCenter();
         const destPath = capturePath();
         root.currentCapturePath = destPath;
         Proc.runCommand("quickCapture.clipboardPasteFile", ["sh", "-c", '"$1" cl paste > "$2" 2>/dev/null', "_", Proc.dmsBin, destPath], (stdout, exitCode) => {
@@ -222,6 +229,7 @@ PluginComponent {
     function openCaptured(path, action, width, height) {
         const minSize = Defaults.get(pluginData, "minImageSize");
         if (width < minSize || height < minSize) {
+            root.pendingFromControlCenter = false;
             captureActions.notifyWarning(I18n.trFor("quickCapture", "Image is too small (%1×%2). Minimum: %3px").arg(width).arg(height).arg(minSize));
             return;
         }
@@ -240,6 +248,8 @@ PluginComponent {
     }
 
     function openAction(path, action) {
+        const fromCC = root.pendingFromControlCenter;
+        root.pendingFromControlCenter = false;
         switch (action) {
         case "float":
             floatServiceItem.spawnWindow("file://" + path, null, [path]);
@@ -254,7 +264,8 @@ PluginComponent {
             captureActions.copyAndSaveImage(path, () => captureActions.cleanupTemp(path));
             return;
         default:
-            closeControlCenter();
+            if (fromCC && root.hideControlCenter)
+                closeControlCenter();
             modal.currentCapturePath = path;
             modal.shouldBeVisible = true;
             modal.open();
@@ -311,17 +322,17 @@ PluginComponent {
         target: "quickCapture"
 
         function screenshot(mode: string, action: string): string {
-            root.triggerCapture(mode, action);
+            root.triggerCapture(mode, action, "", false);
             return "SUCCESS";
         }
 
         function selectFile(action: string): string {
-            root.selectImage(action);
+            root.selectImage(action, false);
             return "SUCCESS";
         }
 
         function fromClipboard(action: string): string {
-            root.fromClipboard(action);
+            root.fromClipboard(action, false);
             return "SUCCESS";
         }
 
@@ -341,7 +352,7 @@ PluginComponent {
         }
 
         function recordStart(mode: string, geometry: string): string {
-            root.record(mode, geometry);
+            root.record(mode, geometry, false);
             return "SUCCESS";
         }
 
@@ -365,7 +376,7 @@ PluginComponent {
                 recorder.stopRecording();
                 return "STOPPED";
             }
-            root.record(mode);
+            root.record(mode, "", false);
             return "STARTED";
         }
 

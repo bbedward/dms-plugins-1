@@ -120,8 +120,8 @@ SettingsGroup {
 
         ToggleSettingPlus {
             settingKey: "defaultHideControlCenter"
-            label: I18n.trFor("quickCapture", "Hide Control Center by Default")
-            description: I18n.trFor("quickCapture", "Initial state for the Control Center toggle.")
+            label: I18n.trFor("quickCapture", "Hide Control Center on Capture")
+            description: I18n.trFor("quickCapture", "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.")
             defaultValue: true
         }
 

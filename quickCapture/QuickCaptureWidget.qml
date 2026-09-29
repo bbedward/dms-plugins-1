@@ -51,14 +51,14 @@ PluginComponent {
             root.daemon.widgetMode = mode;
     }
 
-    function runDefaultAction(settingKey) {
+    function runDefaultAction(settingKey, fromControlCenter) {
         if (!root.daemon)
             return;
         if (root.widgetMode === "video") {
-            root.daemon.record("region");
+            root.daemon.record("region", "", fromControlCenter);
             return;
         }
-        root.daemon.capture(Defaults.get(pluginData, settingKey), "edit");
+        root.daemon.capture(Defaults.get(pluginData, settingKey), "edit", "", fromControlCenter);
     }
 
     popoutWidth: 260
@@ -90,7 +90,7 @@ PluginComponent {
             root.recorder.cancelRecording();
             return;
         }
-        root.runDefaultAction("rightClickAction");
+        root.runDefaultAction("rightClickAction", false);
     }
 
     ccWidgetIcon: root.isRecording ? "videocam" : "screenshot_region"
@@ -108,7 +108,7 @@ PluginComponent {
             root.recorder.stopRecording();
             return;
         }
-        root.runDefaultAction("middleClickAction");
+        root.runDefaultAction("middleClickAction", true);
     }
     ccDetailHeight: 245
 
