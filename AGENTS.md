@@ -212,11 +212,13 @@ dms ipc call <pluginName> close
 dms ipc call <pluginName> toggle
 ```
 
-### Inspecting Runtime Logs
-Check Quickshell runtime logs for warnings, broken bindings, or missing component errors:
-```bash
-journalctl --user -u quickshell -n 50 --no-pager
-```
+### Verification Scripts
+- **Unused Imports:** Run `python3 scripts/check_unused_imports.py` before committing.
+- **Backward Compatibility:** Only required when adopting new/cutting-edge DMS components or modifying `shared/`:
+  ```bash
+  python3 scripts/check_compatibility.py
+  ```
+  Ensures components not yet released in stable DMS (1.6.2) are properly bundled in `shared/` and imported correctly.
 
 ---
 

@@ -80,7 +80,7 @@ KNOWN_MODULE_SYMBOLS: Dict[str, Set[str]] = {
         "SettingsCard", "SectionTitle", "ToggleSetting", "SelectionSetting", "SliderSetting"
     },
     "qs.Widgets": {
-        "DankButton", "DankActionButton", "DankIcon", "DankSearchField",
+        "DankButton", "DankActionButton", "DankIcon",
         "DankTextField", "DankDropdown", "DankKeycap", "DankModal", "StyledText",
         "DankCard", "DankGridView", "DankListView", "DankToggle", "FocusRing",
         "StateLayer", "DankTextCursor", "DankAnim", "SpringMotion", "DankFlickable",
