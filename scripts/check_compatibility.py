@@ -135,6 +135,11 @@ UNRELEASED_DMS_SYMBOLS: Set[str] = {
     "DankScrollIndicator", "DankCard", "FocusRing", "DankPopoutHost", "DankTooltipHost"
 }
 
+# Known properties on DMS components that only exist in unreleased DMS master and break stable DMS
+UNRELEASED_DMS_PROPERTIES: Dict[str, Set[str]] = {
+    "DankDropdown": {"focusReturnTarget"},
+}
+
 # Regex to strip comments
 COMMENT_RE = re.compile(r'/\*.*?\*/|//.*?$', re.MULTILINE | re.DOTALL)
 
@@ -236,8 +241,22 @@ class CompatibilityChecker:
                 if target in ["./shared", "../shared", "../../shared", "./dms-common", "../dms-common"]:
                     has_shared_import = True
 
-        # Parse instantiated types with line numbers
+        # Parse instantiated types and properties with line numbers
         lines = clean_text.splitlines()
+
+        # Check for unreleased properties on DMS components
+        for comp_name, unreleased_props in UNRELEASED_DMS_PROPERTIES.items():
+            for prop in unreleased_props:
+                prop_re = re.compile(r'^\s*' + re.escape(prop) + r'\s*:')
+                for line_no, line_content in enumerate(lines, 1):
+                    if prop_re.match(line_content):
+                        errors.append((
+                            line_no,
+                            "ERROR",
+                            f"Property '{prop}' is not available on stable DMS {BASELINE_DMS_VERSION} "
+                            f"(unreleased property for '{comp_name}'). It causes runtime error: Cannot assign to non-existent property."
+                        ))
+
         for line_no, line_content in enumerate(lines, 1):
             for match in INSTANTIATED_TYPE_RE.finditer(line_content):
                 type_name = match.group("type")
