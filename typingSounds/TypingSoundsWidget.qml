@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import qs.Common
 import qs.Widgets
@@ -21,6 +20,31 @@ PluginComponent {
     property var deviceOptions: []
     property bool _packInit: false
     property bool _devInit: false
+
+    readonly property string currentPackLabel: {
+        var cur = root.daemon ? root.daemon.selectedPackPath : "";
+        for (var i = 0; i < root.packOptions.length; i++) {
+            if (root.packOptions[i].value === cur)
+                return root.packOptions[i].label;
+        }
+        return root._packInit && root.packOptions.length > 0 ? root.packOptions[0].label : I18n.tr("Default Pack");
+    }
+
+    readonly property string currentDeviceLabel: {
+        var cur = root.daemon ? root.daemon.selectedDevicePath : "all";
+        for (var i = 0; i < root.deviceOptions.length; i++) {
+            if (root.deviceOptions[i].value === cur)
+                return root.deviceOptions[i].label;
+        }
+        return I18n.tr("All Keyboards (Auto)");
+    }
+
+    readonly property string volumeIcon: {
+        const vol = root.daemon ? root.daemon.volume : 100;
+        if (!root.daemon || !root.daemon.soundEnabled || vol === 0) return "volume_off";
+        if (vol < 50) return "volume_down";
+        return "volume_up";
+    }
 
     function scanSoundpacks() {
         const script = `
@@ -93,7 +117,7 @@ print(json.dumps(devs))
             if (exitCode !== 0) return;
             try {
                 const data = JSON.parse(stdout.trim());
-                var options = [{ label: "All Keyboards (Auto)", value: "all" }];
+                var options = [{ label: I18n.tr("All Keyboards (Auto)"), value: "all" }];
                 for (var i = 0; i < data.length; i++) {
                     options.push({ label: data[i][0], value: data[i][1] });
                 }
@@ -112,7 +136,10 @@ print(json.dumps(devs))
     ccWidgetPrimaryText: I18n.tr("Typing Sounds")
     ccWidgetSecondaryText: daemon && daemon.soundEnabled ? I18n.tr("Enabled") : I18n.tr("Disabled")
     ccWidgetIsActive: daemon ? daemon.soundEnabled : false
-    ccDetailHeight: 360
+    ccDetailHeight: {
+        const hasWarning = !!(root.daemon && (root.daemon.inputToolMissing || root.daemon.notInInputGroup));
+        return hasWarning ? 400 : 345;
+    }
 
     onCcWidgetToggled: {
         if (daemon) {
@@ -122,165 +149,310 @@ print(json.dumps(devs))
     }
 
     ccDetailContent: Component {
-        Rectangle {
+        Item {
             id: detailRoot
-            radius: Theme.cornerRadius
-            color: Theme.nestedSurface
-            border.color: Theme.outlineMedium
-            border.width: Theme.layerOutlineWidth
-
-            implicitHeight: childrenRect.height
-
-            Item {
-                id: headerRow
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                height: Math.max(headerLabel.implicitHeight, headerControls.implicitHeight) + Theme.spacingS * 2
-
-                StyledText {
-                    id: headerLabel
-                    text: I18n.tr("Typing Sounds")
-                    font.pixelSize: Theme.fontSizeLarge
-                    font.weight: Font.Medium
-                    color: Theme.surfaceText
-                    anchors.left: parent.left
-                    anchors.leftMargin: Theme.spacingM
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Row {
-                    id: headerControls
-                    anchors.right: parent.right
-                    anchors.rightMargin: Theme.spacingM
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: Theme.spacingS
-
-                    DankActionButton {
-                        iconName: "settings"
-                        buttonSize: 28
-                        iconSize: 16
-                        iconColor: Theme.surfaceVariantText
-                        tooltipText: I18n.tr("Settings")
-                        tooltipSide: "bottom"
-                        onClicked: PopoutService.openSettingsWithTab("plugins")
-                    }
-
-                    DankActionButton {
-                        iconName: root.daemon?.soundEnabled ? "volume_up" : "volume_off"
-                        iconColor: root.daemon?.soundEnabled ? Theme.primary : Theme.surfaceVariantText
-                        buttonSize: 28
-                        iconSize: 16
-                        tooltipText: root.daemon?.soundEnabled ? I18n.tr("Disable") : I18n.tr("Enable")
-                        tooltipSide: "bottom"
-                        onClicked: {
-                            if (root.daemon)
-                                root.daemon.saveSetting("soundEnabled", !root.daemon.soundEnabled);
-                        }
-                    }
-                }
-            }
+            implicitHeight: detailColumn.implicitHeight
 
             Column {
                 id: detailColumn
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.top: headerRow.bottom
-                anchors.margins: Theme.spacingM
-                anchors.topMargin: Theme.spacingS
-                spacing: Theme.spacingS
+                spacing: Theme.spacingM
 
-                DankSliderPlus {
+                // ── Warning Banner ───────────────────────────────────────────
+                Rectangle {
                     width: parent.width
-                    value: root.daemon ? root.daemon.volume : 100
-                    minimum: 0
-                    maximum: 200
-                    unit: "%"
-                    showValue: true
-                    wheelEnabled: false
-                    onSliderValueChanged: (newValue) => {
-                        if (root.daemon)
-                            root.daemon.saveSetting("volume", newValue);
+                    height: warningRow.implicitHeight + Theme.spacingM * 2
+                    radius: Theme.cornerRadius
+                    color: Theme.withAlpha(Theme.warning, 0.12)
+                    border.color: Theme.withAlpha(Theme.warning, 0.3)
+                    border.width: 1
+                    visible: !!(root.daemon && (root.daemon.inputToolMissing || root.daemon.notInInputGroup))
+
+                    Row {
+                        id: warningRow
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.margins: Theme.spacingM
+                        spacing: Theme.spacingM
+
+                        DankIcon {
+                            name: "warning"
+                            size: Theme.iconSizeSmall
+                            color: Theme.warning
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        StyledText {
+                            width: parent.width - Theme.iconSizeSmall - Theme.spacingM
+                            text: root.daemon?.notInInputGroup
+                                ? I18n.tr("User not in 'input' group (run: sudo usermod -aG input $USER)")
+                                : I18n.tr("Missing tool: %1").arg(root.daemon?.requiredTool ?? "libinput")
+                            font.pixelSize: Theme.fontSizeSmall
+                            color: Theme.warning
+                            wrapMode: Text.WordWrap
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
                 }
 
-                Column {
+                // ── Volume Card ──────────────────────────────────────────────
+                Rectangle {
                     width: parent.width
-                    spacing: Theme.spacingXS
+                    height: volumeCol.implicitHeight + Theme.spacingM * 2
+                    radius: Theme.cornerRadius
+                    color: Theme.surfaceContainerHigh
+                    border.color: Theme.withAlpha(Theme.outline, 0.08)
+                    border.width: 1
 
-                    StyledText {
-                        text: I18n.tr("Sound Pack")
-                        font.pixelSize: Theme.fontSizeLarge
-                        font.weight: Font.Medium
-                        color: Theme.surfaceText
-                    }
+                    Column {
+                        id: volumeCol
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.margins: Theme.spacingM
+                        spacing: Theme.spacingS
 
-                    DankDropdown {
-                        width: parent.width
-                        compactMode: true
-                        currentValue: {
-                            var cur = root.daemon ? root.daemon.selectedPackPath : "";
-                            for (var i = 0; i < root.packOptions.length; i++) {
-                                if (root.packOptions[i].value === cur)
-                                    return root.packOptions[i].label;
+                        Item {
+                            width: parent.width
+                            height: Math.max(volTitleRow.implicitHeight, volValueText.implicitHeight)
+
+                            Row {
+                                id: volTitleRow
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: Theme.spacingS
+
+                                DankIcon {
+                                    name: root.volumeIcon
+                                    size: Theme.iconSizeSmall
+                                    color: (root.daemon?.soundEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                StyledText {
+                                    text: I18n.tr("Volume")
+                                    font.pixelSize: Theme.fontSizeMedium
+                                    font.weight: Font.Medium
+                                    color: Theme.surfaceText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
                             }
-                            return root._packInit && root.packOptions.length > 0 ? root.packOptions[0].label : "";
+
+                            StyledText {
+                                id: volValueText
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: (root.daemon ? root.daemon.volume : 100) + "%"
+                                font.pixelSize: Theme.fontSizeMedium
+                                font.weight: Font.SemiBold
+                                font.features: { "tnum": 1 }
+                                color: (root.daemon?.soundEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
+                            }
                         }
-                        options: root.packOptions.map(function(o) { return o.label; })
-                        onValueChanged: (newValue) => {
-                            for (var i = 0; i < root.packOptions.length; i++) {
-                                if (root.packOptions[i].label === newValue) {
-                                    if (root.daemon)
-                                        root.daemon.saveSetting("selectedPackPath", root.packOptions[i].value);
-                                    break;
+
+                        DankSliderPlus {
+                            width: parent.width
+                            height: 32
+                            value: root.daemon ? root.daemon.volume : 100
+                            minimum: 0
+                            maximum: 200
+                            unit: "%"
+                            showValue: false
+                            wheelEnabled: true
+                            onSliderValueChanged: (newValue) => {
+                                if (root.daemon)
+                                    root.daemon.saveSetting("volume", newValue);
+                            }
+                        }
+                    }
+                }
+
+                // ── Sound & Device Selectors Card ───────────────────────────
+                Rectangle {
+                    width: parent.width
+                    height: selectorCol.implicitHeight + Theme.spacingM * 2
+                    radius: Theme.cornerRadius
+                    color: Theme.surfaceContainerHigh
+                    border.color: Theme.withAlpha(Theme.outline, 0.08)
+                    border.width: 1
+
+                    Column {
+                        id: selectorCol
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.margins: Theme.spacingM
+                        spacing: Theme.spacingM
+
+                        // Sound Pack Section
+                        Column {
+                            width: parent.width
+                            spacing: Theme.spacingS
+
+                            Item {
+                                width: parent.width
+                                height: 20
+
+                                Row {
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: Theme.spacingS
+
+                                    DankIcon {
+                                        name: "library_music"
+                                        size: Theme.iconSizeSmall
+                                        color: Theme.surfaceVariantText
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    StyledText {
+                                        text: I18n.tr("Sound Pack")
+                                        font.pixelSize: Theme.fontSizeMedium
+                                        font.weight: Font.Medium
+                                        color: Theme.surfaceText
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                StyledText {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: root.daemon?.isPreparing ? I18n.tr("Preparing…") : (root.packOptions.length > 0 ? I18n.tr("%1 packs").arg(root.packOptions.length) : "")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    color: root.daemon?.isPreparing ? Theme.warning : Theme.surfaceVariantText
+                                }
+                            }
+
+                            DankDropdown {
+                                width: parent.width
+                                height: 38
+                                compactMode: true
+                                currentValue: root.currentPackLabel
+                                options: root.packOptions.map(function(o) { return o.label; })
+                                onValueChanged: (newValue) => {
+                                    for (var i = 0; i < root.packOptions.length; i++) {
+                                        if (root.packOptions[i].label === newValue) {
+                                            if (root.daemon)
+                                                root.daemon.saveSetting("selectedPackPath", root.packOptions[i].value);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Divider
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.withAlpha(Theme.outline, 0.06)
+                        }
+
+                        // Keyboard Device Section
+                        Column {
+                            width: parent.width
+                            spacing: Theme.spacingS
+
+                            Row {
+                                width: parent.width
+                                spacing: Theme.spacingS
+
+                                DankIcon {
+                                    name: "keyboard_alt"
+                                    size: Theme.iconSizeSmall
+                                    color: Theme.surfaceVariantText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                StyledText {
+                                    text: I18n.tr("Keyboard Device")
+                                    font.pixelSize: Theme.fontSizeMedium
+                                    font.weight: Font.Medium
+                                    color: Theme.surfaceText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            DankDropdown {
+                                width: parent.width
+                                height: 38
+                                compactMode: true
+                                currentValue: root.currentDeviceLabel
+                                options: root.deviceOptions.map(function(o) { return o.label; })
+                                onValueChanged: (newValue) => {
+                                    for (var i = 0; i < root.deviceOptions.length; i++) {
+                                        if (root.deviceOptions[i].label === newValue) {
+                                            if (root.daemon)
+                                                root.daemon.saveSetting("selectedDevicePath", root.deviceOptions[i].value);
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
-                Column {
+                // ── Mouse Interaction & Settings Card ───────────────────────
+                Rectangle {
                     width: parent.width
-                    spacing: Theme.spacingXS
+                    height: 50
+                    radius: Theme.cornerRadius
+                    color: Theme.surfaceContainerHigh
+                    border.color: Theme.withAlpha(Theme.outline, 0.08)
+                    border.width: 1
 
-                    StyledText {
-                        text: I18n.tr("Device")
-                        font.pixelSize: Theme.fontSizeLarge
-                        font.weight: Font.Medium
-                        color: Theme.surfaceText
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: Theme.spacingM
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: Theme.spacingM
+
+                        DankIcon {
+                            name: "mouse"
+                            size: Theme.iconSizeSmall
+                            color: (root.daemon?.mouseEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.shortDuration } }
+                        }
+
+                        StyledText {
+                            text: I18n.tr("Mouse Clicks")
+                            font.pixelSize: Theme.fontSizeMedium
+                            font.weight: Font.Medium
+                            color: Theme.surfaceText
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        DankToggle {
+                            id: mouseToggle
+                            hideText: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: root.daemon ? root.daemon.mouseEnabled : false
+                            onToggled: (checked) => {
+                                if (root.daemon)
+                                    root.daemon.saveSetting("mouseEnabled", checked);
+                            }
+                        }
                     }
 
-                    DankDropdown {
-                        width: parent.width
-                        compactMode: true
-                        currentValue: {
-                            var cur = root.daemon ? root.daemon.selectedDevicePath : "all";
-                            for (var i = 0; i < root.deviceOptions.length; i++) {
-                                if (root.deviceOptions[i].value === cur)
-                                    return root.deviceOptions[i].label;
-                            }
-                            return "All Keyboards (Auto)";
+                    DankActionButton {
+                        anchors.right: parent.right
+                        anchors.rightMargin: Theme.spacingM
+                        anchors.verticalCenter: parent.verticalCenter
+                        iconName: "settings"
+                        buttonSize: 32
+                        iconSize: 18
+                        iconColor: Theme.surfaceVariantText
+                        tooltipText: I18n.tr("Settings")
+                        tooltipSide: "bottom"
+                        onClicked: {
+                            PopoutService.closeControlCenter();
+                            PopoutService.openSettingsWithTab("plugins");
                         }
-                        options: root.deviceOptions.map(function(o) { return o.label; })
-                        onValueChanged: (newValue) => {
-                            for (var i = 0; i < root.deviceOptions.length; i++) {
-                                if (root.deviceOptions[i].label === newValue) {
-                                    if (root.daemon)
-                                        root.daemon.saveSetting("selectedDevicePath", root.deviceOptions[i].value);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                DankToggle {
-                    width: parent.width
-                    text: I18n.tr("Mouse Clicks")
-                    checked: root.daemon ? root.daemon.mouseEnabled : false
-                    onToggled: (checked) => {
-                        if (root.daemon)
-                            root.daemon.saveSetting("mouseEnabled", checked);
                     }
                 }
             }
