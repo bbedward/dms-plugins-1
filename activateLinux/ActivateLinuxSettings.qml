@@ -39,7 +39,7 @@ PluginSettings {
             id: firstLineSize
             settingKey: "firstLineSize"
             label: I18n.trFor("activateLinux", "First Line Font Size")
-            defaultValue: 22
+            defaultValue: Theme.fontSizeXLarge
             minimum: 8
             maximum: 72
             leftLabel: "8"
@@ -52,7 +52,7 @@ PluginSettings {
             id: secondLineSize
             settingKey: "secondLineSize"
             label: I18n.trFor("activateLinux", "Second Line Font Size")
-            defaultValue: 14
+            defaultValue: Theme.fontSizeMedium
             minimum: 8
             maximum: 48
             leftLabel: "8"
@@ -119,9 +119,5 @@ PluginSettings {
                 I18n.trFor("activateLinux", "You can adjust <b>font sizes</b> and <b>opacity</b> to match your background.")
             ]
         }
-    }
-
-    PluginAbout {
-        repoUrl: "https://github.com/hthienloc/dms-activate-linux"
     }
 }

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Common
+import qs.Widgets
 import qs.Modules.Plugins
 
 DesktopPluginComponent {
@@ -19,8 +20,8 @@ DesktopPluginComponent {
         : I18n.trFor("activateLinux", "Go to Settings to activate Linux.")
 
     readonly property real watermarkOpacity: (pluginData.watermarkOpacity ?? 40) / 100.0
-    readonly property int firstLineSize: pluginData.firstLineSize ?? 22
-    readonly property int secondLineSize: pluginData.secondLineSize ?? 14
+    readonly property int firstLineSize: pluginData.firstLineSize ?? Theme.fontSizeXLarge
+    readonly property int secondLineSize: pluginData.secondLineSize ?? Theme.fontSizeMedium
 
     Rectangle {
         anchors.fill: parent
@@ -29,24 +30,24 @@ DesktopPluginComponent {
         RowLayout {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.rightMargin: 50
-            anchors.bottomMargin: 50
+            anchors.rightMargin: Theme.spacingXL * 2
+            anchors.bottomMargin: Theme.spacingXL * 2
 
             ColumnLayout {
-                spacing: 2
+                spacing: Theme.spacingXXS
 
-                Text {
+                StyledText {
                     text: firstLine
                     color: Theme.surfaceVariantText
-                    font.pointSize: firstLineSize
+                    font.pixelSize: firstLineSize
                     font.weight: Font.Light
                     opacity: watermarkOpacity
                 }
 
-                Text {
+                StyledText {
                     text: secondLine
                     color: Theme.surfaceVariantText
-                    font.pointSize: secondLineSize
+                    font.pixelSize: secondLineSize
                     opacity: watermarkOpacity
                 }
             }
