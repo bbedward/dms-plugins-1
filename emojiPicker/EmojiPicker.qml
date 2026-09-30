@@ -795,9 +795,6 @@ PluginComponent {
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                onEntered: {
-                                    emojiGrid.currentIndex = delegateItem.index;
-                                }
                                 onContainsMouseChanged: {
                                     if (containsMouse)
                                         emojiGrid.hoveredIndex = delegateItem.index;
