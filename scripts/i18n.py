@@ -60,7 +60,7 @@ _GT_LOCALE_MAP = {
 TABLE_START = "<!-- TRANSLATIONS_TABLE_START -->"
 TABLE_END   = "<!-- TRANSLATIONS_TABLE_END -->"
 
-EXCLUDED_PLUGINS = {
+NO_AUTO_TRANSLATE_PLUGINS = {
     "quickCapture",  # Managed externally via POEditor
 }
 
@@ -69,7 +69,7 @@ def success(msg): print(f"\033[92m{msg}\033[0m")
 def warn(msg):    print(f"\033[93mWarning: {msg}\033[0m", file=sys.stderr)
 def error(msg):   print(f"\033[91mError: {msg}\033[0m", file=sys.stderr); sys.exit(1)
 
-def discover_plugins(include_excluded: bool = False) -> dict[str, Path]:
+def discover_plugins() -> dict[str, Path]:
     """Find all plugin directories that contain plugin.json."""
     plugins = {}
     for p in sorted(REPO_ROOT.iterdir()):
@@ -79,13 +79,15 @@ def discover_plugins(include_excluded: bool = False) -> dict[str, Path]:
                 plugin_id = manifest.get("id", p.name)
             except Exception:
                 plugin_id = p.name
-            if not include_excluded and (plugin_id in EXCLUDED_PLUGINS or p.name in EXCLUDED_PLUGINS):
-                continue
             plugins[plugin_id] = p
     return plugins
 
 def _clean_str(s: str) -> str:
-    return s.replace(r'\"', '"').replace(r'\\', '\\').replace(r'\n', '\n')
+    s_norm = s.replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "\\n")
+    try:
+        return json.loads(f'"{s_norm}"')
+    except Exception:
+        return s.replace(r'\"', '"').replace(r'\\', '\\')
 
 def get_plugin_qml_files(plugin_dir: Path) -> list[Path]:
     return [
@@ -414,6 +416,9 @@ def cmd_translate(args):
         error(f"Specify valid --plugin. Available: {', '.join(plugins.keys())}")
 
     pid = args.plugin
+    if pid in NO_AUTO_TRANSLATE_PLUGINS:
+        error(f"Plugin '{pid}' is excluded from auto-translation (managed externally via POEditor).")
+
     pdir = plugins[pid]
     strings, _ = extract_plugin_strings(pdir, pid)
     if not strings:
