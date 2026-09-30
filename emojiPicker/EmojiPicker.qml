@@ -837,6 +837,9 @@ PluginComponent {
                             }
                         }
                     }
+                    Keys.onEscapePressed: event => {
+                        root.handleEscape(event);
+                    }
                 }
 
                 EmojiQueuePreview {
