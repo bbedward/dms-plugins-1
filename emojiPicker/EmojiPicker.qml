@@ -370,40 +370,91 @@ PluginComponent {
                 emojiGrid.positionViewAtIndex(0, GridView.Beginning);
             }
 
+            function focusedCategoryIndex() {
+                for (let index = 0; index < categoryRepeater.count; index++) {
+                    const button = categoryRepeater.itemAt(index);
+                    if (button && button.activeFocus)
+                        return index;
+                }
+                return -1;
+            }
+
             function handleVimNavigation(event) {
                 if (!(event.modifiers & Qt.ControlModifier)
                         || (event.modifiers & (Qt.ShiftModifier | Qt.AltModifier | Qt.MetaModifier)))
                     return false;
 
-                let targetIndex = emojiGrid.currentIndex;
-                switch (event.key) {
-                case Qt.Key_H:
-                    if (targetIndex % emojiGrid.columnCount > 0)
-                        targetIndex--;
-                    break;
-                case Qt.Key_J:
-                    if (targetIndex + emojiGrid.columnCount < root.visibleEntries.length)
-                        targetIndex += emojiGrid.columnCount;
-                    break;
-                case Qt.Key_K:
-                    if (targetIndex >= emojiGrid.columnCount)
-                        targetIndex -= emojiGrid.columnCount;
-                    break;
-                case Qt.Key_L:
-                    if (targetIndex % emojiGrid.columnCount < emojiGrid.columnCount - 1
-                            && targetIndex + 1 < root.visibleEntries.length)
-                        targetIndex++;
-                    break;
-                default:
-                    return false;
+                if (emojiGrid.activeFocus) {
+                    let targetIndex = emojiGrid.currentIndex;
+                    let movedToCategory = false;
+                    switch (event.key) {
+                    case Qt.Key_H:
+                        if (targetIndex % emojiGrid.columnCount > 0)
+                            targetIndex--;
+                        break;
+                    case Qt.Key_J:
+                        if (targetIndex + emojiGrid.columnCount < root.visibleEntries.length)
+                            targetIndex += emojiGrid.columnCount;
+                        break;
+                    case Qt.Key_K:
+                        if (targetIndex >= emojiGrid.columnCount) {
+                            targetIndex -= emojiGrid.columnCount;
+                        } else {
+                            pickerView.focusSelectedCategory();
+                            movedToCategory = true;
+                        }
+                        break;
+                    case Qt.Key_L:
+                        if (targetIndex % emojiGrid.columnCount < emojiGrid.columnCount - 1
+                                && targetIndex + 1 < root.visibleEntries.length)
+                            targetIndex++;
+                        break;
+                    default:
+                        return false;
+                    }
+
+                    if (!movedToCategory) {
+                        emojiGrid.currentIndex = targetIndex;
+                        emojiGrid.forceActiveFocus();
+                    }
+                    event.accepted = true;
+                    return true;
                 }
 
-                if (root.visibleEntries.length > 0) {
-                    emojiGrid.forceActiveFocus();
-                    emojiGrid.currentIndex = targetIndex;
+                const categoryIndex = pickerView.focusedCategoryIndex();
+                if (categoryIndex >= 0) {
+                    switch (event.key) {
+                    case Qt.Key_H:
+                        pickerView.focusCategory(Math.max(0, categoryIndex - 1));
+                        break;
+                    case Qt.Key_J:
+                        pickerView.focusFirstEmoji();
+                        break;
+                    case Qt.Key_K:
+                        searchField.forceActiveFocus();
+                        break;
+                    case Qt.Key_L:
+                        pickerView.focusCategory(Math.min(root.categoryOrder.length - 1, categoryIndex + 1));
+                        break;
+                    default:
+                        return false;
+                    }
+                    event.accepted = true;
+                    return true;
                 }
-                event.accepted = true;
-                return true;
+
+                if (searchField.activeFocus && event.key === Qt.Key_J) {
+                    pickerView.focusSelectedCategory();
+                    event.accepted = true;
+                    return true;
+                }
+
+                if (searchField.activeFocus && event.key === Qt.Key_K) {
+                    event.accepted = true;
+                    return true;
+                }
+
+                return false;
             }
 
             function selectCategory(category) {
