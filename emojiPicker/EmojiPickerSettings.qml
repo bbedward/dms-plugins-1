@@ -201,6 +201,7 @@ PluginSettings {
                 I18n.trFor("emojiPicker", "Press <b>Backspace</b> to remove the last queued emoji."),
                 I18n.trFor("emojiPicker", "Press <b>Down</b> or <b>Tab</b> to move from search to the first emoji."),
                 I18n.trFor("emojiPicker", "In the grid, use <b>Ctrl+H/J/K/L</b> for Vim-style left/down/up/right navigation."),
+                I18n.trFor("emojiPicker", "In the grid, press <b>Backspace</b> or <b>Delete</b> with an empty queue to clear the search and return to it."),
                 I18n.trFor("emojiPicker", "Press <b>Escape</b> to discard the queue, or close the picker when the queue is empty.")
             ]
         }

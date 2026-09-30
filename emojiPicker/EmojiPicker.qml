@@ -457,6 +457,31 @@ PluginComponent {
                 return false;
             }
 
+            function handleSearchTyping(event) {
+                if (searchField.getActiveFocus() || event.text.length === 0 || event.text.trim().length === 0
+                        || (event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier)))
+                    return false;
+
+                searchField.forceActiveFocus();
+                searchField.cursorPosition = searchField.text.length;
+                searchField.insertText(event.text);
+                event.accepted = true;
+                return true;
+            }
+
+            function handleGridSearchReset(event) {
+                if (root.queuedEmojis.length > 0
+                        || (event.key !== Qt.Key_Backspace && event.key !== Qt.Key_Delete))
+                    return false;
+
+                root.query = "";
+                searchField.clear();
+                root.selectedIndex = 0;
+                searchField.forceActiveFocus();
+                event.accepted = true;
+                return true;
+            }
+
             function selectCategory(category) {
                 const restoreGridFocus = emojiGrid.activeFocus;
                 root.selectedCategory = category;
@@ -534,14 +559,7 @@ PluginComponent {
                     event.accepted = true;
                     return;
                 }
-                // Typing while the grid or a category button has focus goes to the search field.
-                if (!searchField.getActiveFocus() && event.text.length > 0 && event.text.trim().length > 0
-                        && !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier))) {
-                    searchField.forceActiveFocus();
-                    searchField.cursorPosition = searchField.text.length;
-                    searchField.insertText(event.text);
-                    event.accepted = true;
-                }
+                pickerView.handleSearchTyping(event);
             }
             Keys.onEscapePressed: event => {
                 root.handleEscape(event);
@@ -798,6 +816,7 @@ PluginComponent {
                         }
                     }
 
+                    Keys.priority: Keys.BeforeItem
                     Keys.onPressed: event => {
                         if (pickerView.handleCommonShortcuts(event))
                             return;
@@ -806,6 +825,10 @@ PluginComponent {
                         if (root.handleEnter(event))
                             return;
                         if (root.handleQueueBackspace(event, true))
+                            return;
+                        if (pickerView.handleGridSearchReset(event))
+                            return;
+                        if (pickerView.handleSearchTyping(event))
                             return;
                         if (event.key === Qt.Key_Up) {
                             if (emojiGrid.currentIndex < emojiGrid.columnCount) {

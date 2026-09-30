@@ -34,6 +34,7 @@ dms ipc call emojiPicker close
 | Ctrl+Enter / Ctrl+V | Copy and paste queued emojis, or the selected emoji when the queue is empty |
 | Ctrl+F | Return focus to the search bar and select all search text |
 | Backspace | Remove the last queued emoji when the grid is focused or search is empty |
+| Backspace / Delete in grid | Clear the search and return focus to the search bar when the queue is empty |
 | Typing anywhere | Focus search and type into it |
 | Down / Tab from search | Focus the first emoji |
 | Left / Right on categories | Move between categories |
