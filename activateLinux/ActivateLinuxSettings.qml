@@ -39,7 +39,7 @@ PluginSettings {
             id: firstLineSize
             settingKey: "firstLineSize"
             label: I18n.trFor("activateLinux", "First Line Font Size")
-            defaultValue: Theme.fontSizeXLarge
+            defaultValue: 22
             minimum: 8
             maximum: 72
             leftLabel: "8"
@@ -52,7 +52,7 @@ PluginSettings {
             id: secondLineSize
             settingKey: "secondLineSize"
             label: I18n.trFor("activateLinux", "Second Line Font Size")
-            defaultValue: Theme.fontSizeMedium
+            defaultValue: 14
             minimum: 8
             maximum: 48
             leftLabel: "8"
