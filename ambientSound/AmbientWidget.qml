@@ -103,14 +103,18 @@ PluginComponent {
     ]
 
     // When Done options
-    readonly property var whenDoneOptions: [
-        { label: "Stop\nAll", value: "stopAll" },
-        { label: "Mute", value: "mute" },
-        { label: "Lock\nScreen", value: "lock" },
-        { label: "Suspend", value: "suspend" },
-        { label: "Power\nOff", value: "powerOff" }
+    readonly property var whenDoneAudioOptions: [
+        { label: I18n.tr("Stop"), icon: "stop", value: "stopAll" },
+        { label: I18n.tr("Mute"), icon: "volume_off", value: "mute" }
     ]
+    readonly property var whenDoneSystemOptions: [
+        { label: I18n.tr("Lock"), icon: "lock", value: "lock" },
+        { label: I18n.tr("Suspend"), icon: "bedtime", value: "suspend" },
+        { label: I18n.tr("Power"), icon: "power_settings_new", value: "powerOff" }
+    ]
+    readonly property var whenDoneOptions: whenDoneAudioOptions.concat(whenDoneSystemOptions)
     property var whenDoneActions: pluginData.whenDoneActions || ["stopAll"]
+    property bool timerSectionExpanded: false
 
     function isWhenDoneSelected(value) {
         return whenDoneActions.indexOf(value) >= 0;
@@ -535,7 +539,7 @@ PluginComponent {
         let gridRows = Math.ceil(root.visibleSounds.length / 4);
         let gridHeight = gridRows * root.cellHeight + (gridRows - 1) * root.gridSpacing;
         let baseH = 90; // Header + MediaHeader + spacing/padding
-        if (pluginData.showTimerSection ?? true) baseH += 110; // Sleep presets & When Done
+        if (root.timerSectionExpanded && (pluginData.showTimerSection ?? true)) baseH += 135; // Sleep presets & When Done card
         let h = baseH + gridHeight;
         if (root.presets.length > 0 || root.playingSounds.length > 0) {
             h += 40; // Save preset button / header row
@@ -548,6 +552,53 @@ PluginComponent {
         return Math.min(800, h);
     }
 
+    component WhenDoneChip: Rectangle {
+        id: chipRoot
+        property string label: ""
+        property string iconName: ""
+        property string value: ""
+        readonly property bool selected: root.isWhenDoneSelected(value)
+
+        height: Theme.buttonHeightXS
+        radius: Theme.cornerRadius
+        color: selected
+            ? Theme.withAlpha(Theme.primary, 0.18)
+            : (chipMouseArea.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh)
+        border.width: 1
+        border.color: selected ? Theme.primary : Theme.surfaceVariant
+
+        Behavior on color { ColorAnimation { duration: 120 } }
+        Behavior on border.color { ColorAnimation { duration: 120 } }
+
+        Row {
+            anchors.centerIn: parent
+            spacing: Theme.spacingXXS
+
+            DankIcon {
+                name: chipRoot.iconName
+                size: Theme.iconSizeSmall
+                color: chipRoot.selected ? Theme.primary : Theme.surfaceVariantText
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            StyledText {
+                text: chipRoot.label
+                font.pixelSize: Theme.fontSizeSmall - 1
+                font.weight: chipRoot.selected ? Font.DemiBold : Font.Normal
+                color: chipRoot.selected ? Theme.primary : Theme.surfaceVariantText
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        MouseArea {
+            id: chipMouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.toggleWhenDoneAction(chipRoot.value)
+        }
+    }
+
     // Popout content
     popoutContent: Component {
         PopoutComponent {
@@ -555,6 +606,70 @@ PluginComponent {
             headerText: "Ambient Sound"
             detailsText: root.playingSounds.length > 0 ? root.playingSounds.length + " playing" : "Tap to play"
             showCloseButton: false
+
+            headerActions: Component {
+                Rectangle {
+                    id: timerHeaderChip
+                    visible: pluginData.showTimerSection ?? true
+                    height: Theme.buttonHeightXXS
+                    implicitWidth: timerChipRow.implicitWidth + Theme.spacingM
+                    radius: height / 2
+                    color: sleepTimer.running
+                        ? Theme.primary
+                        : (root.timerSectionExpanded ? Theme.withAlpha(Theme.primary, 0.15) : (timerMouseArea.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh))
+                    border.width: 1
+                    border.color: sleepTimer.running
+                        ? Theme.primary
+                        : (root.timerSectionExpanded ? Theme.primary : Theme.surfaceVariant)
+
+                    Behavior on color { ColorAnimation { duration: 150 } }
+                    Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                    Row {
+                        id: timerChipRow
+                        anchors.centerIn: parent
+                        spacing: Theme.spacingXS
+
+                        DankIcon {
+                            name: "timer"
+                            size: Theme.iconSizeSmall
+                            color: sleepTimer.running
+                                ? Theme.onPrimary
+                                : (root.timerSectionExpanded ? Theme.primary : Theme.surfaceVariantText)
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        StyledText {
+                            text: sleepTimer.running
+                                ? Math.ceil(sleepTimer.remainingTime / 60000) + "m"
+                                : I18n.tr("Timer")
+                            font.pixelSize: Theme.fontSizeSmall
+                            font.weight: sleepTimer.running ? Font.Bold : Font.Medium
+                            color: sleepTimer.running
+                                ? Theme.onPrimary
+                                : (root.timerSectionExpanded ? Theme.primary : Theme.surfaceVariantText)
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        DankIcon {
+                            name: root.timerSectionExpanded ? "expand_less" : "expand_more"
+                            size: 14
+                            color: sleepTimer.running
+                                ? Theme.onPrimary
+                                : (root.timerSectionExpanded ? Theme.primary : Theme.surfaceVariantText)
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+
+                    MouseArea {
+                        id: timerMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.timerSectionExpanded = !root.timerSectionExpanded
+                    }
+                }
+            }
 
             Column {
                 width: parent.width
@@ -573,6 +688,128 @@ PluginComponent {
                     }
                     onMuteToggled: root.toggleMute()
                     onStopClicked: root.stopAll()
+                }
+
+                // Timer & When Done Expandable Card
+                Rectangle {
+                    id: timerCard
+                    width: parent.width
+                    visible: root.timerSectionExpanded && (pluginData.showTimerSection ?? true)
+                    height: visible ? timerCardContent.implicitHeight + (Theme.spacingS * 2) : 0
+                    radius: Theme.cornerRadius
+                    color: Theme.surfaceContainerLow
+                    border.width: 1
+                    border.color: Theme.surfaceVariant
+                    clip: true
+
+                    Behavior on height { NumberAnimation { duration: 150 } }
+
+                    Column {
+                        id: timerCardContent
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: Theme.spacingS
+                        spacing: Theme.spacingS
+
+                        // Duration presets or active countdown
+                        Row {
+                            width: parent.width
+                            spacing: Theme.spacingXS
+                            visible: !sleepTimer.running
+
+                            Repeater {
+                                model: root.sleepPresets
+                                delegate: DankButton {
+                                    text: modelData.label
+                                    width: (parent.width - (parent.spacing * (root.sleepPresets.length - 1))) / root.sleepPresets.length
+                                    height: Theme.buttonHeightXS
+                                    onClicked: {
+                                        var ms = modelData.minutes * 60 * 1000;
+                                        sleepTimer.interval = ms;
+                                        sleepTimer.remainingTime = ms;
+                                        sleepTimer.start();
+                                    }
+                                }
+                            }
+                        }
+
+                        Row {
+                            width: parent.width
+                            spacing: Theme.spacingS
+                            visible: sleepTimer.running
+
+                            DankIcon {
+                                name: "hourglass_top"
+                                size: Theme.iconSizeMedium
+                                color: Theme.primary
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            StyledText {
+                                text: I18n.tr("Sleep timer: ") + Math.ceil(sleepTimer.remainingTime / 60000) + I18n.tr(" minutes left")
+                                font.pixelSize: Theme.fontSizeSmall
+                                color: Theme.primary
+                                font.weight: Font.Medium
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width - 80 - parent.spacing * 2 - Theme.iconSizeMedium
+                            }
+
+                            DankButton {
+                                text: I18n.tr("Cancel")
+                                width: 80
+                                height: Theme.buttonHeightXS
+                                backgroundColor: Theme.surfaceContainerHighest
+                                textColor: Theme.surfaceText
+                                onClicked: sleepTimer.stop()
+                            }
+                        }
+
+                        // When Done section
+                        Column {
+                            width: parent.width
+                            spacing: Theme.spacingXS
+
+                            StyledText {
+                                text: I18n.tr("When done:")
+                                font.pixelSize: Theme.fontSizeSmall
+                                font.weight: Font.Bold
+                                color: Theme.surfaceVariantText
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: Theme.spacingXS
+
+                                Repeater {
+                                    model: root.whenDoneAudioOptions
+                                    delegate: WhenDoneChip {
+                                        width: Math.floor((parent.width - 1 - (parent.spacing * 5)) / 5)
+                                        label: modelData.label
+                                        iconName: modelData.icon
+                                        value: modelData.value
+                                    }
+                                }
+
+                                Rectangle {
+                                    width: 1
+                                    height: 18
+                                    color: Theme.surfaceVariant
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                Repeater {
+                                    model: root.whenDoneSystemOptions
+                                    delegate: WhenDoneChip {
+                                        width: Math.floor((parent.width - 1 - (parent.spacing * 5)) / 5)
+                                        label: modelData.label
+                                        iconName: modelData.icon
+                                        value: modelData.value
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // Presets section - moved up for quick access
@@ -718,116 +955,21 @@ PluginComponent {
                 }
 
                 // Footer (sleep timer + stop all)
-                Column {
+                HintSection {
                     width: parent.width
-                    spacing: Theme.spacingXS
+                    showHints: root.showHints && root.playingSounds.length > 0
 
-                    Row {
-                        width: parent.width
-                        spacing: Theme.spacingXS
-                        visible: !sleepTimer.running && (pluginData.showTimerSection ?? true)
-
-                        Repeater {
-                            model: root.sleepPresets
-                            delegate: DankButton {
-                                text: modelData.label
-                                width: (parent.width - (parent.spacing * (root.sleepPresets.length - 1))) / root.sleepPresets.length
-                                height: Theme.buttonHeightXS
-                                onClicked: {
-                                    var ms = modelData.minutes * 60 * 1000;
-                                    sleepTimer.interval = ms;
-                                    sleepTimer.remainingTime = ms;
-                                    sleepTimer.start();
-                                }
-                            }
-                        }
+                    HintItem {
+                        icon: "mouse"
+                        text: I18n.tr("Middle-click bar icon to toggle your preset sound.")
                     }
-
-                    Row {
-                        width: parent.width
-                        spacing: Theme.spacingS
-                        visible: sleepTimer.running
-
-                        StyledText {
-                            text: I18n.tr("Sleep timer: ") + Math.ceil(sleepTimer.remainingTime / 60000) + I18n.tr(" minutes left")
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.primary
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: parent.width - 80 - parent.spacing
-                        }
-
-                        DankButton {
-                            text: I18n.tr("Cancel")
-                            width: 80; height: Theme.buttonHeightXS
-                            backgroundColor: Theme.surfaceContainerHighest
-                            textColor: Theme.surfaceText
-                            onClicked: sleepTimer.stop()
-                        }
+                    HintItem {
+                        icon: "mouse"
+                        text: I18n.tr("Right-click bar icon to quickly mute/unmute.")
                     }
-
-                    Column {
-                        width: parent.width
-                        spacing: Theme.spacingXS
-                        visible: pluginData.showTimerSection ?? true
-
-                        StyledText {
-                            text: I18n.tr("When Done:")
-                            font.pixelSize: Theme.fontSizeSmall
-                            font.weight: Font.Bold
-                            color: Theme.surfaceVariantText
-                        }
-
-                        Flow {
-                            width: parent.width
-                            spacing: Theme.spacingXS
-
-                            Repeater {
-                                model: root.whenDoneOptions
-                                delegate: Rectangle {
-                                    width: (parent.width - (parent.spacing * (root.whenDoneOptions.length - 1))) / root.whenDoneOptions.length
-                                    height: Theme.buttonHeightXS
-                                    radius: Theme.cornerRadius
-                                    color: root.isWhenDoneSelected(modelData.value) ? Theme.primary : Theme.surfaceContainerHigh
-                                    border.width: root.isWhenDoneSelected(modelData.value) ? 0 : 1
-                                    border.color: Theme.surfaceVariant
-                                    clip: true
-
-                                    StyledText {
-                                        text: modelData.label
-                                        font.pixelSize: Theme.fontSizeSmall
-                                        color: root.isWhenDoneSelected(modelData.value) ? Theme.onPrimary : Theme.surfaceText
-                                        width: parent.width
-                                        height: parent.height
-                                        verticalAlignment: Text.AlignVCenter
-                                        horizontalAlignment: Text.AlignHCenter
-                                    }
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: root.toggleWhenDoneAction(modelData.value)
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    HintSection {
-                        width: parent.width
-                        showHints: root.showHints && root.playingSounds.length > 0
-
-                        HintItem {
-                            icon: "mouse"
-                            text: I18n.tr("Middle-click bar icon to toggle your preset sound.")
-                        }
-                        HintItem {
-                            icon: "mouse"
-                            text: I18n.tr("Right-click bar icon to quickly mute/unmute.")
-                        }
-                        HintItem {
-                            icon: "mouse"
-                            text: I18n.tr("Scroll on a sound tile to adjust its individual volume.")
-                        }
+                    HintItem {
+                        icon: "mouse"
+                        text: I18n.tr("Scroll on a sound tile to adjust its individual volume.")
                     }
                 }
             }
