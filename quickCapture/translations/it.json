@@ -197,6 +197,9 @@
   "Close": {
     "Close": "Chiudi"
   },
+  "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.": {
+    "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.": ""
+  },
   "Color": {
     "Color": "Colore"
   },
@@ -389,6 +392,9 @@
   "Focused Screen": {
     "Focused Screen": "Schermo attivo"
   },
+  "Folder": {
+    "Folder": ""
+  },
   "Font Size": {
     "Font Size": "Dimensione del Font"
   },
@@ -400,6 +406,9 @@
   },
   "Format tokens: {user} (Username), \\n (New Line), %Y (Year), %y (2-digit year), %m (Month), %d (Day), %H (Hour), %M (Minute), %S (Second)": {
     "Format tokens: {user} (Username), \\n (New Line), %Y (Year), %y (2-digit year), %m (Month), %d (Day), %H (Hour), %M (Minute), %S (Second)": "Token di formato: {user} (Nome utente), \\n (Nuova riga), %Y (Anno), %y (Anno a 2 cifre), %m (Mese), %d (Giorno), %H (Ora), %M (Minuto), %S (Secondo)"
+  },
+  "Format: %1 (%2 FPS)": {
+    "Format: %1 (%2 FPS)": ""
   },
   "Framerate": {
     "Framerate": "Frequenza fotogrammi"
@@ -440,8 +449,8 @@
   "Hide Control Center": {
     "Hide Control Center": "Nascondi il centro di controllo"
   },
-  "Hide Control Center by Default": {
-    "Hide Control Center by Default": "Nascondi il centro di controllo per impostazione predefinita"
+  "Hide Control Center on Capture": {
+    "Hide Control Center on Capture": ""
   },
   "High": {
     "High": "Alta"
@@ -490,9 +499,6 @@
   },
   "Initial Width": {
     "Initial Width": "Larghezza iniziale"
-  },
-  "Initial state for the Control Center toggle.": {
-    "Initial state for the Control Center toggle.": "Stato iniziale dell'interruttore del centro di controllo."
   },
   "Inline": {
     "Inline": "In linea"
@@ -656,9 +662,6 @@
   "Open Image": {
     "Open Image": "Apri immagine"
   },
-  "Open folder": {
-    "Open folder": "Apri cartella"
-  },
   "Outline Variant": {
     "Outline Variant": "Variante contorno"
   },
@@ -784,6 +787,9 @@
   },
   "Recording Folder": {
     "Recording Folder": "Cartella delle registrazioni"
+  },
+  "Recording Paused": {
+    "Recording Paused": ""
   },
   "Recording ended with error code %1.": {
     "Recording ended with error code %1.": "La registrazione è terminata con codice di errore %1."
@@ -922,9 +928,6 @@
   },
   "Select Image to Annotate": {
     "Select Image to Annotate": "Seleziona immagine da annotare"
-  },
-  "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1).": {
-    "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1).": "Seleziona il backend di registrazione dello schermo. Automatico prova prima la GPU e ripiega sulla CPU (%1)."
   },
   "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1). Note: %1 does not support pausing.": {
     "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1). Note: %1 does not support pausing.": ""
