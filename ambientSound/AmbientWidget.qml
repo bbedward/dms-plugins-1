@@ -17,12 +17,11 @@ PluginComponent {
     pillRightClickAction: () => root.toggleMute()
 
     // Layout constants
-    // Popout container provides popoutWidth - PopoutMetrics.contentPadding * 2 (Theme.spacingL = 16px * 2 = 32px)
-    readonly property real cellWidth: Math.floor((root.popoutWidth - 32 - (root.gridSpacing * 3)) / 4)
-    readonly property real cellHeight: 80
-    readonly property real iconSize: 24
-    readonly property real fontSize: 13
-    readonly property int gridSpacing: 6
+    readonly property real cellWidth: Math.floor((root.popoutWidth - (Theme.spacingL * 2) - (root.gridSpacing * 3)) / 4)
+    readonly property real cellHeight: Theme.listItemTwoLineHeight + Theme.spacingS
+    readonly property real iconSize: Theme.iconSize
+    readonly property real fontSize: Theme.fontSizeSmall
+    readonly property real gridSpacing: Theme.spacingS
 
     // Plugin directory (for sound files)
     readonly property string pluginDir: {
@@ -108,6 +107,7 @@ PluginComponent {
         { label: "Stop\nAll", value: "stopAll" },
         { label: "Mute", value: "mute" },
         { label: "Lock\nScreen", value: "lock" },
+        { label: "Suspend", value: "suspend" },
         { label: "Power\nOff", value: "powerOff" }
     ]
     property var whenDoneActions: pluginData.whenDoneActions || ["stopAll"]
@@ -123,8 +123,8 @@ PluginComponent {
         if (value === "stopAll" || value === "mute") {
             newActions = newActions.filter(a => a !== "stopAll" && a !== "mute");
             if (idx < 0) newActions.push(value);
-        } else if (value === "lock" || value === "powerOff") {
-            newActions = newActions.filter(a => a !== "lock" && a !== "powerOff");
+        } else if (value === "lock" || value === "suspend" || value === "powerOff") {
+            newActions = newActions.filter(a => a !== "lock" && a !== "suspend" && a !== "powerOff");
             if (idx < 0) newActions.push(value);
         } else {
             if (idx >= 0) {
@@ -418,8 +418,8 @@ PluginComponent {
                     if (pluginData[key]) root.toggleSound(root.sounds[i].name);
                 }
             }
-            if (pluginData.enableSleepTimer) {
-                var minutes = parseInt(pluginData.sleepTimerDuration) || 0;
+            if (pluginData.enableSleepTimer ?? true) {
+                var minutes = parseInt(pluginData.defaultTimer ?? "30") || 30;
                 if (minutes > 0) {
                     sleepTimer.interval = minutes * 60 * 1000;
                     sleepTimer.remainingTime = minutes * 60 * 1000;
@@ -447,9 +447,11 @@ PluginComponent {
                 root.isMuted = true;
                 root.updateAllVolumes();
             } else if (action === "lock") {
-                Proc.runCommand("lock-screen", ["bash", "-c", "loginctl lock-session"], null, 0);
+                Proc.runCommand("lock-screen", ["loginctl", "lock-session"], null, 0);
+            } else if (action === "suspend") {
+                Proc.runCommand("suspend", ["systemctl", "suspend"], null, 0);
             } else if (action === "powerOff") {
-                Proc.runCommand("power-off", ["bash", "-c", "systemctl suspend"], null, 0);
+                Proc.runCommand("power-off", ["systemctl", "poweroff"], null, 0);
             }
         }
     }
@@ -513,39 +515,13 @@ PluginComponent {
             Row {
                 id: pillRow
                 anchors.centerIn: parent
-                spacing: 4
+                spacing: Theme.spacingXS
 
-                // Only show the note icon when nothing is playing or when muted
                 DankIcon {
-                    name: root.isMuted ? "volume_off" : "music_note"
-                    size: 18
-                    color: root.isMuted ? Theme.error : Theme.surfaceVariantText
-                    visible: root.playingSounds.length === 0 || root.isMuted
+                    name: root.isMuted ? "volume_off" : (root.playingSounds.length > 0 ? "equalizer" : "music_note")
+                    size: Theme.chipIconSize
+                    color: root.isMuted ? Theme.error : (root.playingSounds.length > 0 ? Theme.primary : Theme.surfaceVariantText)
                     anchors.verticalCenter: parent.verticalCenter
-                }
-
-                // Dancing bars, visible only when something is playing and NOT muted
-                Row {
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 1   // tighter bars
-                    visible: root.playingSounds.length > 0 && !root.isMuted
-                    Repeater {
-                        model: 5   // 5 bars
-                        Rectangle {
-                            width: 2
-                            height: 6   // base height taller
-                            radius: 1
-                            color: Theme.primary
-                            anchors.verticalCenter: parent.verticalCenter
-                            Timer {
-                                running: root.playingSounds.length > 0 && !root.isMuted
-                                repeat: true
-                                interval: 150 + (index * 30)   // varied phases
-                                onTriggered: parent.height = 6 + Math.random() * 12   // up to 18px
-                            }
-                            Behavior on height { NumberAnimation { duration: 150 } }
-                        }
-                    }
                 }
             }
         }
@@ -565,7 +541,7 @@ PluginComponent {
             h += 40; // Save preset button / header row
             if (root.presets.length > 0) {
                 let presetRows = Math.ceil(root.presets.length / 2);
-                h += presetRows * 32 + (presetRows - 1) * 4 + 8; // Presets flow height
+                h += presetRows * Theme.buttonHeightXS + (presetRows - 1) * Theme.spacingXS + Theme.spacingS; // Presets flow height
             }
         }
         if (root.showHints && root.playingSounds.length > 0) h += 50;
@@ -582,7 +558,7 @@ PluginComponent {
 
             Column {
                 width: parent.width
-                spacing: 8
+                spacing: Theme.spacingS
 
                 // Volume & Control bar
                 MediaHeader {
@@ -602,12 +578,12 @@ PluginComponent {
                 // Presets section - moved up for quick access
                 Column {
                     width: parent.width
-                    spacing: 4
+                    spacing: Theme.spacingXS
                     visible: root.presets.length > 0 || root.playingSounds.length > 0
 
                     Item {
                         width: parent.width
-                        height: 32
+                        height: Theme.buttonHeightXS
 
                         StyledText {
                             anchors.left: parent.left
@@ -625,7 +601,7 @@ PluginComponent {
                             anchors.verticalCenter: parent.verticalCenter
                             text: I18n.tr("Save Preset")
                             iconName: "bookmark_add"
-                            buttonHeight: 28
+                            buttonHeight: Theme.buttonHeightXXS
                             backgroundColor: "transparent"
                             textColor: Theme.primary
                             horizontalPadding: Theme.spacingM
@@ -636,12 +612,12 @@ PluginComponent {
 
                     Flow {
                         width: parent.width
-                        spacing: 4
+                        spacing: Theme.spacingXS
                         Repeater {
                             model: root.presets
                             delegate: Item {
-                                width: (parent.width - 4) / 2
-                                height: 32
+                                width: (parent.width - Theme.spacingXS) / 2
+                                height: Theme.buttonHeightXS
 
                                 DankButton {
                                     id: presetButton
@@ -666,9 +642,9 @@ PluginComponent {
 
                                 DankIcon {
                                     name: root.editingIndex === index ? "check" : "edit"
-                                    size: 16
+                                    size: Theme.iconSizeSmall
                                     anchors.right: deleteIcon.left
-                                    anchors.rightMargin: 4
+                                    anchors.rightMargin: Theme.spacingXS
                                     anchors.verticalCenter: parent.verticalCenter
                                     color: Theme.surfaceVariantText
                                     MouseArea {
@@ -687,7 +663,7 @@ PluginComponent {
                                 DankIcon {
                                     id: deleteIcon
                                     name: "close"
-                                    size: 16
+                                    size: Theme.iconSizeSmall
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
                                     color: Theme.error
@@ -716,7 +692,7 @@ PluginComponent {
                             height: root.cellHeight
                             iconName: modelData.icon
                             title: modelData.name.replace("-", " ")
-                            titleFontSize: 12
+                            titleFontSize: Theme.fontSizeSmall
                             subtitle: ""
                             volumeProgress: {
                                 var vol = root.soundVolumes[itemId] !== undefined ? root.soundVolumes[itemId] : 100;
@@ -744,19 +720,19 @@ PluginComponent {
                 // Footer (sleep timer + stop all)
                 Column {
                     width: parent.width
-                    spacing: 4
+                    spacing: Theme.spacingXS
 
                     Row {
                         width: parent.width
-                        spacing: 4
+                        spacing: Theme.spacingXS
                         visible: !sleepTimer.running && (pluginData.showTimerSection ?? true)
 
                         Repeater {
                             model: root.sleepPresets
                             delegate: DankButton {
                                 text: modelData.label
-                                width: (parent.width - (parent.spacing * 5)) / 6
-                                height: 32
+                                width: (parent.width - (parent.spacing * (root.sleepPresets.length - 1))) / root.sleepPresets.length
+                                height: Theme.buttonHeightXS
                                 onClicked: {
                                     var ms = modelData.minutes * 60 * 1000;
                                     sleepTimer.interval = ms;
@@ -769,7 +745,7 @@ PluginComponent {
 
                     Row {
                         width: parent.width
-                        spacing: 8
+                        spacing: Theme.spacingS
                         visible: sleepTimer.running
 
                         StyledText {
@@ -782,7 +758,7 @@ PluginComponent {
 
                         DankButton {
                             text: I18n.tr("Cancel")
-                            width: 80; height: 32
+                            width: 80; height: Theme.buttonHeightXS
                             backgroundColor: Theme.surfaceContainerHighest
                             textColor: Theme.surfaceText
                             onClicked: sleepTimer.stop()
@@ -791,7 +767,7 @@ PluginComponent {
 
                     Column {
                         width: parent.width
-                        spacing: 4
+                        spacing: Theme.spacingXS
                         visible: pluginData.showTimerSection ?? true
 
                         StyledText {
@@ -803,12 +779,13 @@ PluginComponent {
 
                         Flow {
                             width: parent.width
-                            spacing: 4
+                            spacing: Theme.spacingXS
 
                             Repeater {
                                 model: root.whenDoneOptions
                                 delegate: Rectangle {
-                                    width: (parent.width - (parent.spacing * 3)) / 4; height: 36
+                                    width: (parent.width - (parent.spacing * (root.whenDoneOptions.length - 1))) / root.whenDoneOptions.length
+                                    height: Theme.buttonHeightXS
                                     radius: Theme.cornerRadius
                                     color: root.isWhenDoneSelected(modelData.value) ? Theme.primary : Theme.surfaceContainerHigh
                                     border.width: root.isWhenDoneSelected(modelData.value) ? 0 : 1

@@ -14,7 +14,7 @@ Rectangle {
     property color borderColor: "transparent"
     property real borderWidth: 0
     property color textColor: Theme.surfaceText
-    property int titleFontSize: 14
+    property real titleFontSize: Theme.fontSizeMedium
     property real volumeProgress: 0.0 // from 0.0 to 1.0
     
     signal clicked()
@@ -169,11 +169,11 @@ Rectangle {
 
     Column {
         anchors.centerIn: parent
-        spacing: 4
+        spacing: Theme.spacingXS
         
         DankIcon {
             name: root.iconName
-            size: 32
+            size: Theme.iconSizeLarge
             color: root.active ? root.activeColor : root.textColor
             anchors.horizontalCenter: parent.horizontalCenter
         }
@@ -185,13 +185,13 @@ Rectangle {
             color: root.active ? root.activeColor : root.textColor
             anchors.horizontalCenter: parent.horizontalCenter
             elide: Text.ElideRight
-            width: parent.parent.width - 16
+            width: parent.parent.width - Theme.spacingL
             horizontalAlignment: Text.AlignHCenter
         }
         
         StyledText {
             text: root.subtitle
-            font.pixelSize: 11
+            font.pixelSize: Theme.fontSizeSmall
             color: root.active ? root.activeColor : root.textColor
             anchors.horizontalCenter: parent.horizontalCenter
             visible: text !== ""
