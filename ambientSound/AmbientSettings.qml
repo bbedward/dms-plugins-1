@@ -113,23 +113,12 @@ PluginSettings {
         SectionTitle { 
             text: I18n.tr("Sleep Timer")
             icon: "timer" 
-            showReset: enableSleepTimer.isDirty || defaultTimer.isDirty || showTimerSection.isDirty
+            showReset: enableSleepTimer.isDirty || defaultTimer.isDirty
             onResetClicked: {
                 enableSleepTimer.resetToDefault();
                 defaultTimer.resetToDefault();
-                showTimerSection.resetToDefault();
             }
         }
-
-        ToggleSettingPlus {
-            id: showTimerSection
-            settingKey: "showTimerSection"
-            label: I18n.tr("Show Timer in Popout")
-            description: I18n.tr("Display sleep timer controls in the popout menu.")
-            defaultValue: true
-        }
-
-        Separator {}
 
         ToggleSettingPlus {
             id: enableSleepTimer
