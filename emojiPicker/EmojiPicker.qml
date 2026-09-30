@@ -28,6 +28,10 @@ PluginComponent {
         const configured = Number(root.pluginData?.recentLimit ?? 30);
         return Number.isFinite(configured) ? Math.max(5, Math.min(100, configured)) : 30;
     }
+    readonly property int emojisPerRow: {
+        const configured = Number(root.pluginData?.emojisPerRow ?? 8);
+        return Math.max(4, Math.min(16, configured));
+    }
     readonly property bool pasteByDefault: (root.pluginData?.defaultAction ?? "copy") === "paste"
     readonly property bool showCopyToast: root.pluginData?.showCopyToast ?? true
     readonly property bool showHints: root.pluginData?.showHints ?? true
@@ -343,6 +347,42 @@ PluginComponent {
                 emojiGrid.positionViewAtIndex(0, GridView.Beginning);
             }
 
+            function handleVimNavigation(event) {
+                if (!(event.modifiers & Qt.ControlModifier)
+                        || (event.modifiers & (Qt.ShiftModifier | Qt.AltModifier | Qt.MetaModifier)))
+                    return false;
+
+                let targetIndex = emojiGrid.currentIndex;
+                switch (event.key) {
+                case Qt.Key_H:
+                    if (targetIndex % emojiGrid.columnCount > 0)
+                        targetIndex--;
+                    break;
+                case Qt.Key_J:
+                    if (targetIndex + emojiGrid.columnCount < root.visibleEntries.length)
+                        targetIndex += emojiGrid.columnCount;
+                    break;
+                case Qt.Key_K:
+                    if (targetIndex >= emojiGrid.columnCount)
+                        targetIndex -= emojiGrid.columnCount;
+                    break;
+                case Qt.Key_L:
+                    if (targetIndex % emojiGrid.columnCount < emojiGrid.columnCount - 1
+                            && targetIndex + 1 < root.visibleEntries.length)
+                        targetIndex++;
+                    break;
+                default:
+                    return false;
+                }
+
+                if (root.visibleEntries.length > 0) {
+                    emojiGrid.forceActiveFocus();
+                    emojiGrid.currentIndex = targetIndex;
+                }
+                event.accepted = true;
+                return true;
+            }
+
             function selectCategory(category) {
                 const restoreGridFocus = emojiGrid.activeFocus;
                 root.selectedCategory = category;
@@ -479,6 +519,8 @@ PluginComponent {
                         Keys.onPressed: event => {
                             if (pickerView.handleCommonShortcuts(event))
                                 return;
+                            if (pickerView.handleVimNavigation(event))
+                                return;
                             if (event.key === Qt.Key_Down) {
                                 pickerView.focusSelectedCategory();
                                 event.accepted = true;
@@ -557,6 +599,12 @@ PluginComponent {
                                 Keys.onRightPressed: pickerView.focusCategory(Math.min(root.categoryOrder.length - 1, index + 1))
                                 Keys.onUpPressed: searchField.forceActiveFocus()
                                 Keys.onDownPressed: pickerView.focusFirstEmoji()
+                                Keys.onPressed: event => {
+                                    if (pickerView.handleCommonShortcuts(event))
+                                        return;
+                                    if (pickerView.handleVimNavigation(event))
+                                        return;
+                                }
                             }
                         }
                     }
@@ -600,9 +648,10 @@ PluginComponent {
                     id: emojiGrid
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    readonly property int columnCount: Math.max(1, Math.floor(width / 72))
-                    cellWidth: width / columnCount
-                    cellHeight: 68
+                    readonly property int columnCount: root.emojisPerRow
+                    readonly property real cellSize: width / root.emojisPerRow
+                    cellWidth: cellSize
+                    cellHeight: cellSize
                     clip: true
                     model: root.visibleEntries
                     currentIndex: root.selectedIndex
@@ -627,7 +676,7 @@ PluginComponent {
 
                         Rectangle {
                             anchors.fill: parent
-                            anchors.margins: 3
+                            anchors.margins: 4
                             radius: Theme.cornerRadius
                             color: delegateItem.isCurrent && emojiGrid.activeFocus ? Theme.withAlpha(Theme.primary, 0.16) : (emojiMouse.containsMouse ? Theme.surfaceContainerHigh : "transparent")
                             border.width: delegateItem.isCurrent && emojiGrid.activeFocus ? 2 : 0
@@ -670,6 +719,8 @@ PluginComponent {
 
                     Keys.onPressed: event => {
                         if (pickerView.handleCommonShortcuts(event))
+                            return;
+                        if (pickerView.handleVimNavigation(event))
                             return;
                         if (root.handleEnter(event))
                             return;

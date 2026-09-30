@@ -39,6 +39,7 @@ dms ipc call emojiPicker close
 | Left / Right on categories | Move between categories |
 | Down from categories | Focus the first emoji |
 | Arrow keys | Navigate the emoji grid |
+| Ctrl+H / Ctrl+J / Ctrl+K / Ctrl+L | Vim-style left / down / up / right navigation |
 | Up from the first row | Return to the categories, then to search |
 | Escape | Discard a non-empty queue; close the picker when the queue is empty |
 
@@ -63,6 +64,7 @@ Open DMS Settings → Plugins → Emoji Picker to change:
 - Default category
 - Picker size
 - Recent history size
+- Emojis per row
 - Copy confirmation toast
 - Default action
 

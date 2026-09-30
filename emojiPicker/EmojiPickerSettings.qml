@@ -100,11 +100,12 @@ PluginSettings {
         SectionTitle {
             text: I18n.trFor("emojiPicker", "Appearance")
             icon: "palette"
-            showReset: pickerSize.isDirty || defaultSkinTone.isDirty || showHints.isDirty
+            showReset: pickerSize.isDirty || defaultSkinTone.isDirty || showHints.isDirty || emojisPerRow.isDirty
             onResetClicked: {
                 pickerSize.resetToDefault();
                 defaultSkinTone.resetToDefault();
                 showHints.resetToDefault();
+                emojisPerRow.resetToDefault();
             }
         }
 
@@ -148,6 +149,20 @@ PluginSettings {
             description: I18n.trFor("emojiPicker", "Show keyboard navigation hints at the bottom of the picker.")
             defaultValue: true
         }
+
+        Separator {}
+
+        SliderSettingPlus {
+            id: emojisPerRow
+            settingKey: "emojisPerRow"
+            label: I18n.trFor("emojiPicker", "Emojis Per Row")
+            description: I18n.trFor("emojiPicker", "Number of emojis displayed per row. Each emoji stays square.")
+            minimum: 4
+            maximum: 16
+            defaultValue: 8
+            leftLabel: "4"
+            rightLabel: "16"
+        }
     }
 
     SettingsCard {
@@ -185,6 +200,7 @@ PluginSettings {
                 I18n.trFor("emojiPicker", "With emojis queued, <b>Enter</b> copies the sequence and <b>Ctrl+Enter</b> pastes it."),
                 I18n.trFor("emojiPicker", "Press <b>Backspace</b> to remove the last queued emoji."),
                 I18n.trFor("emojiPicker", "Press <b>Down</b> or <b>Tab</b> to move from search to the emoji grid."),
+                I18n.trFor("emojiPicker", "In the grid, use <b>Ctrl+H/J/K/L</b> for Vim-style left/down/up/right navigation."),
                 I18n.trFor("emojiPicker", "Press <b>Escape</b> to discard the queue, or close the picker when the queue is empty.")
             ]
         }
