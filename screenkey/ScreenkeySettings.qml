@@ -445,8 +445,4 @@ print(json.dumps(devs))
             ]
         }
     }
-
-    PluginAbout {
-        repoUrl: "https://github.com/loccun/dms-screenkey"
-    }
 }

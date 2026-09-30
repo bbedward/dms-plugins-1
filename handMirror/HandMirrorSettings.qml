@@ -236,8 +236,4 @@ PluginSettings {
             isDirectory: true
         }
     }
-
-    PluginAbout {
-        repoUrl: "https://github.com/hthienloc/dms-hand-mirror"
-    }
 }

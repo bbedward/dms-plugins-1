@@ -299,8 +299,4 @@ PluginSettings {
             ]
         }
     }
-
-    PluginAbout {
-        repoUrl: "https://github.com/hthienloc/dms-timer"
-    }
 }

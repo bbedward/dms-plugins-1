@@ -4,7 +4,6 @@ DankSliderPlus 1.0 DankSliderPlus.qml
 HintItem 1.0 HintItem.qml
 HintSection 1.0 HintSection.qml
 NumericText 1.0 NumericText.qml
-PluginAbout 1.0 PluginAbout.qml
 PluginShortcut 1.0 PluginShortcut.qml
 SectionTitle 1.0 SectionTitle.qml
 SelectionSettingPlus 1.0 SelectionSettingPlus.qml

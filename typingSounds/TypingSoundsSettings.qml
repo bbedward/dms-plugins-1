@@ -236,8 +236,4 @@ print(json.dumps(devs))
             ]
         }
     }
-
-    PluginAbout {
-        repoUrl: "https://github.com/hthienloc/dms-typing-sounds"
-    }
 }

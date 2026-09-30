@@ -438,8 +438,4 @@ PluginSettings {
             ]
         }
     }
-
-    PluginAbout {
-        repoUrl: "https://github.com/hthienloc/dms-ambient-sound"
-    }
 }

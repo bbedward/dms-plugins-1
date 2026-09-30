@@ -2,7 +2,6 @@ module dms.common
 CopyBox 1.0 CopyBox.qml
 DankSliderPlus 1.0 DankSliderPlus.qml
 NumericText 1.0 NumericText.qml
-PluginAbout 1.0 PluginAbout.qml
 SectionTitle 1.0 SectionTitle.qml
 SelectionSettingPlus 1.0 SelectionSettingPlus.qml
 Separator 1.0 Separator.qml

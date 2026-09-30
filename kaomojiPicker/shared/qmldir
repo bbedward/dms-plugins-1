@@ -2,7 +2,6 @@ module dms.common
 DankSliderPlus 1.0 DankSliderPlus.qml
 InfoText 1.0 InfoText.qml
 NumericText 1.0 NumericText.qml
-PluginAbout 1.0 PluginAbout.qml
 SectionTitle 1.0 SectionTitle.qml
 Separator 1.0 Separator.qml
 SettingsCard 1.0 SettingsCard.qml

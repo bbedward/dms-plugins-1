@@ -295,8 +295,4 @@ SettingsGroup {
             text: "binds {\n    Print { spawn \"dms\" \"ipc\" \"call\" \"quickCapture\" \"screenshot\" \"region\" \"edit\"; }\n}"
         }
     }
-
-    PluginAbout {
-        repoUrl: "https://github.com/hthienloc/dms-quick-capture"
-    }
 }

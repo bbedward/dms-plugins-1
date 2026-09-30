@@ -646,8 +646,4 @@ PluginSettings {
             ]
         }
     }
-
-    PluginAbout {
-        repoUrl: "https://github.com/hthienloc/dms-hidden-bar"
-    }
 }
