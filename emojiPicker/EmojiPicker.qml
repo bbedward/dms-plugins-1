@@ -523,6 +523,11 @@ PluginComponent {
                     event.accepted = true;
                     return;
                 }
+                if (event.key === Qt.Key_Down && searchField.getActiveFocus()) {
+                    pickerView.focusFirstEmoji();
+                    event.accepted = true;
+                    return;
+                }
                 // Down from the header (close button) goes to the search field; the other rows handle their own arrows.
                 if (event.key === Qt.Key_Down && !emojiGrid.activeFocus) {
                     searchField.forceActiveFocus();
