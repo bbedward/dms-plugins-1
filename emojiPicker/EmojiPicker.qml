@@ -44,6 +44,8 @@ PluginComponent {
     property string activeSkinTone: root.getStoredSkinTone()
 
     property var allEntries: []
+    property var entriesByCategory: ({})
+    property var entryByEmoji: ({})
     property var recentEmojis: []
     property string query: ""
     property string selectedCategory: "recent"
@@ -96,7 +98,7 @@ PluginComponent {
         if (!emoji)
             return null;
         const stripped = root.stripSkinTone(emoji);
-        return root.allEntries.find(entry => entry.emoji === emoji || entry.emoji === stripped || (entry.variants && entry.variants.indexOf(emoji) >= 0));
+        return root.entryByEmoji[emoji] || root.entryByEmoji[stripped] || null;
     }
 
     function setSkinTone(tone) {
@@ -118,16 +120,15 @@ PluginComponent {
         if (!q && root.selectedCategory === "recent") {
             source = root.recentEmojis.map(emoji => root.findEntry(emoji)).filter(Boolean);
         } else if (!q) {
-            source = root.allEntries.filter(entry => entry.category === root.selectedCategory);
+            source = root.entriesByCategory[root.selectedCategory] || [];
         }
         if (!q)
             return source;
-        return root.allEntries.filter(entry => {
-            if (root.selectedCategory !== "recent" && entry.category !== root.selectedCategory)
-                return false;
-            const currentEmoji = root.effectiveEmoji(entry);
-            const haystack = [entry.name, entry.emoji, currentEmoji].concat(entry.keywords || []).join(" ").toLowerCase();
-            return haystack.includes(q);
+        const searchSource = root.selectedCategory === "recent"
+            ? root.allEntries
+            : (root.entriesByCategory[root.selectedCategory] || []);
+        return searchSource.filter(entry => {
+            return entry.searchText.includes(q) || root.effectiveEmoji(entry).toLowerCase().includes(q);
         });
     }
 
@@ -145,7 +146,29 @@ PluginComponent {
     }
 
     function loadData() {
-        root.allEntries = EmojiData.getEntries();
+        if (root.allEntries.length === 0) {
+            const entries = EmojiData.getEntries();
+            const byCategory = {};
+            const byEmoji = {};
+
+            for (const entry of entries) {
+                entry.searchText = [entry.name, entry.emoji].concat(entry.keywords || []).join(" ").toLowerCase();
+                if (!byCategory[entry.category])
+                    byCategory[entry.category] = [];
+                byCategory[entry.category].push(entry);
+
+                byEmoji[entry.emoji] = entry;
+                byEmoji[root.stripSkinTone(entry.emoji)] = entry;
+                for (const variant of entry.variants || []) {
+                    byEmoji[variant] = entry;
+                    byEmoji[root.stripSkinTone(variant)] = entry;
+                }
+            }
+
+            root.allEntries = entries;
+            root.entriesByCategory = byCategory;
+            root.entryByEmoji = byEmoji;
+        }
         const saved = PluginService.loadPluginState(root.pluginId, "recent", []);
         root.recentEmojis = Array.isArray(saved) ? saved.slice(0, root.recentLimit) : [];
     }
