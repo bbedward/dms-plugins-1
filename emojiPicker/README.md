@@ -35,12 +35,12 @@ dms ipc call emojiPicker close
 | Ctrl+F | Return focus to the search bar and select all search text |
 | Backspace | Remove the last queued emoji when the grid is focused or search is empty |
 | Typing anywhere | Focus search and type into it |
-| Down / Tab from search | Focus the selected category |
+| Down / Tab from search | Focus the first emoji |
 | Left / Right on categories | Move between categories |
 | Down from categories | Focus the first emoji |
 | Arrow keys | Navigate the emoji grid |
 | Ctrl+H / Ctrl+J / Ctrl+K / Ctrl+L | Vim-style left / down / up / right navigation |
-| Up from the first row | Return to the categories, then to search |
+| Up from the first row | Return to the search bar |
 | Escape | Discard a non-empty queue; close the picker when the queue is empty |
 
 ### Categories

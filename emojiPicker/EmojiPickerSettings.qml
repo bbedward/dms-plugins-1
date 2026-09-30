@@ -199,7 +199,7 @@ PluginSettings {
                 I18n.trFor("emojiPicker", "Hold <b>Shift</b> while left-clicking or pressing <b>Enter</b> to add emojis to a queue."),
                 I18n.trFor("emojiPicker", "With emojis queued, <b>Enter</b> copies the sequence and <b>Ctrl+Enter</b> pastes it."),
                 I18n.trFor("emojiPicker", "Press <b>Backspace</b> to remove the last queued emoji."),
-                I18n.trFor("emojiPicker", "Press <b>Down</b> or <b>Tab</b> to move from search to the emoji grid."),
+                I18n.trFor("emojiPicker", "Press <b>Down</b> or <b>Tab</b> to move from search to the first emoji."),
                 I18n.trFor("emojiPicker", "In the grid, use <b>Ctrl+H/J/K/L</b> for Vim-style left/down/up/right navigation."),
                 I18n.trFor("emojiPicker", "Press <b>Escape</b> to discard the queue, or close the picker when the queue is empty.")
             ]

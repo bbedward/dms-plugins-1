@@ -386,7 +386,7 @@ PluginComponent {
 
                 if (emojiGrid.activeFocus) {
                     let targetIndex = emojiGrid.currentIndex;
-                    let movedToCategory = false;
+                    let movedToSearch = false;
                     switch (event.key) {
                     case Qt.Key_H:
                         if (targetIndex % emojiGrid.columnCount > 0)
@@ -400,8 +400,8 @@ PluginComponent {
                         if (targetIndex >= emojiGrid.columnCount) {
                             targetIndex -= emojiGrid.columnCount;
                         } else {
-                            pickerView.focusSelectedCategory();
-                            movedToCategory = true;
+                            searchField.forceActiveFocus();
+                            movedToSearch = true;
                         }
                         break;
                     case Qt.Key_L:
@@ -413,7 +413,7 @@ PluginComponent {
                         return false;
                     }
 
-                    if (!movedToCategory) {
+                    if (!movedToSearch) {
                         emojiGrid.currentIndex = targetIndex;
                         emojiGrid.forceActiveFocus();
                     }
@@ -443,13 +443,13 @@ PluginComponent {
                     return true;
                 }
 
-                if (searchField.activeFocus && event.key === Qt.Key_J) {
-                    pickerView.focusSelectedCategory();
+                if (searchField.getActiveFocus() && event.key === Qt.Key_J) {
+                    pickerView.focusFirstEmoji();
                     event.accepted = true;
                     return true;
                 }
 
-                if (searchField.activeFocus && event.key === Qt.Key_K) {
+                if (searchField.getActiveFocus() && event.key === Qt.Key_K) {
                     event.accepted = true;
                     return true;
                 }
@@ -514,6 +514,8 @@ PluginComponent {
 
             Keys.onPressed: event => {
                 if (pickerView.handleCommonShortcuts(event))
+                    return;
+                if (pickerView.handleVimNavigation(event))
                     return;
                 const category = pickerView.categoryForShortcut(event);
                 if (category) {
@@ -589,14 +591,14 @@ PluginComponent {
                             root.selectedIndex = 0;
                         }
                         ignoreUpDownKeys: true
-                        keyForwardTargets: [searchField]
+                        keyForwardTargets: [pickerView]
                         Keys.onPressed: event => {
                             if (pickerView.handleCommonShortcuts(event))
                                 return;
                             if (pickerView.handleVimNavigation(event))
                                 return;
                             if (event.key === Qt.Key_Down) {
-                                pickerView.focusSelectedCategory();
+                                pickerView.focusFirstEmoji();
                                 event.accepted = true;
                                 return;
                             }
@@ -605,7 +607,7 @@ PluginComponent {
                             root.handleQueueBackspace(event, searchField.text.length === 0);
                         }
                         Keys.onTabPressed: {
-                            pickerView.focusSelectedCategory();
+                            pickerView.focusFirstEmoji();
                         }
                     }
 
@@ -802,7 +804,7 @@ PluginComponent {
                             return;
                         if (event.key === Qt.Key_Up) {
                             if (emojiGrid.currentIndex < emojiGrid.columnCount) {
-                                pickerView.focusSelectedCategory();
+                                searchField.forceActiveFocus();
                                 event.accepted = true;
                             }
                         }
