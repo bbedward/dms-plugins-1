@@ -716,7 +716,7 @@ PluginComponent {
             DankIcon {
                 visible: root.inputBroken
                 name: "warning"
-                size: 11
+                size: Theme.iconSizeSmall
                 color: Theme.error
                 anchors.top: parent.top
                 anchors.right: parent.right
@@ -800,7 +800,7 @@ PluginComponent {
                         anchors.fill: parent
                         gradient: Gradient {
                             GradientStop { position: 0.0; color: "transparent" }
-                            GradientStop { position: 1.0; color: Qt.rgba(0,0,0, 0.1) }
+                            GradientStop { position: 1.0; color: Theme.shadowMedium }
                         }
                     }
 
@@ -808,7 +808,7 @@ PluginComponent {
                     Text {
                         anchors.centerIn: parent
                         font.family: bongoFont.name
-                        font.pixelSize: 80
+                        font.pixelSize: Theme.fontSizeXLarge * 4
                         font.letterSpacing: -2
                         color: root.catColorMode === "classic"
                             ? (popout.isActive ? Theme.onPrimaryContainer : Theme.surfaceText)
@@ -892,7 +892,7 @@ PluginComponent {
                         width: parent.width
                         height: 36
                         spacing: Theme.spacingM
-                        DankIcon { name: "keyboard"; size: 20; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                        DankIcon { name: "keyboard"; size: Theme.iconSizeMedium; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
                         DankDropdown {
                             id: keyboardDropdown
                             width: parent.width - 40
@@ -920,7 +920,7 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "aspect_ratio"; size: 18; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DankIcon { name: "aspect_ratio"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
                             DankSlider {
                                 id: sizeSlider
                                 width: parent.width - 80
@@ -932,7 +932,7 @@ PluginComponent {
                             }
                             DankIcon {
                                 name: "restore"
-                                size: 18
+                                size: Theme.iconSizeSmall
                                 color: Theme.primary
                                 opacity: (root.catSize * 100) !== 100 ? 1.0 : 0.3
                                 anchors.verticalCenter: parent.verticalCenter
@@ -965,7 +965,7 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "bedtime"; size: 18; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DankIcon { name: "bedtime"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
                             DankSlider {
                                 id: sleepSlider
                                 width: parent.width - 80
@@ -977,7 +977,7 @@ PluginComponent {
                             }
                             DankIcon {
                                 name: "restore"
-                                size: 18
+                                size: Theme.iconSizeSmall
                                 color: Theme.primary
                                 opacity: (root.waitingTimeout / 1000) !== 5 ? 1.0 : 0.3
                                 anchors.verticalCenter: parent.verticalCenter
@@ -1010,7 +1010,7 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "swap_vert"; size: 18; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DankIcon { name: "swap_vert"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
                             DankSlider {
                                 id: offsetSlider
                                 width: parent.width - 80
@@ -1022,7 +1022,7 @@ PluginComponent {
                             }
                             DankIcon {
                                 name: "restore"
-                                size: 18
+                                size: Theme.iconSizeSmall
                                 color: Theme.primary
                                 opacity: root.catYOffset !== 0 ? 1.0 : 0.3
                                 anchors.verticalCenter: parent.verticalCenter
@@ -1055,7 +1055,7 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "timer"; size: 18; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DankIcon { name: "timer"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
                             DankSlider {
                                 id: pawHoldSlider
                                 width: parent.width - 80
@@ -1067,7 +1067,7 @@ PluginComponent {
                             }
                             DankIcon {
                                 name: "restore"
-                                size: 18
+                                size: Theme.iconSizeSmall
                                 color: Theme.primary
                                 opacity: root.pawHoldTime !== 0 ? 1.0 : 0.3
                                 anchors.verticalCenter: parent.verticalCenter
@@ -1100,7 +1100,7 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "palette"; size: 18; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DankIcon { name: "palette"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
                             DankDropdown {
                                 id: colorModeDropdown
                                 width: parent.width - 40 - (customSwatch.visible ? 40 + Theme.spacingM : 0)
@@ -1151,7 +1151,7 @@ PluginComponent {
                             spacing: Theme.spacingS
                             DankIcon {
                                 name: root.enableBlinking ? "visibility" : "visibility_off"
-                                size: 22
+                                size: Theme.iconSize
                                 color: root.enableBlinking ? Theme.primary : Theme.surfaceText
                                 opacity: root.enableBlinking ? 1.0 : 0.4
                                 MouseArea {
@@ -1173,7 +1173,7 @@ PluginComponent {
                             spacing: Theme.spacingS
                             DankIcon {
                                 name: root.soundEnabled ? "volume_up" : "volume_off"
-                                size: 22
+                                size: Theme.iconSize
                                 color: root.soundEnabled ? Theme.primary : Theme.surfaceText
                                 opacity: root.soundEnabled ? 1.0 : 0.4
                                 MouseArea {
@@ -1195,7 +1195,7 @@ PluginComponent {
                             spacing: Theme.spacingS
                             DankIcon {
                                 name: "speed"
-                                size: 22
+                                size: Theme.iconSize
                                 color: root.showMetrics ? Theme.primary : Theme.surfaceText
                                 opacity: root.showMetrics ? 1.0 : 0.4
                                 MouseArea {

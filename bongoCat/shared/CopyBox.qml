@@ -6,7 +6,7 @@ import qs.Services
 Column {
     id: root
     width: parent.width
-    spacing: 4
+    spacing: Theme.spacingXS
 
     property string label: ""
     property string text: ""
@@ -41,19 +41,19 @@ Column {
     Rectangle {
         id: bgRect
         width: parent.width
-        height: Math.max(40, cmdRow.implicitHeight + 16)
+        height: Math.max(40, cmdRow.implicitHeight + Theme.spacingL)
         color: Theme.surfaceContainerHigh
         border.color: copyMouseArea.containsMouse ? Theme.withAlpha(Theme.primary, 0.7) : Theme.withAlpha(Theme.primary, 0.0)
         border.width: 1
-        radius: 4
+        radius: Theme.cornerRadius
 
         Behavior on border.color { ColorAnimation { duration: 150 } }
 
         Row {
             id: cmdRow
-            width: parent.width - 16
+            width: parent.width - Theme.spacingL
             anchors.centerIn: parent
-            spacing: 8
+            spacing: Theme.spacingS
 
             StyledText {
                 width: parent.width - 32
