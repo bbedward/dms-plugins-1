@@ -22,7 +22,7 @@ PluginComponent {
 
     readonly property string socketPath: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/dms-breathing-mpv.sock"
 
-    readonly property real cellWidth: (root.popoutWidth - (root.gridSpacing * 2) - Theme.spacingL) / 2
+    readonly property real cellWidth: Math.floor((root.popoutWidth - (Theme.spacingL * 2) - root.gridSpacing) / 2)
     readonly property real cellHeight: 100
     readonly property int labelFontSize: Theme.fontSizeSmall
     readonly property int timerFontSize: Theme.fontSizeLarge
@@ -855,15 +855,17 @@ PluginComponent {
                 }
 
                 // Exercises grid
-                Flow {
+                Grid {
+                    id: exercisesGrid
                     width: parent.width
+                    columns: 2
                     spacing: root.gridSpacing
                     visible: !root.isRunning
 
                     Repeater {
                         model: root.exercises
                         delegate: ActionTile {
-                            width: root.cellWidth
+                            width: Math.floor((exercisesGrid.width - exercisesGrid.spacing) / 2)
                             height: root.cellHeight
                             title: modelData.name
                             subtitle: (modelData.inhaleDuration || 0) + "-" + (modelData.holdDuration || 0) + "-" + (modelData.exhaleDuration || 0) + "-" + (modelData.holdAfterExhale || 0)
