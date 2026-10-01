@@ -16,7 +16,7 @@ Column {
         Proc.runCommand("copy-ipc", ["dms", "cl", "copy", root.text], function() {
             root.isCopied = true;
             copyTimer.restart();
-            ToastService.showInfo("Copied to clipboard");
+            ToastService.showInfo(I18n.tr("Copied to clipboard"));
         });
     }
 
@@ -41,7 +41,7 @@ Column {
     Rectangle {
         id: bgRect
         width: parent.width
-        height: Math.max(40, cmdRow.implicitHeight + Theme.spacingL)
+        height: Math.max(Theme.buttonHeightS, cmdRow.implicitHeight + Theme.spacingL)
         color: Theme.surfaceContainerHigh
         border.color: copyMouseArea.containsMouse ? Theme.withAlpha(Theme.primary, 0.7) : Theme.withAlpha(Theme.primary, 0.0)
         border.width: 1
@@ -56,16 +56,18 @@ Column {
             spacing: Theme.spacingS
 
             StyledText {
-                width: parent.width - 32
+                width: parent.width - Theme.iconSize - Theme.spacingS
                 text: root.text
-                font.family: "Monospace"
+                isMonospace: true
+                font.family: Theme.defaultMonoFontFamily
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.secondary
                 wrapMode: Text.Wrap
             }
 
             DankButton {
-                width: 24; height: 24
+                width: Theme.iconSize
+                height: Theme.iconSize
                 iconName: root.isCopied ? "check" : "content_copy"
                 backgroundColor: "transparent"
                 textColor: root.isCopied ? Theme.success : Theme.primary
