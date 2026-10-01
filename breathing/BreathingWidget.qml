@@ -20,12 +20,14 @@ PluginComponent {
 
     pillRightClickAction: () => root.togglePause()
 
-    readonly property real cellWidth: (root.popoutWidth - (root.gridSpacing * 2) - 16) / 2
+    readonly property string socketPath: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/dms-breathing-mpv.sock"
+
+    readonly property real cellWidth: (root.popoutWidth - (root.gridSpacing * 2) - Theme.spacingL) / 2
     readonly property real cellHeight: 100
     readonly property int labelFontSize: Theme.fontSizeSmall
     readonly property int timerFontSize: Theme.fontSizeLarge
     readonly property int spacing: Theme.spacingM
-    readonly property int gridSpacing: 8
+    readonly property int gridSpacing: Theme.spacingS
 
     readonly property var exercises: [
         {
@@ -171,10 +173,31 @@ PluginComponent {
     property bool isPaused: false
     property int currentExerciseIndex: -1
     property int currentCycle: 0
+    function sendIpcCommand(commandObj) {
+        var payload = JSON.stringify(commandObj) + "\n";
+        Proc.runCommand("breathing-ipc", [
+            "sh", "-c",
+            "printf '%s' \"$1\" | socat - \"UNIX-CONNECT:$2\" 2>/dev/null",
+            "sh", payload, root.socketPath
+        ], null, 0, -1);
+    }
+
+    function getSoundFile() {
+        var soundFile = pluginDir + "/sounds/chime.ogg";
+        if (root.soundType === "meditation") {
+            soundFile = pluginDir + "/sounds/meditation.mp3";
+        } else if (root.soundType === "custom") {
+            var customPath = pluginData.customSoundPath !== undefined ? pluginData.customSoundPath.trim() : "";
+            if (customPath.length > 0) {
+                soundFile = customPath;
+            }
+        }
+        return soundFile;
+    }
+
     onCurrentCycleChanged: {
         if (isPlayerRunning && currentCycle > 1) {
-            var cmd = "echo '{\"command\":[\"seek\",0,\"absolute\"]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock 2>/dev/null";
-            Proc.runCommand("restart-breathing-sound", ["bash", "-c", cmd], null, 0, -1);
+            sendIpcCommand({ "command": ["seek", 0, "absolute"] });
         }
     }
     property string breathPhase: ""
@@ -195,8 +218,7 @@ PluginComponent {
     onSoundVolumeChanged: {
         pluginData.defaultSoundVolume = soundVolume;
         if (isPlayerRunning || isTestingSound) {
-            var cmd = "echo '{\"command\":[\"set_property\",\"volume\"," + soundVolume + "]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock 2>/dev/null";
-            Proc.runCommand("update-volume", ["bash", "-c", cmd], null, 0, -1);
+            sendIpcCommand({ "command": ["set_property", "volume", soundVolume] });
         }
     }
 
@@ -216,8 +238,7 @@ PluginComponent {
             root.fadeElapsedMs += root.fadeTickMs;
             var progress = Math.min(root.fadeElapsedMs / root.fadeDurationMs, 1.0);
             var vol = Math.round(root.fadeStartVol + (root.fadeEndVol - root.fadeStartVol) * progress);
-            var cmd = "echo '{\"command\":[\"set_property\",\"volume\"," + vol + "]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock 2>/dev/null";
-            Proc.runCommand("fade-breathing-volume", ["bash", "-c", cmd], null, 0, -1);
+            sendIpcCommand({ "command": ["set_property", "volume", vol] });
             if (progress >= 1.0) volumeFadeTimer.stop();
         }
     }
@@ -228,9 +249,7 @@ PluginComponent {
         root.fadeEndVol = toVol;
         root.fadeDurationMs = Math.max(durationMs, 1);
         root.fadeElapsedMs = 0;
-        // Set initial volume immediately
-        var cmd = "echo '{\"command\":[\"set_property\",\"volume\"," + Math.round(fromVol) + "]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock 2>/dev/null";
-        Proc.runCommand("fade-breathing-volume", ["bash", "-c", cmd], null, 0, -1);
+        sendIpcCommand({ "command": ["set_property", "volume", Math.round(fromVol)] });
         if (fromVol !== toVol) volumeFadeTimer.start();
     }
 
@@ -247,23 +266,22 @@ PluginComponent {
             stopExercise();
         }
         isTestingSound = true;
-        var SOCK = "/tmp/dms-breathing-mpv.sock";
-        var soundFile = pluginDir + "/sounds/chime.ogg";
-        if (root.soundType === "meditation") {
-            soundFile = pluginDir + "/sounds/meditation.mp3";
-        } else if (root.soundType === "custom") {
-            var customPath = pluginData.customSoundPath !== undefined ? pluginData.customSoundPath.trim() : "";
-            if (customPath.length > 0) {
-                soundFile = customPath;
-            }
-        }
-        var initCmd = "rm -f '" + SOCK + "'; mpv --no-video --no-config --loop=inf --audio-pitch-correction=no --volume=" + root.soundVolume + " --audio-samplerate=48000 --speed=1.0 --input-ipc-server='" + SOCK + "' '" + soundFile + "' 2>&1";
-        console.log("[BreathingWidget] startTestSound cmd:", initCmd);
-        Proc.runCommand("start-breathing-test-sound", ["bash", "-c", initCmd], function(output, exitCode) {
-            console.log("[BreathingWidget] MPV exited! code:", exitCode, "output:", output);
-            isTestingSound = false;
-            var debugCmd = "printf '%s' 'MPV exited with code " + exitCode + ". Output: " + output.replace(/'/g, "") + "' > /tmp/breathing-mpv-error.txt";
-            Proc.runCommand("write-debug", ["bash", "-c", debugCmd], null, 0);
+        var soundFile = getSoundFile();
+        Proc.runCommand("rm-breathing-test-sock", ["rm", "-f", root.socketPath], function() {
+            Proc.runCommand("start-breathing-test-sound", [
+                "mpv",
+                "--no-video",
+                "--no-config",
+                "--loop=inf",
+                "--audio-pitch-correction=no",
+                "--volume=" + root.soundVolume,
+                "--audio-samplerate=48000",
+                "--speed=1.0",
+                "--input-ipc-server=" + root.socketPath,
+                soundFile
+            ], function(output, exitCode) {
+                isTestingSound = false;
+            }, 0, -1);
         }, 0, -1);
     }
 
@@ -272,31 +290,20 @@ PluginComponent {
         stopSound();
     }
 
-    function playSoundCmd() {
-        var SOCK = "/tmp/dms-breathing-mpv.sock";
-        var soundFile = pluginDir + "/sounds/chime.ogg";
-        if (root.soundType === "meditation") {
-            soundFile = pluginDir + "/sounds/meditation.mp3";
-        } else if (root.soundType === "custom") {
-            var customPath = pluginData.customSoundPath !== undefined ? pluginData.customSoundPath.trim() : "";
-            if (customPath.length > 0) {
-                soundFile = customPath;
-            }
-        }
-        return "mpv --no-video --no-config --loop=inf --audio-pitch-correction=no --volume=" + root.soundVolume + " --audio-samplerate=48000 --input-ipc-server='" + SOCK + "' '" + soundFile + "' > /dev/null 2>&1";
-    }
-
     function stopSound() {
         isPlayerRunning = false;
         volumeFadeTimer.stop();
-        var cmd = "echo '{\"command\":[\"quit\"]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock 2>/dev/null; rm -f /tmp/dms-breathing-mpv.sock";
-        Proc.runCommand("stop-breathing-sound", ["bash", "-c", cmd], null, 0, -1);
+        var payload = JSON.stringify({ "command": ["quit"] }) + "\n";
+        Proc.runCommand("stop-breathing-sound", [
+            "sh", "-c",
+            "printf '%s' \"$1\" | socat - \"UNIX-CONNECT:$2\" 2>/dev/null; rm -f \"$2\"",
+            "sh", payload, root.socketPath
+        ], null, 0, -1);
     }
 
     function pauseSound() {
         if (!enableSound || !isPlayerRunning) return;
-        var cmd = "echo '{\"command\":[\"set_property\",\"pause\",true]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock";
-        Proc.runCommand("pause-breathing-sound", ["bash", "-c", cmd], null, 0, -1);
+        sendIpcCommand({ "command": ["set_property", "pause", true] });
     }
 
     function resumeSound() {
@@ -305,42 +312,59 @@ PluginComponent {
             playSound(breathPhase);
             return;
         }
-        var cmd = "echo '{\"command\":[\"set_property\",\"pause\",false]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock";
-        Proc.runCommand("resume-breathing-sound", ["bash", "-c", cmd], null, 0, -1);
+        sendIpcCommand({ "command": ["set_property", "pause", false] });
     }
 
     function playSound(phase) {
         if (!enableSound || !isRunning || isPaused) return;
 
         var shouldStrike = (phase === "inhale") || (root.enableTwoTone && phase === "exhale");
-        var speed = "1.0";
+        var speed = 1.0;
         if (phase === "inhale") {
-            speed = "1.1";
+            speed = 1.1;
         } else if (phase === "exhale" || phase === "holdAfterExhale") {
-            speed = "0.9";
+            speed = 0.9;
         }
 
         if (isPlayerRunning) {
-            var cmd = "echo '{\"command\":[\"set_property\",\"speed\"," + speed + "]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock && " +
-                      "echo '{\"command\":[\"set_property\",\"volume\"," + root.soundVolume + "]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock && " +
-                      "echo '{\"command\":[\"set_property\",\"pause\",false]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock";
+            var cmds = [
+                JSON.stringify({ "command": ["set_property", "speed", speed] }),
+                JSON.stringify({ "command": ["set_property", "volume", root.soundVolume] }),
+                JSON.stringify({ "command": ["set_property", "pause", false] })
+            ];
             if (shouldStrike) {
-                cmd += " && echo '{\"command\":[\"seek\",0,\"absolute\"]}' | socat - UNIX-CONNECT:/tmp/dms-breathing-mpv.sock";
+                cmds.push(JSON.stringify({ "command": ["seek", 0, "absolute"] }));
             }
-            Proc.runCommand("play-breathing-sound", ["bash", "-c", cmd], null, 0, -1);
+            var payload = cmds.join("\n") + "\n";
+            Proc.runCommand("play-breathing-sound", [
+                "sh", "-c",
+                "printf '%s' \"$1\" | socat - \"UNIX-CONNECT:$2\" 2>/dev/null",
+                "sh", payload, root.socketPath
+            ], null, 0, -1);
         } else {
             isPlayerRunning = true;
-            var SOCK = "/tmp/dms-breathing-mpv.sock";
-            var initCmd = "rm -f '" + SOCK + "'; " + playSoundCmd();
-            Proc.runCommand("start-breathing-sound", ["bash", "-c", initCmd], null, 0, -1);
-            var capturedSpeed = speed;
-            var strikePart = shouldStrike ? "echo '{\"command\":[\"seek\",0,\"absolute\"]}' | socat - UNIX-CONNECT:" + SOCK + " 2>/dev/null && " : "";
-            var setCmd = "for i in {1..30}; do if [ -S " + SOCK + " ]; then " +
-                         "echo '{\"command\":[\"set_property\",\"speed\"," + capturedSpeed + "]}' | socat - UNIX-CONNECT:" + SOCK + " 2>/dev/null && " +
-                         strikePart +
-                         "echo '{\"command\":[\"set_property\",\"pause\",false]}' | socat - UNIX-CONNECT:" + SOCK + " 2>/dev/null && break; " +
-                         "fi; sleep 0.05; done";
-            Proc.runCommand("play-breathing-sound", ["bash", "-c", setCmd], null, 0, -1);
+            var soundFile = getSoundFile();
+            Proc.runCommand("rm-breathing-sock", ["rm", "-f", root.socketPath], function() {
+                Proc.runCommand("start-breathing-sound", [
+                    "mpv",
+                    "--no-video",
+                    "--no-config",
+                    "--loop=inf",
+                    "--audio-pitch-correction=no",
+                    "--volume=" + root.soundVolume,
+                    "--audio-samplerate=48000",
+                    "--input-ipc-server=" + root.socketPath,
+                    soundFile
+                ], null, 0, -1);
+
+                var strikeCmd = shouldStrike ? "printf '%s\\n' '{\"command\":[\"seek\",0,\"absolute\"]}' | socat - \"UNIX-CONNECT:$1\" 2>/dev/null; " : "";
+                var setCmd = "for i in {1..30}; do if [ -S \"$1\" ]; then " +
+                             "printf '%s\\n' '{\"command\":[\"set_property\",\"speed\"," + speed + "]}' | socat - \"UNIX-CONNECT:$1\" 2>/dev/null && " +
+                             strikeCmd +
+                             "printf '%s\\n' '{\"command\":[\"set_property\",\"pause\",false]}' | socat - \"UNIX-CONNECT:$1\" 2>/dev/null && break; " +
+                             "fi; sleep 0.05; done";
+                Proc.runCommand("init-breathing-sound", ["sh", "-c", setCmd, "sh", root.socketPath], null, 0, -1);
+            }, 0, -1);
         }
     }
 
@@ -521,14 +545,14 @@ PluginComponent {
             Row {
                 id: pillRow
                 anchors.centerIn: parent
-                spacing: 4
+                spacing: Theme.spacingXS
 
                 DankIcon {
                     name: root.isPaused ? "pause" : 
                           (breathPhase === "inhale" ? "trending_up" : 
                            breathPhase === "hold" || breathPhase === "holdAfterExhale" ? "horizontal_rule" :
                            breathPhase === "exhale" ? "trending_down" : "air")
-                    size: 18
+                    size: Theme.chipIconSize
                     color: (root.isRunning || root.breathPhase !== "") ? Theme.primary : Theme.surfaceVariantText
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -860,47 +884,35 @@ PluginComponent {
                 // Start/Stop buttons
                 Column {
                     width: parent.width
-                    spacing: 8
+                    spacing: Theme.spacingS
 
                     // Duration presets
                     Row {
                         width: parent.width
-                        spacing: 4
+                        spacing: Theme.spacingXS
                         visible: !root.isRunning
 
                         Repeater {
                             model: root.timePresets
-                            delegate: Rectangle {
-                                width: (parent.width - 28) / 8
-                                height: 28
-                                radius: Theme.cornerRadius
-                                color: root.selectedDuration === modelData.minutes ? Theme.primary : Theme.surfaceContainerHigh
-
-                                StyledText {
-                                    text: modelData.label
-                                    font.pixelSize: 12
-                                    font.weight: root.selectedDuration === modelData.minutes ? Font.Bold : Font.Normal
-                                    color: root.selectedDuration === modelData.minutes ? Theme.onPrimary : Theme.surfaceText
-                                    anchors.centerIn: parent
-                                }
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: root.selectedDuration = modelData.minutes;
-                                }
+                            delegate: DankButton {
+                                width: (parent.width - (parent.spacing * (root.timePresets.length - 1))) / root.timePresets.length
+                                height: Theme.buttonHeightXXS
+                                text: modelData.label
+                                backgroundColor: root.selectedDuration === modelData.minutes ? Theme.primary : Theme.surfaceContainerHigh
+                                textColor: root.selectedDuration === modelData.minutes ? Theme.onPrimary : Theme.surfaceText
+                                onClicked: root.selectedDuration = modelData.minutes
                             }
                         }
                     }
 
                     Row {
                         width: parent.width
-                        spacing: 8
+                        spacing: Theme.spacingS
 
                         DankButton {
                             text: root.isRunning ? (root.isPaused ? I18n.tr("Resume") : I18n.tr("Pause")) : I18n.tr("Start")
-                            width: parent.width / 2 - 4
-                            height: 40
+                            width: (parent.width - parent.spacing) / 2
+                            height: Theme.buttonHeightS
                             iconName: root.isPaused ? "play_arrow" : (root.isRunning ? "pause" : "play_arrow")
                             onClicked: {
                                 if (root.isRunning) {
@@ -913,9 +925,9 @@ PluginComponent {
 
                         DankButton {
                             text: I18n.tr("Stop")
-                            width: parent.width / 2 - 4
-                            height: 40
-                            backgroundColor: (root.isRunning || root.breathPhase !== "") ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15) : Theme.surfaceContainerHigh
+                            width: (parent.width - parent.spacing) / 2
+                            height: Theme.buttonHeightS
+                            backgroundColor: (root.isRunning || root.breathPhase !== "") ? Theme.withAlpha(Theme.error, 0.15) : Theme.surfaceContainerHigh
                             textColor: (root.isRunning || root.breathPhase !== "") ? Theme.error : Theme.surfaceVariantText
                             iconName: "stop"
                             enabled: root.isRunning || root.breathPhase !== ""
