@@ -1,4 +1,5 @@
 import QtQuick
+import QtMultimedia
 import qs.Common
 import qs.Modules.Plugins
 import "./shared"
@@ -7,8 +8,12 @@ PluginSettings {
     id: root
     pluginId: "handMirror"
 
+    MediaDevices {
+        id: mediaDevices
+    }
+
     function getCameraOptions() {
-        const devices = MediaDevices.videoInputs;
+        const devices = mediaDevices.videoInputs;
         if (!devices || devices.length === 0) {
             return [{ label: I18n.tr("Default Camera"), value: "0" }];
         }

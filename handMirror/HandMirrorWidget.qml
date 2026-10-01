@@ -34,6 +34,11 @@ PluginComponent {
     readonly property real   cfg_filterStrength: (root.pluginData.filterStrength ?? 100) / 100.0
     readonly property real   cfg_smoothing:      (root.pluginData.smoothingAmount ?? 0) / 100.0
 
+    readonly property color  sepiaColor:        "#704214"
+    readonly property color  overlayBtnBg:      Theme.withAlpha("#000000", 0.6)
+    readonly property color  overlayBtnHoverBg: Theme.withAlpha("#000000", 0.8)
+    readonly property color  overlayBtnBorder:  Theme.onPrimary
+
     // Aspect ratio calculation
     property real cameraRatio: 4.0 / 3.0
     readonly property real activeRatio: {
@@ -370,7 +375,7 @@ PluginComponent {
                         contrast: root.cfg_filterMode === "contrast" ? (0.4 * root.cfg_filterStrength) : 0.0
                         brightness: root.cfg_filterMode === "contrast" ? (0.1 * root.cfg_filterStrength) : 0.0
                         colorization: root.cfg_filterMode === "sepia" ? root.cfg_filterStrength : 0.0
-                        colorizationColor: "#704214"
+                        colorizationColor: root.sepiaColor
 
                         // Simple denoising via smoothing
                         blurEnabled: root.cfg_smoothing > 0
@@ -440,16 +445,16 @@ PluginComponent {
 
                 // Pin button overlay (top right) - only visible in popout mode
                 StyledRect {
-                    width: 28
-                    height: 28
-                    radius: 14
-                    color: pinArea.containsMouse ? Qt.rgba(0, 0, 0, 0.8) : Qt.rgba(0, 0, 0, 0.6)
-                    border.color: "white"
+                    width: Theme.buttonHeightXXS
+                    height: Theme.buttonHeightXXS
+                    radius: height / 2
+                    color: pinArea.containsMouse ? root.overlayBtnHoverBg : root.overlayBtnBg
+                    border.color: root.overlayBtnBorder
                     border.width: 1
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.rightMargin: 12
-                    anchors.topMargin: 12
+                    anchors.rightMargin: Theme.spacingM
+                    anchors.topMargin: Theme.spacingM
                     visible: !contentItem.isStandalone && opacity > 0.0
                     opacity: (!contentItem.isStandalone && cameraHoverHandler.hovered) ? 1.0 : 0.0
                     Behavior on opacity {
@@ -459,16 +464,14 @@ PluginComponent {
                     DankIcon {
                         anchors.centerIn: parent
                         name: "push_pin"
-                        size: 14
-                        color: "white"
+                        size: Theme.iconSizeSmall
+                        color: root.overlayBtnBorder
                     }
 
                     MouseArea {
                         id: pinArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        onEntered: parent.color = Qt.rgba(0, 0, 0, 0.8)
-                        onExited: parent.color = Qt.rgba(0, 0, 0, 0.6)
                         onClicked: {
                             root.closePopout();
                             standaloneWindow.visible = true;
@@ -478,16 +481,16 @@ PluginComponent {
 
                 // Flash toggle button overlay (top right) - only visible in popout mode
                 StyledRect {
-                    width: 28
-                    height: 28
-                    radius: 14
-                    color: flashArea.containsMouse ? Qt.rgba(0, 0, 0, 0.8) : Qt.rgba(0, 0, 0, 0.6)
-                    border.color: "white"
+                    width: Theme.buttonHeightXXS
+                    height: Theme.buttonHeightXXS
+                    radius: height / 2
+                    color: flashArea.containsMouse ? root.overlayBtnHoverBg : root.overlayBtnBg
+                    border.color: root.overlayBtnBorder
                     border.width: 1
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.rightMargin: 114
-                    anchors.topMargin: 12
+                    anchors.rightMargin: Theme.spacingM + (Theme.buttonHeightXXS + Theme.spacingS) * 3
+                    anchors.topMargin: Theme.spacingM
                     visible: !contentItem.isStandalone && opacity > 0.0
                     opacity: (!contentItem.isStandalone && cameraHoverHandler.hovered) ? 1.0 : 0.0
                     Behavior on opacity {
@@ -497,8 +500,8 @@ PluginComponent {
                     DankIcon {
                         anchors.centerIn: parent
                         name: root.cfg_screenFlash ? "flash_on" : "offline_bolt"
-                        size: 14
-                        color: root.cfg_screenFlash ? Theme.primary : "white"
+                        size: Theme.iconSizeSmall
+                        color: root.cfg_screenFlash ? Theme.primary : root.overlayBtnBorder
                     }
 
                     MouseArea {
@@ -513,16 +516,16 @@ PluginComponent {
 
                 // Snapshot button — captures photo with current delay setting
                 StyledRect {
-                    width: 28
-                    height: 28
-                    radius: 14
-                    color: snapArea.containsMouse ? Qt.rgba(0, 0, 0, 0.8) : Qt.rgba(0, 0, 0, 0.6)
-                    border.color: "white"
+                    width: Theme.buttonHeightXXS
+                    height: Theme.buttonHeightXXS
+                    radius: height / 2
+                    color: snapArea.containsMouse ? root.overlayBtnHoverBg : root.overlayBtnBg
+                    border.color: root.overlayBtnBorder
                     border.width: 1
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.rightMargin: 80
-                    anchors.topMargin: 12
+                    anchors.rightMargin: Theme.spacingM + (Theme.buttonHeightXXS + Theme.spacingS) * 2
+                    anchors.topMargin: Theme.spacingM
                     visible: !contentItem.isStandalone && opacity > 0.0
                     opacity: (!contentItem.isStandalone && cameraHoverHandler.hovered) ? 1.0 : 0.0
                     Behavior on opacity {
@@ -532,16 +535,14 @@ PluginComponent {
                     DankIcon {
                         anchors.centerIn: parent
                         name: "photo_camera"
-                        size: 14
-                        color: "white"
+                        size: Theme.iconSizeSmall
+                        color: root.overlayBtnBorder
                     }
 
                     MouseArea {
                         id: snapArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        onEntered: parent.color = Qt.rgba(0, 0, 0, 0.8)
-                        onExited: parent.color = Qt.rgba(0, 0, 0, 0.6)
                         onClicked: {
                             root.performCapture(videoOutput);
                         }
@@ -551,16 +552,16 @@ PluginComponent {
                 // Timer button — cycles capture delay on each click
                 StyledRect {
                     id: timerBtn
-                    width: 32
-                    height: 28
-                    radius: 14
-                    color: timerArea.containsMouse ? Qt.rgba(0, 0, 0, 0.8) : Qt.rgba(0, 0, 0, 0.6)
-                    border.color: "white"
+                    width: Theme.buttonHeightXXS + Theme.spacingXS
+                    height: Theme.buttonHeightXXS
+                    radius: height / 2
+                    color: timerArea.containsMouse ? root.overlayBtnHoverBg : root.overlayBtnBg
+                    border.color: root.overlayBtnBorder
                     border.width: 1
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.rightMargin: 46
-                    anchors.topMargin: 12
+                    anchors.rightMargin: Theme.spacingM + Theme.buttonHeightXXS + Theme.spacingS
+                    anchors.topMargin: Theme.spacingM
                     visible: !contentItem.isStandalone && opacity > 0.0
                     opacity: (!contentItem.isStandalone && cameraHoverHandler.hovered) ? 1.0 : 0.0
                     Behavior on opacity {
@@ -572,9 +573,9 @@ PluginComponent {
 
                     StyledText {
                         text: timerBtn.delays[timerBtn.delayIndex]
-                        font.pixelSize: 9
+                        font.pixelSize: Theme.fontSizeSmall
                         font.bold: true
-                        color: "white"
+                        color: root.overlayBtnBorder
                         anchors.centerIn: parent
                     }
 
@@ -582,8 +583,6 @@ PluginComponent {
                         id: timerArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        onEntered: parent.color = Qt.rgba(0, 0, 0, 0.8)
-                        onExited: parent.color = Qt.rgba(0, 0, 0, 0.6)
                         onClicked: {
                             timerBtn.delayIndex = (timerBtn.delayIndex + 1) % timerBtn.delays.length;
                             root.pluginService.savePluginData(root.pluginId, "captureDelay", timerBtn.delays[timerBtn.delayIndex].replace("s", ""));
@@ -710,16 +709,16 @@ PluginComponent {
                 // Countdown Visual Overlay
                 StyledRect {
                     anchors.fill: parent
-                    color: Qt.rgba(0, 0, 0, 0.4)
+                    color: Theme.withAlpha("#000000", 0.4)
                     visible: root.isCountingDown
                     radius: cameraViewPanel.radius
 
                     StyledText {
                         anchors.centerIn: parent
                         text: root.countdownValue
-                        font.pixelSize: 72
+                        font.pixelSize: Theme.fontSizeXLarge * 4
                         font.bold: true
-                        color: "white"
+                        color: root.overlayBtnBorder
                     }
                 }
 
@@ -738,7 +737,7 @@ PluginComponent {
 
                         Item {
                             width: parent.width
-                            height: parent.height - (root.isPreviewing ? 48 : 0)
+                            height: parent.height - (root.isPreviewing ? (Theme.buttonHeightM - Theme.spacingS) : 0)
                             clip: true
 
                             Image {
@@ -774,8 +773,8 @@ PluginComponent {
                         // Bottom Action Bar
                         Rectangle {
                             width: parent.width
-                            height: 48
-                            color: Qt.rgba(0, 0, 0, 0.6)
+                            height: Theme.buttonHeightM - Theme.spacingS
+                            color: root.overlayBtnBg
                             
                             Separator { anchors.top: parent.top }
 
@@ -792,7 +791,7 @@ PluginComponent {
 
                                 DankActionButton {
                                     iconName: "content_copy"
-                                    iconColor: "white"
+                                    iconColor: root.overlayBtnBorder
                                     tooltipText: I18n.tr("Copy to Clipboard")
                                     onClicked: root.copyPreview()
                                 }
@@ -873,16 +872,16 @@ PluginComponent {
 
             // Close button (top right of standalone window)
             StyledRect {
-                width: 28
-                height: 28
-                radius: 14
-                color: closeArea.containsMouse ? Theme.errorHover : Qt.rgba(0, 0, 0, 0.6)
-                border.color: "white"
+                width: Theme.buttonHeightXXS
+                height: Theme.buttonHeightXXS
+                radius: height / 2
+                color: closeArea.containsMouse ? Theme.errorHover : root.overlayBtnBg
+                border.color: root.overlayBtnBorder
                 border.width: 1
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.rightMargin: 12
-                anchors.topMargin: 12
+                anchors.rightMargin: Theme.spacingM
+                anchors.topMargin: Theme.spacingM
                 opacity: windowHoverHandler.hovered ? 1.0 : 0.0
                 visible: opacity > 0.0
                 Behavior on opacity {
@@ -892,8 +891,8 @@ PluginComponent {
                 DankIcon {
                     anchors.centerIn: parent
                     name: "close"
-                    size: 14
-                    color: "white"
+                    size: Theme.iconSizeSmall
+                    color: root.overlayBtnBorder
                 }
 
                 MouseArea {
@@ -908,16 +907,16 @@ PluginComponent {
 
             // Unpin button (top right of standalone window, next to close)
             StyledRect {
-                width: 28
-                height: 28
-                radius: 14
-                color: unpinArea.containsMouse ? Qt.rgba(0, 0, 0, 0.8) : Qt.rgba(0, 0, 0, 0.6)
-                border.color: "white"
+                width: Theme.buttonHeightXXS
+                height: Theme.buttonHeightXXS
+                radius: height / 2
+                color: unpinArea.containsMouse ? root.overlayBtnHoverBg : root.overlayBtnBg
+                border.color: root.overlayBtnBorder
                 border.width: 1
                 anchors.right: parent.right
-                anchors.rightMargin: 46
+                anchors.rightMargin: Theme.spacingM + Theme.buttonHeightXXS + Theme.spacingS
                 anchors.top: parent.top
-                anchors.topMargin: 12
+                anchors.topMargin: Theme.spacingM
                 opacity: windowHoverHandler.hovered ? 1.0 : 0.0
                 visible: opacity > 0.0
                 Behavior on opacity {
@@ -927,7 +926,7 @@ PluginComponent {
                 DankIcon {
                     anchors.centerIn: parent
                     name: "push_pin"
-                    size: 14
+                    size: Theme.iconSizeSmall
                     color: Theme.primary
                 }
 
@@ -944,16 +943,16 @@ PluginComponent {
 
             // Flash toggle button (standalone window)
             StyledRect {
-                width: 28
-                height: 28
-                radius: 14
-                color: flashAreaStandalone.containsMouse ? Qt.rgba(0, 0, 0, 0.8) : Qt.rgba(0, 0, 0, 0.6)
-                border.color: "white"
+                width: Theme.buttonHeightXXS
+                height: Theme.buttonHeightXXS
+                radius: height / 2
+                color: flashAreaStandalone.containsMouse ? root.overlayBtnHoverBg : root.overlayBtnBg
+                border.color: root.overlayBtnBorder
                 border.width: 1
                 anchors.right: parent.right
-                anchors.rightMargin: 80
+                anchors.rightMargin: Theme.spacingM + (Theme.buttonHeightXXS + Theme.spacingS) * 2
                 anchors.top: parent.top
-                anchors.topMargin: 12
+                anchors.topMargin: Theme.spacingM
                 opacity: windowHoverHandler.hovered ? 1.0 : 0.0
                 visible: opacity > 0.0
                 Behavior on opacity {
@@ -963,8 +962,8 @@ PluginComponent {
                 DankIcon {
                     anchors.centerIn: parent
                     name: root.cfg_screenFlash ? "flash_on" : "offline_bolt"
-                    size: 14
-                    color: root.cfg_screenFlash ? Theme.primary : "white"
+                    size: Theme.iconSizeSmall
+                    color: root.cfg_screenFlash ? Theme.primary : root.overlayBtnBorder
                 }
 
                 MouseArea {
@@ -979,16 +978,16 @@ PluginComponent {
 
             // Snapshot button (top right of standalone window, next to flash)
             StyledRect {
-                width: 28
-                height: 28
-                radius: 14
-                color: snapAreaStandalone.containsMouse ? Qt.rgba(0, 0, 0, 0.8) : Qt.rgba(0, 0, 0, 0.6)
-                border.color: "white"
+                width: Theme.buttonHeightXXS
+                height: Theme.buttonHeightXXS
+                radius: height / 2
+                color: snapAreaStandalone.containsMouse ? root.overlayBtnHoverBg : root.overlayBtnBg
+                border.color: root.overlayBtnBorder
                 border.width: 1
                 anchors.right: parent.right
-                anchors.rightMargin: 114
+                anchors.rightMargin: Theme.spacingM + (Theme.buttonHeightXXS + Theme.spacingS) * 3
                 anchors.top: parent.top
-                anchors.topMargin: 12
+                anchors.topMargin: Theme.spacingM
                 opacity: windowHoverHandler.hovered ? 1.0 : 0.0
                 visible: opacity > 0.0
                 Behavior on opacity {
@@ -998,16 +997,14 @@ PluginComponent {
                 DankIcon {
                     anchors.centerIn: parent
                     name: "photo_camera"
-                    size: 14
-                    color: "white"
+                    size: Theme.iconSizeSmall
+                    color: root.overlayBtnBorder
                 }
 
                 MouseArea {
                     id: snapAreaStandalone
                     anchors.fill: parent
                     hoverEnabled: true
-                    onEntered: parent.color = Qt.rgba(0, 0, 0, 0.8)
-                    onExited: parent.color = Qt.rgba(0, 0, 0, 0.6)
                     onClicked: {
                         if (standaloneLoader.item) {
                             root.performCapture(standaloneLoader.item.videoOutput);
