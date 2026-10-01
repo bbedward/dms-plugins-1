@@ -975,8 +975,10 @@ PluginComponent {
                                     onClicked: (mouse) => {
                                         if (mouse.button === Qt.RightButton && isCompleted) {
                                             root.activeHistoryIndex = index;
-                                            var pt = mapToGlobal(mouse.x, mouse.y);
-                                            historyMenu.open(root.screen, pt.x, pt.y, false);
+                                            var pt = mapToItem(root, mouse.x, mouse.y);
+                                            historyMenu.x = Math.max(0, Math.min(pt.x, root.width - historyMenu.width));
+                                            historyMenu.y = Math.max(0, Math.min(pt.y, root.height - 150));
+                                            historyMenu.open();
                                         }
                                     }
                                 }
@@ -1040,49 +1042,107 @@ PluginComponent {
 
     property int activeHistoryIndex: -1
 
-    DankContextMenu {
+    Popup {
         id: historyMenu
-        menuItems: [
-            {
-                type: "item",
-                icon: "play_arrow",
-                text: I18n.tr("Play Now"),
-                action: () => {
-                    let item = downloadsModel.get(root.activeHistoryIndex);
-                    let p = item.fullPath || (item.downloadPath + "/" + item.title);
-                    Quickshell.execDetached(["xdg-open", p]);
-                }
-            },
-            {
-                type: "item",
-                icon: "open_in_new",
-                text: I18n.tr("Open File"),
-                action: () => {
-                    let item = downloadsModel.get(root.activeHistoryIndex);
-                    let p = item.fullPath || (item.downloadPath + "/" + item.title);
-                    Quickshell.execDetached(["xdg-open", p]);
-                }
-            },
-            {
-                type: "item",
-                icon: "folder",
-                text: I18n.tr("Open Folder"),
-                action: () => {
-                    let item = downloadsModel.get(root.activeHistoryIndex);
-                    let p = item.fullPath || (item.downloadPath + "/" + item.title);
-                    let dir = p.substring(0, p.lastIndexOf("/"));
-                    Quickshell.execDetached(["xdg-open", dir]);
-                }
-            },
-            {
-                type: "item",
-                icon: "delete",
-                text: I18n.tr("Remove from History"),
-                action: () => {
-                    downloadsModel.remove(root.activeHistoryIndex);
-                    root.updateActiveCount();
+        width: 180
+        height: menuColumn.implicitHeight + Theme.spacingS * 2
+        padding: 0
+        background: Rectangle {
+            color: "transparent"
+        }
+
+        contentItem: StyledRect {
+            color: Theme.surfaceContainer
+            radius: Theme.cornerRadius
+            border.color: Theme.withAlpha(Theme.outline, 0.15)
+            border.width: 1
+
+            Column {
+                id: menuColumn
+                width: parent.width
+                anchors.centerIn: parent
+                spacing: 2
+
+                Repeater {
+                    model: [
+                        {
+                            icon: "play_arrow",
+                            text: I18n.tr("Play Now"),
+                            action: () => {
+                                let item = downloadsModel.get(root.activeHistoryIndex);
+                                let p = item.fullPath || (item.downloadPath + "/" + item.title);
+                                Quickshell.execDetached(["xdg-open", p]);
+                            }
+                        },
+                        {
+                            icon: "open_in_new",
+                            text: I18n.tr("Open File"),
+                            action: () => {
+                                let item = downloadsModel.get(root.activeHistoryIndex);
+                                let p = item.fullPath || (item.downloadPath + "/" + item.title);
+                                Quickshell.execDetached(["xdg-open", p]);
+                            }
+                        },
+                        {
+                            icon: "folder",
+                            text: I18n.tr("Open Folder"),
+                            action: () => {
+                                let item = downloadsModel.get(root.activeHistoryIndex);
+                                let p = item.fullPath || (item.downloadPath + "/" + item.title);
+                                let dir = p.substring(0, p.lastIndexOf("/"));
+                                Quickshell.execDetached(["xdg-open", dir]);
+                            }
+                        },
+                        {
+                            icon: "delete",
+                            text: I18n.tr("Remove from History"),
+                            action: () => {
+                                downloadsModel.remove(root.activeHistoryIndex);
+                                root.updateActiveCount();
+                            }
+                        }
+                    ]
+
+                    delegate: MouseArea {
+                        width: parent.width
+                        height: 32
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+
+                        Rectangle {
+                            anchors.fill: parent
+                            color: parent.containsMouse ? Theme.withAlpha(Theme.primary, 0.1) : "transparent"
+                            radius: Theme.cornerRadius / 2
+                        }
+
+                        Row {
+                            anchors.fill: parent
+                            anchors.leftMargin: Theme.spacingS
+                            anchors.rightMargin: Theme.spacingS
+                            spacing: Theme.spacingS
+
+                            DankIcon {
+                                name: modelData.icon
+                                size: 16
+                                color: Theme.surfaceText
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            StyledText {
+                                text: modelData.text
+                                font.pixelSize: Theme.fontSizeSmall
+                                color: Theme.surfaceText
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        onClicked: {
+                            modelData.action();
+                            historyMenu.close();
+                        }
+                    }
                 }
             }
-        ]
+        }
     }
 }
