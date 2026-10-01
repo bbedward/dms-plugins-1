@@ -48,7 +48,7 @@ SettingsCard {
                 textColor: Theme.primary
                 visible: root.repoUrl !== ""
                 onClicked: {
-                    Quickshell.execDetached(["gio", "open", root.repoUrl])
+                    Quickshell.execDetached(["dms", "open", root.repoUrl])
                 }
             }
         }
