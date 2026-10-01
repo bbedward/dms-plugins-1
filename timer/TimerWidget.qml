@@ -217,18 +217,20 @@ PluginComponent {
         defaultValue: 0
     }
 
+    property bool previousDNDState: false
+
     Connections {
         target: root.autoDND ? SessionData : null
-        function onIsDNDChanged() {
-            // No-op, just here to make the binding reactive
+        function onDoNotDisturbChanged() {
         }
     }
 
     onAutoDNDChanged: {
         if (autoDND && globalIsRunning.value) {
-            SessionData.isDND = true;
-        } else if (!autoDND) {
-            // Don't force DND off, just let it be
+            root.previousDNDState = SessionData.doNotDisturb;
+            if (!SessionData.doNotDisturb) {
+                SessionData.setDoNotDisturb(true);
+            }
         }
     }
 
@@ -238,9 +240,12 @@ PluginComponent {
         function onValueChanged() {
             if (root.autoDND) {
                 if (globalIsRunning.value) {
-                    SessionData.isDND = true;
-                } else if (globalRemainingSeconds.value === 0) {
-                    SessionData.isDND = false;
+                    root.previousDNDState = SessionData.doNotDisturb;
+                    if (!SessionData.doNotDisturb) {
+                        SessionData.setDoNotDisturb(true);
+                    }
+                } else {
+                    SessionData.setDoNotDisturb(root.previousDNDState);
                 }
             }
         }
@@ -249,7 +254,7 @@ PluginComponent {
     Timer {
         id: timer
 
-        interval: 100
+        interval: 1000
         repeat: true
         running: globalIsRunning.value && globalRemainingMilliseconds.value > 0
         onTriggered: {
@@ -361,14 +366,14 @@ PluginComponent {
                 }
 
                 Item {
-                    width: 56
-                    height: 6
+                    width: Theme.navigationIndicatorWidth
+                    height: Theme.spacingXS + Theme.spacingXXS
                     anchors.verticalCenter: parent.verticalCenter
                     visible: root._pillIsProgress && !root.isReady
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: 3
+                        radius: parent.height / 2
                         color: root.pillColor
                         opacity: 0.2
                     }
@@ -376,7 +381,7 @@ PluginComponent {
                     Rectangle {
                         width: parent.width * (1 - (globalRemainingMilliseconds.value / Math.max(1, globalTotalSeconds.value * 1000)))
                         height: parent.height
-                        radius: 3
+                        radius: height / 2
                         color: root.pillColor
                     }
                 }
@@ -510,7 +515,7 @@ PluginComponent {
                     }
 
                     Row {
-                        spacing: 4
+                        spacing: Theme.spacingXS
                         anchors.horizontalCenter: parent.horizontalCenter
 
                         Repeater {
@@ -541,25 +546,25 @@ PluginComponent {
                             }]
 
                             delegate: Rectangle {
-                                width: 58
-                                height: 42
+                                width: Theme.buttonMinWidth
+                                height: Theme.menuItemHeight
                                 radius: Theme.cornerRadius
                                 color: root.systemActionOnTimeout === modelData.value ? Theme.primary : Theme.surfaceContainerHigh
 
                                 Column {
                                     anchors.centerIn: parent
-                                    spacing: 2
+                                    spacing: Theme.spacingXXS
 
                                     DankIcon {
                                         name: modelData.icon
-                                        size: 16
+                                        size: Theme.iconSizeSmall
                                         color: root.systemActionOnTimeout === modelData.value ? Theme.onPrimary : Theme.surfaceText
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }
 
                                     StyledText {
                                         text: modelData.label
-                                        font.pixelSize: 9
+                                        font.pixelSize: Math.max(9, Math.round(Theme.fontSizeSmall * 0.75))
                                         font.weight: Font.Medium
                                         color: root.systemActionOnTimeout === modelData.value ? Theme.onPrimary : Theme.surfaceText
                                         anchors.horizontalCenter: parent.horizontalCenter
