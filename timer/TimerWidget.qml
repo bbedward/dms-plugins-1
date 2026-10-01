@@ -122,7 +122,7 @@ PluginComponent {
 
     function handleTimeout() {
         if (root.showNotification)
-            Proc.runCommand("timer-notify", ["notify-send", "-i", "appointment-soon", "-u", "normal", root.notificationTitle, root.notificationBody], null, 0);
+            Proc.runCommand("timer-notify", ["dms", "notify", root.notificationTitle, root.notificationBody, "--icon", "appointment-soon"], null, 0);
 
         if (root.soundPath !== "")
             Proc.runCommand("timer-sound", ["paplay", "--property=media.role=event", root.soundPath], null, 0);
