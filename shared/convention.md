@@ -55,3 +55,27 @@ PluginSettings {
   import qs.Modules.Plugins
   import "./shared"
   ```
+
+## 4. Built-in Utilities & Dependency Minimization
+Do not declare external package dependencies for capabilities that DMS provides natively:
+
+### CLI Built-in Replacements
+- **Clipboard**: Use `["dms", "cl", "copy", text]` / `["dms", "cl", "paste"]` instead of `wl-clipboard` (`wl-copy`/`wl-paste`), `xclip`.
+- **Notifications**: Use `["dms", "notify", title, message]` instead of `libnotify` (`notify-send`).
+- **Screenshots**: Use `["dms", "screenshot", "region"|"full"|"all"]` instead of `grim`, `slurp`, `grimblast`.
+- **Downloads**: Use `["dms", "dl", url, "-o", path]` instead of `curl`/`wget` for basic file fetches.
+- **Open File/URL**: Use `["dms", "open", target]` instead of `xdg-open`, `gio open`.
+- **QR Codes**: Use `["dms", "qr", text]` instead of `qrencode`.
+- **Trash**: Use `["dms", "trash", "put"|"list", path]` instead of `trash-cli`, `rm`.
+- **Brightness**: Use `["dms", "brightness", percent]` instead of `brightnessctl`.
+- **Display Query**: Use `["dms", "randr"]` instead of `wlr-randr`, `xrandr`.
+
+### Native QML Services (Avoid Spawning Shells)
+- **Audio Control**: Use `AudioService` (`defaultSink.volume`, `setVolume`, `toggleMute`) instead of `pactl`/`wpctl`.
+- **Network / VPN**: Use `NetworkService` (`activeVpn`, `vpnConnections`, `toggleVpn`) instead of `nmcli`.
+- **Bluetooth**: Use `BluetoothService` instead of `bluetoothctl`.
+- **Session / DND**: Use `SessionData.setDoNotDisturb(...)` and `SessionService` instead of `systemctl`/`loginctl`.
+- **Display / Outputs**: Bind to `NiriService.outputs` or `CompositorService.screens` instead of polling `niri msg outputs`.
+- **State Storage**: Use `PluginService.loadPluginState()` / `savePluginState()` instead of `cat`/`printf` via `sh -c`.
+- **Process Signals**: Use `processInstance.signal(signum)` instead of `killall` / `pkill` (`psmisc`).
+
