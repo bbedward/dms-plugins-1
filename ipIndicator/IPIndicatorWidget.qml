@@ -240,7 +240,7 @@ PluginComponent {
 
                         reason = lines.join("\n");
                     }
-                    Proc.runCommand("notify-ip-change", ["notify-send", "IP Indicator", reason], function() {
+                    Proc.runCommand("notify-ip-change", ["dms", "notify", "IP Indicator", reason], function() {
                     }, 50, 5000);
                 }
                 lastKnownIP = publicIP;
@@ -703,7 +703,7 @@ PluginComponent {
                                         anchors.verticalCenter: parent.verticalCenter
                                         tooltipText: I18n.tr("Copy IPv4")
                                         onClicked: {
-                                            Proc.runCommand("copy-ipv4", ["wl-copy", "--", publicIPv4], function() {
+                                            Proc.runCommand("copy-ipv4", ["dms", "cl", "copy", publicIPv4], function() {
                                                 if (typeof ToastService !== "undefined" && ToastService)
                                                     ToastService.showInfo(I18n.tr("Copied to clipboard"));
                                             });
@@ -758,7 +758,7 @@ PluginComponent {
                                         anchors.verticalCenter: parent.verticalCenter
                                         tooltipText: I18n.tr("Copy IPv6")
                                         onClicked: {
-                                            Proc.runCommand("copy-ipv6", ["wl-copy", "--", publicIPv6], function() {
+                                            Proc.runCommand("copy-ipv6", ["dms", "cl", "copy", publicIPv6], function() {
                                                 if (typeof ToastService !== "undefined" && ToastService)
                                                     ToastService.showInfo(I18n.tr("Copied to clipboard"));
                                             });

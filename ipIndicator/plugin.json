@@ -10,9 +10,7 @@
   "dependencies": [
     "curl",
     "iproute2",
-    "iputils",
-    "libnotify",
-    "wl-clipboard"
+    "iputils"
   ],
   "capabilities": [
     "dankbar-widget"
