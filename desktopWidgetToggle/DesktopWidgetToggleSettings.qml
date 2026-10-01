@@ -170,7 +170,7 @@ PluginSettings {
             visible: currentGroup !== null
 
             Rectangle {
-                width: parent.width; height: 32; radius: 16; color: Theme.withAlpha(Theme.surfaceText, 0.05)
+                width: parent.width; height: Theme.buttonHeightXS; radius: height / 2; color: Theme.withAlpha(Theme.surfaceText, 0.05)
                 border.color: Theme.withAlpha(Theme.outline, 0.1); border.width: 1
 
                 Row {
@@ -183,7 +183,7 @@ PluginSettings {
                         onClicked: rootSettings.selectedGroupSubTabIndex = 0
 
                         Rectangle {
-                            anchors.fill: parent; radius: 14
+                            anchors.fill: parent; radius: height / 2
                             color: rootSettings.selectedGroupSubTabIndex === 0 ? Theme.primary : "transparent"
 
                             Row {
@@ -192,7 +192,7 @@ PluginSettings {
 
                                 DankIcon {
                                     name: "settings"
-                                    size: 14
+                                    size: Theme.iconSizeSmall
                                     color: rootSettings.selectedGroupSubTabIndex === 0 ? Theme.onPrimary : Theme.surfaceText
                                     opacity: tabGroupBtn.containsMouse ? 0.9 : 0.6
                                     anchors.verticalCenter: parent.verticalCenter
@@ -217,7 +217,7 @@ PluginSettings {
                         onClicked: rootSettings.selectedGroupSubTabIndex = 1
 
                         Rectangle {
-                            anchors.fill: parent; radius: 14
+                            anchors.fill: parent; radius: height / 2
                             color: rootSettings.selectedGroupSubTabIndex === 1 ? Theme.primary : "transparent"
 
                             Row {
@@ -226,7 +226,7 @@ PluginSettings {
 
                                 DankIcon {
                                     name: "widgets"
-                                    size: 14
+                                    size: Theme.iconSizeSmall
                                     color: rootSettings.selectedGroupSubTabIndex === 1 ? Theme.onPrimary : Theme.surfaceText
                                     opacity: tabWidgetsBtn.containsMouse ? 0.9 : 0.6
                                     anchors.verticalCenter: parent.verticalCenter
@@ -554,8 +554,8 @@ PluginSettings {
                                         required property var modelData
                                         visible: modelData.visible !== false
                                         width: (behaviorBar.width - (behaviorBar.spacing * (behaviorBar.activeModel.length - 1))) / behaviorBar.activeModel.length
-                                        height: 32
-                                        radius: 4
+                                        height: Theme.buttonHeightXS
+                                        radius: Theme.cornerRadiusXS
                                         
                                         readonly property bool active: {
                                             if (modelData.key === "toggleOverlay") return behaviorBar.overrides.toggleOverlay !== false;
@@ -569,7 +569,7 @@ PluginSettings {
                                         StyledText {
                                             anchors.centerIn: parent
                                             text: modelData.label
-                                            font.pixelSize: 10
+                                            font.pixelSize: Math.max(9, Math.round(Theme.fontSizeSmall * 0.8))
                                             color: parent.active ? Theme.primary : Theme.surfaceVariantText
                                         }
 

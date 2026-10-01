@@ -321,7 +321,7 @@ PluginComponent {
 
                 StyledText {
                     text: rootWidget.activeGroupIds.length
-                    font.pixelSize: 10
+                    font.pixelSize: Math.max(9, Math.round(Theme.fontSizeSmall * 0.8))
                     font.bold: true
                     color: Theme.primary
                     visible: rootWidget.activeGroupIds.length > 0
