@@ -196,7 +196,12 @@ Item {
 
         FileBrowserSurfaceModal {
             id: browserModal
-            browserTitle: root.isDirectory ? (root.label || I18n.tr("Select Directory")) : (root.label || I18n.tr("Select File"))
+            browserTitle: {
+                const pid = root.findSettings()?.pluginId;
+                if (root.isDirectory)
+                    return root.label || (pid ? I18n.trFor(pid, "Select Directory") : I18n.tr("Select Directory"));
+                return root.label || (pid ? I18n.trFor(pid, "Select File") : I18n.tr("Select File"));
+            }
             browserType: root.isDirectory ? "folder_picker" : "file_picker"
             folderMode: root.isDirectory
             saveMode: false

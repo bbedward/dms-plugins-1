@@ -171,7 +171,7 @@ Item {
                 }
 
                 StyledText {
-                    text: root.value === "primary" ? I18n.tr("PRIMARY") : root.value.toString().toUpperCase()
+                    text: root.value === "primary" ? (root.findSettings()?.pluginId ? I18n.trFor(root.findSettings().pluginId, "PRIMARY") : I18n.tr("PRIMARY")) : root.value.toString().toUpperCase()
                     font.pixelSize: Theme.fontSizeSmall
                     font.weight: Font.Bold
                     isMonospace: true

@@ -22,10 +22,21 @@ Item {
         selector.resetToDefault();
     }
 
+    function findSettings() {
+        let item = parent;
+        while (item) {
+            if (item.saveValue !== undefined && item.loadValue !== undefined) return item;
+            item = item.parent;
+        }
+        return null;
+    }
+
     function _defaultOptions() {
+        const pid = findSettings()?.pluginId;
+        const defaultText = pid ? I18n.trFor(pid, "System Default") : I18n.tr("System Default");
         return [
             {
-                label: I18n.tr("System Default") + (Theme.fontFamily ? " (" + Theme.fontFamily + ")" : ""),
+                label: defaultText + (Theme.fontFamily ? " (" + Theme.fontFamily + ")" : ""),
                 value: "system"
             }
         ];
