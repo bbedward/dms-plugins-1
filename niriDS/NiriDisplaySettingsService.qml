@@ -52,38 +52,47 @@ Singleton {
         return isInternalName(display.name);
     }
 
+    function updateOutputs(parsed) {
+        if (!parsed || typeof parsed !== 'object') return;
+        root.rawOutputs = parsed;
+        const arr = [];
+        for (const name in parsed) {
+            const raw = parsed[name];
+            const internal = isInternal({ name: name });
+            const hasLogical = raw.logical && typeof raw.logical === 'object';
+            let friendly = internal ? "Laptop Screen" : ((raw.make && raw.model) ? (raw.make + " " + raw.model) : name);
+
+            arr.push({
+                name: name,
+                friendlyName: friendly,
+                disabled: !hasLogical,
+                logical: hasLogical ? raw.logical : null,
+                isInternal: internal
+            });
+        }
+        arr.sort((a, b) => {
+            if (a.isInternal !== b.isInternal) return a.isInternal ? -1 : 1;
+            return a.name.localeCompare(b.name);
+        });
+        arr.forEach(d => delete d.isInternal);
+        
+        const newJson = JSON.stringify(arr);
+        if (root._displaysJsonCache !== newJson) {
+            root._displaysJsonCache = newJson;
+            root.displays = arr;
+        }
+    }
+
     function setDisplays() {
+        if (NiriService.outputs && Object.keys(NiriService.outputs).length > 0) {
+            updateOutputs(NiriService.outputs);
+            return;
+        }
         Proc.runCommand("niriDS:getOutputs", ["niri", "msg", "--json", "outputs"], (output, exitCode) => {
             if (exitCode !== 0) return;
             try {
                 const parsed = JSON.parse(output);
-                root.rawOutputs = parsed;
-                const arr = [];
-                for (const name in parsed) {
-                    const raw = parsed[name];
-                    const internal = isInternal({ name: name });
-                    const hasLogical = raw.logical && typeof raw.logical === 'object';
-                    let friendly = internal ? "Laptop Screen" : ((raw.make && raw.model) ? (raw.make + " " + raw.model) : name);
-
-                    arr.push({
-                        name: name,
-                        friendlyName: friendly,
-                        disabled: !hasLogical,
-                        logical: hasLogical ? raw.logical : null,
-                        isInternal: internal
-                    });
-                }
-                arr.sort((a, b) => {
-                    if (a.isInternal !== b.isInternal) return a.isInternal ? -1 : 1;
-                    return a.name.localeCompare(b.name);
-                });
-                arr.forEach(d => delete d.isInternal);
-                
-                const newJson = JSON.stringify(arr);
-                if (root._displaysJsonCache !== newJson) {
-                    root._displaysJsonCache = newJson;
-                    root.displays = arr;
-                }
+                updateOutputs(parsed);
             } catch (e) {
                 console.warn("niriDS: setDisplays failed:", e);
             }

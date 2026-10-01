@@ -88,49 +88,49 @@ PluginComponent {
         root.enableInternalDisplayWithFallback();
     }
 
-    Timer {
-        id: niriWatcher
-        interval: (pluginData && typeof pluginData.pollingInterval === "number" && pluginData.pollingInterval > 0 ? pluginData.pollingInterval : 3) * 1000
-        repeat: true
-        running: true
+    function handleOutputsUpdated() {
+        if (!NiriService.outputs) return;
+        const prevTotalOutputs = Object.keys(cachedRawOutputs || {}).length;
+        NiriDS.updateOutputs(NiriService.outputs);
 
-        onTriggered: {
-            const prevTotalOutputs = Object.keys(cachedRawOutputs || {}).length;
-            NiriDS.setDisplays();
-            root.initTicks++;
+        const current = NiriDS.displays.length;
+        const totalOutputs = Object.keys(NiriDS.rawOutputs || {}).length;
+        cachedRawOutputs = NiriDS.rawOutputs;
 
-            Qt.callLater(() => {
-                const current = NiriDS.displays.length;
-                const totalOutputs = Object.keys(NiriDS.rawOutputs || {}).length;
-                cachedRawOutputs = NiriDS.rawOutputs;
-
-                // Skip first 2 ticks to allow Niri to stabilize outputs
-                if (initTicks < 3) {
-                    if (initTicks === 2) {
-                        lastOutputCount = current;
-                    }
-                    return;
-                }
-
-                if (totalOutputs > prevTotalOutputs) {
-                    const action = (pluginData && typeof pluginData.connectionAction === 'string' && pluginData.connectionAction)
-                        ? pluginData.connectionAction
-                        : "show_menu";
-
-                    if (action === "show_menu") {
-                        NiriDS.setDisplays();
-                        NiriDS.modal?.openCentered();
-                        NiriDS.modalVisible = true;
-                    } else if (action !== "none") {
-                        NiriDS.apply(action);
-                    }
-                } else if (lastOutputCount > 0 && current < lastOutputCount) {
-                    // Display count decreased - external monitor unplugged
-                    checkFallback();
-                }
-
-                lastOutputCount = current;
-            });
+        // Skip initial updates to allow compositor state to settle
+        if (initTicks < 2) {
+            initTicks++;
+            lastOutputCount = current;
+            return;
         }
+
+        if (totalOutputs > prevTotalOutputs) {
+            const action = (pluginData && typeof pluginData.connectionAction === 'string' && pluginData.connectionAction)
+                ? pluginData.connectionAction
+                : "show_menu";
+
+            if (action === "show_menu") {
+                modal.openCentered();
+                NiriDS.modalVisible = true;
+            } else if (action !== "none") {
+                NiriDS.apply(action);
+            }
+        } else if (lastOutputCount > 0 && current < lastOutputCount) {
+            // Display count decreased - external monitor unplugged
+            checkFallback();
+        }
+
+        lastOutputCount = current;
+    }
+
+    Connections {
+        target: NiriService
+        function onOutputsChanged() {
+            root.handleOutputsUpdated();
+        }
+    }
+
+    Component.onCompleted: {
+        Qt.callLater(() => root.handleOutputsUpdated());
     }
 }

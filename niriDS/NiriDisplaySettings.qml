@@ -12,13 +12,12 @@ PluginSettings {
         SectionTitle { 
             text: I18n.tr("General Settings")
             icon: "settings" 
-            showReset: connectionAction.isDirty || enableFallback.isDirty || fallbackDisplay.isDirty || bgOpacity.isDirty || pollingInterval.isDirty
+            showReset: connectionAction.isDirty || enableFallback.isDirty || fallbackDisplay.isDirty || bgOpacity.isDirty
             onResetClicked: {
                 connectionAction.resetToDefault();
                 enableFallback.resetToDefault();
                 fallbackDisplay.resetToDefault();
                 bgOpacity.resetToDefault();
-                pollingInterval.resetToDefault();
             }
         }
 
@@ -46,19 +45,6 @@ PluginSettings {
             label: I18n.tr("Enable safety fallback")
             description: I18n.tr("Automatically re-enable the laptop screen if all external monitors are disconnected")
             defaultValue: true
-        }
-
-        Separator {}
-
-        SliderSettingPlus {
-            id: pollingInterval
-            settingKey: "pollingInterval"
-            label: I18n.tr("Polling Timer")
-            description: I18n.tr("How often to check for display changes (seconds)")
-            minimum: 1
-            maximum: 5
-            defaultValue: 3
-            unit: "s"
         }
 
         Separator {}
