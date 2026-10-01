@@ -28,7 +28,7 @@ Every plugin declares its surface type in `plugin.json`. Choose the simplest, mo
 
 | Type | Base Component | Role & Primary Surface | When to Use | Examples in repo |
 | :--- | :--- | :--- | :--- | :--- |
-| `widget` | `PluginComponent` | DankBar pill + popout card / Control Center | Persistent bar presence needed for quick status readout, toggling state, or interacting via popout | `caffeine`, `timer`, `ipIndicator`, `hydrate`, `breathing`, `lutrisLauncher`, `bongoCat`, `ambientSound`, `handMirror`, `hiddenBar`, `mediaDownloader`, `ocrScanner` |
+| `widget` | `PluginComponent` | DankBar pill + popout card / Control Center | Persistent bar presence needed for quick status readout, toggling state, or interacting via popout | `timer`, `ipIndicator`, `hydrate`, `breathing`, `lutrisLauncher`, `bongoCat`, `ambientSound`, `handMirror`, `hiddenBar`, `mediaDownloader`, `ocrScanner` |
 | `daemon` | `PluginComponent` | Background service or standalone on-demand modal/overlay | Headless background event/timer listener, or on-demand modal/overlay triggered via shortcut/IPC without cluttering the bar | `emojiPicker` |
 | `launcher` | `Item` | DMS Launcher search result provider | Actionable search results, conversions, or query integrations inside DMS Launcher (`trigger` based) | `kaomojiPicker` |
 | `desktop` | `DesktopPluginComponent` | Floating desktop widget | Persistent or draggable widget placed directly onto the desktop workspace | `activateLinux` |
@@ -246,7 +246,7 @@ Common examples:
 - `feat(emojiPicker): add Ctrl+F, Ctrl+C and Ctrl+V shortcuts`
 - `fix(screenkey): handle click-through overlay mask`
 - `docs(quickCapture): document backdrop toggle shortcut`
-- `refactor(caffeine): simplify state timer handling`
+- `fix(timer): optimize polling interval and adopt Theme tokens`
 
 ### Issue & Pull Request Communication
 

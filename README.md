@@ -10,7 +10,6 @@ A collection of plugins for [DankMaterialShell](https://github.com/AvengeMedia/D
 | [Ambient Sound](ambientSound) | DankBar Widget / Popout | Play ambient background sounds for focus and relaxation. |
 | [Bongo Cat](bongoCat) | DankBar Widget | Reactive Bongo Cat in your bar that taps paws as you type. |
 | [Breathing Exercise](breathing) | DankBar Widget / Popout | Guided breathing techniques and exercises for relaxation and focus. |
-| [Caffeine](caffeine) | DankBar Widget / Control Center | Keep your screen awake and prevent idle sleep with duration presets. |
 | [Desktop Widget Toggle](desktopWidgetToggle) | Composite (Daemon / DankBar Widget) | Toggle visibility of desktop widget groups as an overlay. |
 | [Emoji Picker](emojiPicker) | Daemon (Modal Picker) | Centered modal emoji picker triggered via IPC or shortcut. |
 | [Hand Mirror](handMirror) | DankBar Widget / Popout | Quick webcam preview check right from your bar. |

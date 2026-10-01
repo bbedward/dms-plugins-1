@@ -18,7 +18,6 @@ body:
         - ambientSound
         - bongoCat
         - breathing
-        - caffeine
         - desktopWidgetToggle
         - emojiPicker
         - handMirror
