@@ -64,15 +64,17 @@ QT_QUICKSHELL_BUILTINS: Set[str] = {
     "MultiEffect", "FastBlur", "GaussianBlur", "DropShadow", "InnerShadow",
     "ColorOverlay", "LinearGradient", "RadialGradient", "ConicalGradient",
     "Blend", "Displace", "GammaAdjust", "HueSaturation", "LevelAdjust",
+    # QtQuick
+    "Shortcut",
     # QtMultimedia
     "MediaPlayer", "AudioOutput", "VideoOutput", "AudioSession", "Camera",
-    "MediaDevices", "SoundEffect",
+    "CaptureSession", "MediaDevices", "SoundEffect",
     # Quickshell core types
     "Scope", "Variants", "WlSession", "DesktopService", "Quickshell",
     "PanelWindow", "FloatingWindow", "PopupWindow", "SubsurfaceWindow",
     "Region", "Mask", "WlrLayershell", "WlrForeignToplevel",
     # Quickshell.Io
-    "IpcHandler", "Process", "File", "Socket", "Pipe", "IoStream",
+    "IpcHandler", "Process", "File", "FileView", "Socket", "Pipe", "IoStream",
     "StandardPaths", "FileInfo", "FileWatcher", "SplitParser", "StringParser",
     "StdioCollector",
     # Quickshell.Services
@@ -131,8 +133,19 @@ DMS_STABLE_SYMBOLS: Dict[str, Set[str]] = {
 
 # Known symbols that only exist in unreleased DMS master and require bundling in shared/
 UNRELEASED_DMS_SYMBOLS: Set[str] = {
-    "DankSearchField", "DankBadge", "DankAnim", "SpringMotion", "DankTabButton",
-    "DankScrollIndicator", "DankCard", "FocusRing", "DankPopoutHost", "DankTooltipHost"
+    "ClockContent", "DankAnalogClock", "DankAnim", "DankBadge", "DankBottomSheet",
+    "DankCard", "DankClockFace", "DankConfirmDialogContent", "DankContextMenu",
+    "DankDialog", "DankDragHandle", "DankEditableGrid", "DankEditableGridSlot",
+    "DankFab", "DankGridEditChrome", "DankIconButton", "DankKeyHints",
+    "DankLayer", "DankListHighlight", "DankListItem", "DankListRow",
+    "DankLoadingIndicator", "DankMaterialShape", "DankMonthGrid", "DankNavigationBar",
+    "DankOSDSheet", "DankOrganicBlob", "DankPaletteSwatch", "DankPanelResizer",
+    "DankPopoutHost", "DankReorderGroup", "DankReorderList", "DankResizeGrip",
+    "DankRingGauge", "DankScrollIndicator", "DankSearchField", "DankSparkline",
+    "DankSplitButton", "DankTabButton", "DankTimePicker", "DankTone",
+    "DankTooltipHost", "DankWindowHeader", "EdgeExclusion", "FocusRing",
+    "PointerOverflowMarker", "ReleaseNotesCard", "SpringMotion", "StyledButton",
+    "SurfaceContentClip", "UserIdentity"
 }
 
 # Known properties on DMS components that only exist in unreleased DMS master and break stable DMS
@@ -302,13 +315,13 @@ class CompatibilityChecker:
                 if type_name in self.all_stable_dms_symbols:
                     continue
 
-                # 5. Symbol from unreleased DMS master?
-                if type_name in UNRELEASED_DMS_SYMBOLS:
+                # 5. Symbol from unreleased DMS master or unreleased Dank* widget?
+                if type_name in UNRELEASED_DMS_SYMBOLS or type_name.startswith("Dank"):
                     errors.append((
                         line_no,
                         "ERROR",
                         f"Unreleased DMS component '{type_name}' is NOT available in stable DMS {BASELINE_DMS_VERSION} "
-                        f"and is not bundled in shared/. Please bundle '{type_name}.qml' into shared/ and run sync_shared.py."
+                        f"and is not bundled in shared/. Please bundle '{type_name}.qml' into shared/ or provide a backward-compatible alternative."
                     ))
                     continue
 
