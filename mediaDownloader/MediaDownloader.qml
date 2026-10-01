@@ -16,7 +16,7 @@ PluginComponent {
     pillRightClickAction: function() {
         Proc.runCommand(
             "mediaDownloader.rightClickPaste",
-            ["sh", "-c", "wl-paste --no-newline || xclip -selection clipboard -o"],
+            ["dms", "cl", "paste"],
             (stdout, exitCode) => {
                 if (exitCode === 0 && stdout !== "") {
                     var trimmed = stdout.trim();
