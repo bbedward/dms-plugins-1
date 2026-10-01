@@ -79,7 +79,7 @@ QtObject {
         const mode = setting("postNotification");
         if (mode !== "notification" && mode !== "both")
             return;
-        Proc.runCommand("quickCapture.notifyError", ["notify-send", "-u", "critical", "-a", "Quick Capture", "-i", "error", I18n.trFor("quickCapture", "Quick Capture Error"), fullMsg]);
+        Proc.runCommand("quickCapture.notifyError", [Proc.dmsBin, "notify", "--app", "Quick Capture", "--icon", "error", I18n.trFor("quickCapture", "Quick Capture Error"), fullMsg]);
     }
 
     function withExport(callback) {

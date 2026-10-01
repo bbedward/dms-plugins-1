@@ -279,7 +279,7 @@ PluginComponent {
 
         if (uri.startsWith("http://") || uri.startsWith("https://")) {
             root.isDownloading = true;
-            Proc.runCommand("quickCapture.download", ["curl", "-s", "-L", "-o", root.currentCapturePath, uri], (stdout, exitCode) => {
+            Proc.runCommand("quickCapture.download", [Proc.dmsBin, "dl", uri, "-o", root.currentCapturePath], (stdout, exitCode) => {
                 root.isDownloading = false;
                 if (exitCode !== 0) {
                     captureActions.notifyError(I18n.trFor("quickCapture", "Failed to download image."));
