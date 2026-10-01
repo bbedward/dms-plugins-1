@@ -623,6 +623,8 @@ PluginComponent {
 
 
     IpcHandler {
+        target: "hiddenBar"
+
         function toggle() : string {
             pluginRoot.isExpanded = !pluginRoot.isExpanded;
             pluginRoot.isPinned = false;
@@ -632,6 +634,42 @@ PluginComponent {
             else
                 collapseTimer.stop();
             return pluginRoot.isExpanded ? "EXPANDED" : "COLLAPSED";
+        }
+
+        function expand() : string {
+            if (!pluginRoot.isExpanded) {
+                pluginRoot.isExpanded = true;
+                pluginRoot.isPinned = false;
+                updateWidgets();
+                if (pluginRoot.autoCollapse && !pluginRoot.anyHovered)
+                    collapseTimer.restart();
+            }
+            return "EXPANDED";
+        }
+
+        function collapse() : string {
+            if (pluginRoot.isExpanded) {
+                pluginRoot.isExpanded = false;
+                pluginRoot.isPinned = false;
+                collapseTimer.stop();
+                updateWidgets();
+            }
+            return "COLLAPSED";
+        }
+
+        function pin() : string {
+            pluginRoot.isExpanded = true;
+            pluginRoot.isPinned = true;
+            collapseTimer.stop();
+            updateWidgets();
+            return "PINNED";
+        }
+
+        function unpin() : string {
+            pluginRoot.isPinned = false;
+            if (pluginRoot.autoCollapse && !pluginRoot.anyHovered)
+                collapseTimer.restart();
+            return "UNPINNED";
         }
 
         function togglePin() : string {
@@ -649,8 +687,6 @@ PluginComponent {
             }
             return pluginRoot.isPinned ? "PINNED" : "UNPINNED";
         }
-
-        target: "hiddenBar"
     }
 
     MouseArea {
