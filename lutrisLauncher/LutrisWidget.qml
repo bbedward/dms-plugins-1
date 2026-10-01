@@ -153,8 +153,10 @@ PluginComponent {
                             "slug": parsedGames[i].slug
                         })
                     }
-                    pluginService?.savePluginData(pluginId, "cachedGames", parsedGames)
-                    pluginService?.savePluginData(pluginId, "allGames", gamesListForSettings)
+                    if (pluginService) {
+                        pluginService.savePluginData(pluginId, "cachedGames", parsedGames);
+                        pluginService.savePluginData(pluginId, "allGames", gamesListForSettings);
+                    }
 
                     updateFilteredModel()
                     statusMessage = parsedGames.length + " games found"
@@ -267,10 +269,12 @@ PluginComponent {
 
     function saveStats() {
         try {
-            pluginService?.savePluginData(pluginId, "favorites", favorites)
-            pluginService?.savePluginData(pluginId, "playCounts", playCounts)
-            pluginService?.savePluginData(pluginId, "sortMode", sortMode)
-            pluginService?.savePluginData(pluginId, "blacklist", blacklist)
+            if (pluginService) {
+                pluginService.savePluginData(pluginId, "favorites", favorites);
+                pluginService.savePluginData(pluginId, "playCounts", playCounts);
+                pluginService.savePluginData(pluginId, "sortMode", sortMode);
+                pluginService.savePluginData(pluginId, "blacklist", blacklist);
+            }
         } catch(e) {
             console.log("Lutris Launcher: Failed to save stats", e)
         }
@@ -290,8 +294,8 @@ PluginComponent {
                 var aFav = favSet.has(a.slug) ? 0 : 1
                 var bFav = favSet.has(b.slug) ? 0 : 1
                 if (aFav !== bFav) return aFav - bFav
-                var aTime = (playCounts[a.slug]?.lastPlayed || 0)
-                var bTime = (playCounts[b.slug]?.lastPlayed || 0)
+                var aTime = (playCounts[a.slug] && playCounts[a.slug].lastPlayed) || 0
+                var bTime = (playCounts[b.slug] && playCounts[b.slug].lastPlayed) || 0
                 return bTime - aTime
             })
         } else if (sortMode === 2) {
@@ -299,8 +303,8 @@ PluginComponent {
                 var aFav = favSet.has(a.slug) ? 0 : 1
                 var bFav = favSet.has(b.slug) ? 0 : 1
                 if (aFav !== bFav) return aFav - bFav
-                var aCount = playCounts[a.slug]?.count || 0
-                var bCount = playCounts[b.slug]?.count || 0
+                var aCount = (playCounts[a.slug] && playCounts[a.slug].count) || 0
+                var bCount = (playCounts[b.slug] && playCounts[b.slug].count) || 0
                 return bCount - aCount
             })
         }
@@ -525,17 +529,10 @@ PluginComponent {
                             }
 
                             DankButton {
-                                width: 36; height: 36; iconName: "refresh"
+                                width: Theme.buttonHeightXS; height: Theme.buttonHeightXS; iconName: "refresh"
                                 backgroundColor: Theme.surfaceContainerHigh
                                 textColor: root.isLoading ? Theme.surfaceVariantText : Theme.surfaceText
                                 onClicked: root.fetchGames()
-                            }
-
-                            DankButton {
-                                width: 36; height: 36; iconName: "settings"
-                                backgroundColor: Theme.surfaceContainerHigh
-                                textColor: Theme.surfaceText
-                                onClicked: pluginService.showPluginSettings(root.pluginId)
                             }
                         }
                     }
@@ -626,7 +623,7 @@ PluginComponent {
                                         width: parent.width
                                         height: 180
                                         color: Theme.surfaceContainer
-                                        radius: Theme.roundness === "ROUND_FULL" ? 12 : (Theme.roundness === "ROUND_TWELVE" ? 12 : (Theme.roundness === "ROUND_EIGHT" ? 8 : 4))
+                                        radius: Theme.cornerRadius
                                         clip: true
                                         opacity: (root.isLaunching && model.id !== root.launchingId) ? 0.5 : 1.0
                                         scale: delegateItem.isCurrent ? 1.03 : 1.0
@@ -739,13 +736,13 @@ PluginComponent {
                                         Rectangle {
                                             id: infoPanel
                                             anchors.fill: parent
-                                            color: Qt.rgba(Theme.surfaceContainerHighest.r, Theme.surfaceContainerHighest.g, Theme.surfaceContainerHighest.b, 0.85)
+                                            color: Theme.withAlpha(Theme.surfaceContainerHighest, 0.85)
                                             visible: false
                                             radius: parent.radius
                                             z: 10
                                             
                                             border.width: 1
-                                            border.color: Qt.rgba(1, 1, 1, 0.1)
+                                            border.color: Theme.withAlpha(Theme.outline, 0.2)
 
                                             MouseArea {
                                                 anchors.fill: parent
@@ -759,7 +756,7 @@ PluginComponent {
 
                                                 StyledText {
                                                     width: parent.width
-                                                    text: root.getFormattedDate(root.playCounts[model.slug]?.lastPlayed)
+                                                    text: root.getFormattedDate(root.playCounts[model.slug] ? root.playCounts[model.slug].lastPlayed : null)
                                                     font.bold: true
                                                     font.pixelSize: Theme.fontSizeSmall
                                                     color: Theme.primary
@@ -768,14 +765,14 @@ PluginComponent {
 
                                                 StyledText {
                                                     width: parent.width
-                                                    text: I18n.trFor("lutrisLauncher", "Plays: ") + (root.playCounts[model.slug]?.count || 0)
-                                                    font.pixelSize: 10
+                                                    text: I18n.trFor("lutrisLauncher", "Plays: ") + ((root.playCounts[model.slug] && root.playCounts[model.slug].count) || 0)
+                                                    font.pixelSize: Theme.fontSizeSmall
                                                     horizontalAlignment: Text.AlignHCenter
                                                 }
 
                                                 DankButton {
                                                     width: parent.width - Theme.spacingS
-                                                    height: 32
+                                                    height: Theme.buttonHeightXS
                                                     anchors.horizontalCenter: parent.horizontalCenter
                                                     text: model.isBlacklisted ? I18n.trFor("lutrisLauncher", "Unhide") : I18n.trFor("lutrisLauncher", "Hide")
                                                     iconName: model.isBlacklisted ? "visibility" : "block"
@@ -796,15 +793,15 @@ PluginComponent {
                                                 StyledText {
                                                     visible: !model.isBlacklisted && root.isFavorite(model.slug)
                                                     text: I18n.trFor("lutrisLauncher", "Can't hide favorites")
-                                                    font.pixelSize: 9
+                                                    font.pixelSize: Theme.fontSizeSmall
                                                     color: Theme.error
                                                     horizontalAlignment: Text.AlignHCenter
                                                     width: parent.width
                                                 }
 
                                                 DankButton {
-                                                    width: 40
-                                                    height: 24
+                                                    width: Theme.buttonHeightS
+                                                    height: Theme.buttonHeightXXS
                                                     anchors.horizontalCenter: parent.horizontalCenter
                                                     text: I18n.trFor("lutrisLauncher", "Close")
                                                     backgroundColor: "transparent"
