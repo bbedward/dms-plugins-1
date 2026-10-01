@@ -82,15 +82,15 @@ PluginComponent {
             };
         }
     }, {
-        "name": "ip-api.com",
-        "url": "http://ip-api.com/json",
+        "name": "ipwho.is",
+        "url": "https://ipwho.is/",
         "parser": function(data) {
             return {
-                "ip": data.query || "",
-                "isp": data.isp || data.org || "",
-                "countryCode": (data.countryCode || "").toLowerCase(),
+                "ip": data.ip || "",
+                "isp": (data.connection ? (data.connection.isp || data.connection.org) : "") || "",
+                "countryCode": (data.country_code || "").toLowerCase(),
                 "country": data.country || "",
-                "region": data.regionName || data.region || "",
+                "region": data.region || "",
                 "city": data.city || ""
             };
         }
@@ -510,8 +510,8 @@ PluginComponent {
 
                 Image {
                     source: root.countryCode ? "./flags/" + root.countryCode.toLowerCase() + ".png" : ""
-                    width: 20
-                    height: 14
+                    width: Theme.iconSizeMedium
+                    height: Math.round(Theme.iconSizeMedium * 0.7)
                     fillMode: Image.PreserveAspectFit
                     anchors.verticalCenter: parent.verticalCenter
                     visible: root.useFlagIcon && !privacyMode && !pillShowLocal && root.countryCode !== ""
@@ -564,8 +564,8 @@ PluginComponent {
 
                 Image {
                     source: root.countryCode ? "./flags/" + root.countryCode.toLowerCase() + ".png" : ""
-                    width: 20
-                    height: 14
+                    width: Theme.iconSizeMedium
+                    height: Math.round(Theme.iconSizeMedium * 0.7)
                     fillMode: Image.PreserveAspectFit
                     anchors.horizontalCenter: parent.horizontalCenter
                     visible: root.useFlagIcon && !privacyMode && !pillShowLocal && root.countryCode !== ""
@@ -615,6 +615,8 @@ PluginComponent {
 
             PopoutComponent {
                 id: mainContent
+
+                readonly property real labelWidth: Math.round(Theme.fontSizeMedium * 7)
 
                 width: parent.width
                 headerText: "IP Indicator" + (vpnActive ? " (VPN)" : "")
@@ -674,7 +676,7 @@ PluginComponent {
                                     text: I18n.tr("IPv4")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceVariantText
-                                    width: 100
+                                    width: mainContent.labelWidth
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
 
@@ -688,40 +690,24 @@ PluginComponent {
                                         font.pixelSize: Theme.fontSizeMedium
                                         color: Theme.surfaceText
                                         font.bold: true
-                                        width: Math.min(implicitWidth, parent.parent.width - 100 - 24 - Theme.spacingS)
+                                        width: Math.min(implicitWidth, parent.parent.width - mainContent.labelWidth - Theme.iconSize - Theme.spacingS)
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
-                                    Rectangle {
-                                        width: 24
-                                        height: 24
-                                        radius: 12
-                                        color: copyAreaV4.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                                    DankActionButton {
+                                        iconName: "content_copy"
+                                        iconSize: Theme.iconSizeSmall - 2
+                                        iconColor: Theme.primary
+                                        buttonSize: Theme.iconSize
                                         anchors.verticalCenter: parent.verticalCenter
-
-                                        DankIcon {
-                                            anchors.centerIn: parent
-                                            name: "content_copy"
-                                            size: Theme.iconSizeSmall - 2
-                                            color: Theme.primary
+                                        tooltipText: I18n.tr("Copy IPv4")
+                                        onClicked: {
+                                            Proc.runCommand("copy-ipv4", ["wl-copy", "--", publicIPv4], function() {
+                                                if (typeof ToastService !== "undefined" && ToastService)
+                                                    ToastService.showInfo(I18n.tr("Copied to clipboard"));
+                                            });
                                         }
-
-                                        MouseArea {
-                                            id: copyAreaV4
-
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                Proc.runCommand("copy-ipv4", ["wl-copy", "--", publicIPv4], function() {
-                                                    if (typeof ToastService !== "undefined" && ToastService)
-                                                        ToastService.showInfo("Copied to clipboard");
-
-                                                });
-                                            }
-                                        }
-
                                     }
 
                                 }
@@ -745,7 +731,7 @@ PluginComponent {
                                     text: I18n.tr("IPv6")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceVariantText
-                                    width: 100
+                                    width: mainContent.labelWidth
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
 
@@ -759,40 +745,24 @@ PluginComponent {
                                         font.pixelSize: Theme.fontSizeMedium
                                         color: Theme.surfaceText
                                         font.bold: true
-                                        width: Math.min(implicitWidth, parent.parent.width - 100 - 24 - Theme.spacingS)
+                                        width: Math.min(implicitWidth, parent.parent.width - mainContent.labelWidth - Theme.iconSize - Theme.spacingS)
                                         elide: Text.ElideRight
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
-                                    Rectangle {
-                                        width: 24
-                                        height: 24
-                                        radius: 12
-                                        color: copyAreaV6.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                                    DankActionButton {
+                                        iconName: "content_copy"
+                                        iconSize: Theme.iconSizeSmall - 2
+                                        iconColor: Theme.primary
+                                        buttonSize: Theme.iconSize
                                         anchors.verticalCenter: parent.verticalCenter
-
-                                        DankIcon {
-                                            anchors.centerIn: parent
-                                            name: "content_copy"
-                                            size: Theme.iconSizeSmall - 2
-                                            color: Theme.primary
+                                        tooltipText: I18n.tr("Copy IPv6")
+                                        onClicked: {
+                                            Proc.runCommand("copy-ipv6", ["wl-copy", "--", publicIPv6], function() {
+                                                if (typeof ToastService !== "undefined" && ToastService)
+                                                    ToastService.showInfo(I18n.tr("Copied to clipboard"));
+                                            });
                                         }
-
-                                        MouseArea {
-                                            id: copyAreaV6
-
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                Proc.runCommand("copy-ipv6", ["wl-copy", "--", publicIPv6], function() {
-                                                    if (typeof ToastService !== "undefined" && ToastService)
-                                                        ToastService.showInfo("Copied to clipboard");
-
-                                                });
-                                            }
-                                        }
-
                                     }
 
                                 }
@@ -816,14 +786,14 @@ PluginComponent {
                                     text: I18n.tr("ISP")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceVariantText
-                                    width: 100
+                                    width: mainContent.labelWidth
                                 }
 
                                 StyledText {
                                     text: privacyMode ? "----" : (ispName || "N/A")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceText
-                                    width: parent.width - 100
+                                    width: parent.width - mainContent.labelWidth
                                     elide: Text.ElideRight
                                 }
 
@@ -838,14 +808,14 @@ PluginComponent {
                                     text: I18n.tr("Location")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceVariantText
-                                    width: 100
+                                    width: mainContent.labelWidth
                                 }
 
                                 StyledText {
                                     text: privacyMode ? "----" : (countryName ? countryName + (cityName || regionName ? " - " + (cityName || regionName) : "") : "N/A")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceText
-                                    width: parent.width - 100
+                                    width: parent.width - mainContent.labelWidth
                                     elide: Text.ElideRight
                                 }
 
@@ -890,14 +860,14 @@ PluginComponent {
                                     text: I18n.tr("Local IP")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceVariantText
-                                    width: 100
+                                    width: mainContent.labelWidth
                                 }
 
                                 StyledText {
                                     text: localIP || "N/A"
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceText
-                                    width: parent.width - 100
+                                    width: parent.width - mainContent.labelWidth
                                     elide: Text.ElideRight
                                 }
 
@@ -912,14 +882,14 @@ PluginComponent {
                                     text: I18n.tr("Gateway")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceVariantText
-                                    width: 100
+                                    width: mainContent.labelWidth
                                 }
 
                                 StyledText {
                                     text: localGateway || "N/A"
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceText
-                                    width: parent.width - 100
+                                    width: parent.width - mainContent.labelWidth
                                     elide: Text.ElideRight
                                 }
 
@@ -934,14 +904,14 @@ PluginComponent {
                                     text: I18n.tr("Interface")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceVariantText
-                                    width: 100
+                                    width: mainContent.labelWidth
                                 }
 
                                 StyledText {
                                     text: localInterface || "N/A"
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceText
-                                    width: parent.width - 100
+                                    width: parent.width - mainContent.labelWidth
                                     elide: Text.ElideRight
                                 }
 
@@ -956,13 +926,15 @@ PluginComponent {
                                     text: I18n.tr("Latency")
                                     font.pixelSize: Theme.fontSizeMedium
                                     color: Theme.surfaceVariantText
-                                    width: 100
+                                    width: mainContent.labelWidth
                                 }
 
                                 StyledText {
                                     text: latencyMs ? latencyMs : (latencyError ? latencyError : "")
                                     color: (latencyError ? Theme.error : Theme.surfaceText)
                                     font.pixelSize: Theme.fontSizeMedium
+                                    width: parent.width - mainContent.labelWidth
+                                    elide: Text.ElideRight
                                 }
 
                             }
@@ -995,85 +967,40 @@ PluginComponent {
                         anchors.verticalCenter: parent.verticalCenter
 
                         // Privacy Button
-                        Rectangle {
-                            width: 32
-                            height: 32
-                            radius: 16
-                            color: privacyArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                        DankActionButton {
+                            iconName: privacyMode ? "visibility_off" : "visibility"
+                            iconSize: Theme.iconSizeSmall
+                            iconColor: Theme.surfaceText
+                            buttonSize: Theme.buttonHeightXS
                             anchors.verticalCenter: parent.verticalCenter
-
-                            DankIcon {
-                                anchors.centerIn: parent
-                                name: privacyMode ? "visibility_off" : "visibility"
-                                size: Theme.iconSizeSmall
-                                color: Theme.surfaceText
-                            }
-
-                            MouseArea {
-                                id: privacyArea
-
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: togglePrivacy()
-                            }
-
+                            tooltipText: privacyMode ? I18n.tr("Disable Privacy Mode") : I18n.tr("Enable Privacy Mode")
+                            onClicked: togglePrivacy()
                         }
 
                         // Bar Display Source Button
-                        Rectangle {
-                            width: 32
-                            height: 32
-                            radius: 16
-                            color: sourceArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                        DankActionButton {
+                            iconName: pillShowLocal ? "lan" : "public"
+                            iconSize: Theme.iconSizeSmall
+                            iconColor: Theme.surfaceText
+                            buttonSize: Theme.buttonHeightXS
                             anchors.verticalCenter: parent.verticalCenter
-
-                            DankIcon {
-                                anchors.centerIn: parent
-                                name: pillShowLocal ? "lan" : "public"
-                                size: Theme.iconSizeSmall
-                                color: Theme.surfaceText
-                            }
-
-                            MouseArea {
-                                id: sourceArea
-
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.setPillSource(!pillShowLocal)
-                            }
-
+                            tooltipText: pillShowLocal ? I18n.tr("Show Public IP in Bar") : I18n.tr("Show Local IP in Bar")
+                            onClicked: root.setPillSource(!pillShowLocal)
                         }
 
                         // Refresh Button
-                        Rectangle {
-                            width: 32
-                            height: 32
-                            radius: 16
-                            color: refreshArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                        DankActionButton {
+                            iconName: "refresh"
+                            iconSize: Theme.iconSizeSmall
+                            iconColor: Theme.surfaceText
+                            buttonSize: Theme.buttonHeightXS
                             anchors.verticalCenter: parent.verticalCenter
-
-                            DankIcon {
-                                anchors.centerIn: parent
-                                name: "refresh"
-                                size: Theme.iconSizeSmall
-                                color: Theme.surfaceText
+                            tooltipText: I18n.tr("Refresh Network Info")
+                            onClicked: {
+                                checkVPN();
+                                fetchLocalDetails();
+                                fetchIPInfo();
                             }
-
-                            MouseArea {
-                                id: refreshArea
-
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    checkVPN();
-                                    fetchLocalDetails();
-                                    fetchIPInfo();
-                                }
-                            }
-
                         }
 
                     }

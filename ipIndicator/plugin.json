@@ -8,7 +8,11 @@
   "icon": "public",
   "type": "widget",
   "dependencies": [
-    "curl"
+    "curl",
+    "iproute2",
+    "iputils",
+    "libnotify",
+    "wl-clipboard"
   ],
   "capabilities": [
     "dankbar-widget"
