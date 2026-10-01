@@ -156,7 +156,7 @@ PluginComponent {
             processImage(url.substring(7), false);
         } else if (url.startsWith("http://") || url.startsWith("https://")) {
             const tempFile = cacheDir + "/dms_ocr_dl_" + Date.now();
-            Proc.runCommand("download-image", ["curl", "-sSL", url, "-o", tempFile], (stdout, exitCode) => {
+            Proc.runCommand("download-image", ["dms", "dl", url, "-o", tempFile], (stdout, exitCode) => {
                 if (exitCode === 0) {
                     processImage(tempFile, true);
                 } else {
