@@ -45,6 +45,9 @@ PluginComponent {
     readonly property bool embedMetadata: pluginData.embedMetadata ?? true
     readonly property bool embedSubs: pluginData.embedSubs ?? false
 
+    readonly property real tileHeight: Theme.listItemHeight + Theme.spacingS
+    readonly property real thumbSize: Theme.listItemHeight - Theme.spacingXS
+
     // State variables
     property string activeUrl: ""
     property int activeDownloadsCount: 0
@@ -113,45 +116,9 @@ PluginComponent {
     }
 
     function checkYtdlpVersion() {
-        Proc.runCommand("mediaDownloader.checkUpdate", ["yt-dlp", "--update"], (stdout, exitCode) => {
-            var currentVersion = "";
-            var latestVersion = "";
-            var isPkgManaged = false;
-            var lines = stdout.split("\n");
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i].trim();
-                if (line.indexOf("Current version:") === 0) {
-                    currentVersion = line.substring("Current version:".length).trim();
-                } else if (line.indexOf("Latest version:") === 0) {
-                    latestVersion = line.substring("Latest version:".length).trim();
-                } else if (line.indexOf("package manager") !== -1 || line.indexOf("pip ") !== -1 || line.indexOf("PyPI") !== -1) {
-                    isPkgManaged = true;
-                }
-            }
-            
-            root.ytdlpPkgManaged = isPkgManaged;
-            
-            if (isPkgManaged) {
-                root.detectPkgManager();
-            }
-            
-            if (currentVersion !== "") {
-                var cur = currentVersion.indexOf("@") !== -1 ? currentVersion.split("@")[1] : currentVersion;
-                cur = cur.split(" ")[0].trim();
-                root.ytdlpVersion = cur;
-                
-                if (latestVersion !== "") {
-                    var lat = latestVersion.indexOf("@") !== -1 ? latestVersion.split("@")[1] : latestVersion;
-                    lat = lat.split(" ")[0].trim();
-                    root.ytdlpLatestVersion = lat;
-                    root.ytdlpOutdated = isPkgManaged ? false : (cur !== lat);
-                }
-            } else {
-                Proc.runCommand("mediaDownloader.getVersion", ["yt-dlp", "--version"], (versionStdout, versionExitCode) => {
-                    if (versionExitCode === 0 && versionStdout.trim() !== "") {
-                        root.ytdlpVersion = versionStdout.trim().split(" ")[0];
-                    }
-                });
+        Proc.runCommand("mediaDownloader.getVersion", ["yt-dlp", "--version"], (stdout, exitCode) => {
+            if (exitCode === 0 && stdout.trim() !== "") {
+                root.ytdlpVersion = stdout.trim().split(" ")[0];
             }
         });
     }
@@ -181,7 +148,7 @@ PluginComponent {
             ToastService.showInfo("Updating yt-dlp...");
         }
         
-        Proc.runCommand("mediaDownloader.doUpdate", ["sh", "-c", "yt-dlp -U 2>&1"], (stdout, exitCode) => {
+        Proc.runCommand("mediaDownloader.doUpdate", ["yt-dlp", "-U"], (stdout, exitCode) => {
             root.updatingYtdlp = false;
             var output = stdout.trim();
             if (exitCode === 0) {
@@ -450,10 +417,11 @@ PluginComponent {
 
                 function _extractThumbnail(fp, idx) {
                     if (!fp) return;
-                    var thumbDir = "/tmp/dms-media-downloader/";
+                    var cacheBase = Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache");
+                    var thumbDir = cacheBase + "/dms-media-downloader/";
                     var thumbPath = thumbDir + "thumb_" + idx + ".jpg";
                     Proc.runCommand("mediaDownloader.extractThumb" + idx,
-                        ["sh", "-c", "mkdir -p '" + thumbDir + "' && ffmpeg -y -i \"" + fp + "\" -an -vcodec copy -f image2 \"" + thumbPath + "\" 2>/dev/null"],
+                        ["sh", "-c", "mkdir -p \"$1\" && ffmpeg -y -i \"$2\" -an -vcodec copy -f image2 \"$3\" 2>/dev/null", "sh", thumbDir, fp, thumbPath],
                         function(stdout, exitCode2) {
                             if (exitCode2 === 0)
                                 downloadsModel.setProperty(idx, "thumbnailUrl", "file://" + thumbPath);
@@ -649,7 +617,7 @@ PluginComponent {
                     // Option 1: Quick Video
                     ActionTile {
                         width: (parent.width - Theme.spacingM) / 2
-                        height: 64
+                        height: root.tileHeight
                         iconName: "videocam"
                         title: "Quick Video"
                         titleFontSize: Theme.fontSizeSmall
@@ -664,7 +632,7 @@ PluginComponent {
                     // Option 2: Quick Audio
                     ActionTile {
                         width: (parent.width - Theme.spacingM) / 2
-                        height: 64
+                        height: root.tileHeight
                         iconName: "audiotrack"
                         title: "Quick Audio"
                         titleFontSize: Theme.fontSizeSmall
@@ -679,7 +647,7 @@ PluginComponent {
                     // Option 3: Custom Video Options
                     ActionTile {
                         width: (parent.width - Theme.spacingM) / 2
-                        height: 64
+                        height: root.tileHeight
                         iconName: "settings"
                         title: "Custom Video"
                         titleFontSize: Theme.fontSizeSmall
@@ -695,7 +663,7 @@ PluginComponent {
                     // Option 4: Custom Audio Options
                     ActionTile {
                         width: (parent.width - Theme.spacingM) / 2
-                        height: 64
+                        height: root.tileHeight
                         iconName: "settings"
                         title: "Custom Audio"
                         titleFontSize: Theme.fontSizeSmall
@@ -754,7 +722,7 @@ PluginComponent {
 
                     DankButton {
                         width: parent.width
-                        buttonHeight: 36
+                        buttonHeight: Theme.buttonHeightS
                         text: "Start Custom Download"
                         backgroundColor: Theme.primary
                         textColor: Theme.onPrimary
@@ -785,13 +753,13 @@ PluginComponent {
                     DankButton {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        buttonHeight: 24
+                        buttonHeight: Theme.buttonHeightXXS
                         horizontalPadding: Theme.spacingS
                         enabled: root.hasHistoryItems
                         backgroundColor: "transparent"
                         textColor: root.hasHistoryItems ? Theme.error : Theme.surfaceVariantText
                         iconName: "delete_sweep"
-                        iconSize: 14
+                        iconSize: Theme.iconSizeSmall
                         text: "Clear History"
                         onClicked: {
                             for (var i = downloadsModel.count - 1; i >= 0; i--) {
@@ -805,12 +773,14 @@ PluginComponent {
                     }
                 }
 
-                ScrollView {
+                DankFlickable {
                     width: parent.width
+                    contentWidth: width
+                    contentHeight: downloadsColumn.implicitHeight
                     height: {
                         var h = 300;
                         if (root.activeUrl !== "") {
-                            h -= 130; // 2 rows of ActionTile (64px) + spacing
+                            h -= (root.tileHeight * 2 + Theme.spacingM);
                             if (root.customMode !== "") {
                                 h -= 90;
                             }
@@ -820,6 +790,7 @@ PluginComponent {
                     clip: true
 
                     Column {
+                        id: downloadsColumn
                         width: parent.width
                         spacing: Theme.spacingM
 
@@ -829,7 +800,7 @@ PluginComponent {
                                 width: parent.width
                                 readonly property bool isCompleted: model.status === "completed"
                                 readonly property bool hasThumb: model.thumbnailUrl && model.thumbnailUrl !== ""
-                                height: isCompleted ? 88 : 72
+                                height: isCompleted ? (Theme.listItemTwoLineHeight + Theme.spacingL) : Theme.listItemTwoLineHeight
                                 color: Theme.surfaceContainerHigh
                                 radius: Theme.cornerRadius
                                 border.color: Theme.withAlpha(Theme.outline, 0.1)
@@ -837,16 +808,16 @@ PluginComponent {
 
                                 Row {
                                     anchors.fill: parent
-                                    anchors.topMargin: 10
-                                    anchors.bottomMargin: 14
+                                    anchors.topMargin: Theme.spacingS
+                                    anchors.bottomMargin: Theme.spacingM
                                     anchors.leftMargin: Theme.spacingM
                                     anchors.rightMargin: Theme.spacingM
                                     spacing: Theme.spacingM
 
                                     // Thumbnail for completed downloads
                                     Rectangle {
-                                        width: 52
-                                        height: 52
+                                        width: root.thumbSize
+                                        height: root.thumbSize
                                         radius: Theme.cornerRadius / 2
                                         color: Theme.surfaceContainerLowest
                                         clip: true
@@ -862,11 +833,11 @@ PluginComponent {
 
                                     Column {
                                         width: {
-                                            if (isCompleted && hasThumb) parent.width - 52 - Theme.spacingM
+                                            if (isCompleted && hasThumb) parent.width - root.thumbSize - Theme.spacingM
                                             else parent.width
                                         }
                                         anchors.verticalCenter: parent.verticalCenter
-                                        spacing: 4
+                                        spacing: Theme.spacingXS
 
                                         Item {
                                             width: parent.width
@@ -895,11 +866,11 @@ PluginComponent {
 
                                         Item {
                                             width: parent.width
-                                            height: 28
+                                            height: Theme.buttonHeightXXS
 
                                             StyledText {
                                                 text: model.status === "downloading" ? model.speed + " - ETA " + model.eta : (model.status === "fetching" ? "Initializing..." : "")
-                                                font.pixelSize: Theme.fontSizeSmall - 2
+                                                font.pixelSize: Theme.fontSizeSmall
                                                 color: Theme.surfaceVariantText
                                                 anchors.left: parent.left
                                                 anchors.right: actionButtonsRow.left
@@ -912,7 +883,7 @@ PluginComponent {
                                                 id: actionButtonsRow
                                                 anchors.right: parent.right
                                                 anchors.verticalCenter: parent.verticalCenter
-                                                spacing: 4
+                                                spacing: Theme.spacingXS
 
                                                 // Cancel Button
                                                 DankActionButton {
@@ -1004,7 +975,8 @@ PluginComponent {
                                     onClicked: (mouse) => {
                                         if (mouse.button === Qt.RightButton && isCompleted) {
                                             root.activeHistoryIndex = index;
-                                            historyMenu.open(mouse.x, mouse.y);
+                                            var pt = mapToGlobal(mouse.x, mouse.y);
+                                            historyMenu.open(root.screen, pt.x, pt.y, false);
                                         }
                                     }
                                 }
@@ -1022,7 +994,7 @@ PluginComponent {
 
                     DankIcon {
                         name: root.ytdlpOutdated ? "warning" : "info"
-                        size: 12
+                        size: Theme.iconSizeSmall
                         color: root.ytdlpOutdated ? Theme.error : (root.ytdlpPkgManaged ? Theme.surfaceVariantText : Theme.surfaceVariantText)
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -1035,7 +1007,7 @@ PluginComponent {
                                 return "yt-dlp v" + root.ytdlpVersion + " (Update available: v" + root.ytdlpLatestVersion + ")";
                             return "yt-dlp v" + root.ytdlpVersion;
                         }
-                        font.pixelSize: Theme.fontSizeSmall - 2
+                        font.pixelSize: Theme.fontSizeSmall
                         color: root.ytdlpOutdated ? Theme.error : Theme.surfaceVariantText
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -1043,7 +1015,7 @@ PluginComponent {
                     DankButton {
                         text: "Update"
                         visible: root.ytdlpOutdated && !root.updatingYtdlp && !root.ytdlpPkgManaged
-                        buttonHeight: 20
+                        buttonHeight: Theme.buttonHeightXXS
                         horizontalPadding: Theme.spacingS
                         backgroundColor: Theme.withAlpha(Theme.primary, 0.1)
                         textColor: Theme.primary
@@ -1056,7 +1028,7 @@ PluginComponent {
                     StyledText {
                         text: "Updating..."
                         visible: root.updatingYtdlp
-                        font.pixelSize: Theme.fontSizeSmall - 2
+                        font.pixelSize: Theme.fontSizeSmall
                         font.italic: true
                         color: Theme.primary
                         anchors.verticalCenter: parent.verticalCenter
@@ -1067,107 +1039,50 @@ PluginComponent {
     }
 
     property int activeHistoryIndex: -1
-    Popup {
+
+    DankContextMenu {
         id: historyMenu
-        width: 180
-        height: menuColumn.implicitHeight + Theme.spacingS * 2
-        padding: 0
-        background: Rectangle {
-            color: "transparent"
-        }
-
-        contentItem: StyledRect {
-            color: Theme.surfaceContainer
-            radius: Theme.cornerRadius
-            border.color: Theme.withAlpha(Theme.outline, 0.15)
-            border.width: 1
-
-            Column {
-                id: menuColumn
-                anchors.fill: parent
-                anchors.margins: Theme.spacingS
-                spacing: 2
-
-                Repeater {
-                    model: [
-                        {
-                            text: I18n.tr("Play Now"),
-                            icon: "play_arrow",
-                            action: function() {
-                                let item = downloadsModel.get(root.activeHistoryIndex);
-                                let p = item.fullPath || (item.downloadPath + "/" + item.title);
-                                Quickshell.execDetached(["xdg-open", p]);
-                            }
-                        },
-                        {
-                            text: I18n.tr("Open File"),
-                            icon: "open_in_new",
-                            action: function() {
-                                let item = downloadsModel.get(root.activeHistoryIndex);
-                                let p = item.fullPath || (item.downloadPath + "/" + item.title);
-                                Quickshell.execDetached(["xdg-open", p]);
-                            }
-                        },
-                        {
-                            text: I18n.tr("Open Folder"),
-                            icon: "folder",
-                            action: function() {
-                                let item = downloadsModel.get(root.activeHistoryIndex);
-                                let p = item.fullPath || (item.downloadPath + "/" + item.title);
-                                let dir = p.substring(0, p.lastIndexOf("/"));
-                                Quickshell.execDetached(["xdg-open", dir]);
-                            }
-                        },
-                        {
-                            text: I18n.tr("Remove from History"),
-                            icon: "delete",
-                            action: function() {
-                                downloadsModel.remove(root.activeHistoryIndex);
-                                root.updateActiveCount();
-                            }
-                        }
-                    ]
-
-                    delegate: MouseArea {
-                        width: parent.width
-                        height: 32
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-
-                        Rectangle {
-                            anchors.fill: parent
-                            color: parent.containsMouse ? Theme.withAlpha(Theme.primary, 0.1) : "transparent"
-                            radius: Theme.cornerRadius / 2
-                        }
-
-                        Row {
-                            anchors.fill: parent
-                            anchors.leftMargin: Theme.spacingS
-                            anchors.rightMargin: Theme.spacingS
-                            spacing: Theme.spacingS
-
-                            DankIcon {
-                                name: modelData.icon
-                                size: 16
-                                color: Theme.surfaceText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            StyledText {
-                                text: modelData.text
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.surfaceText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-
-                        onClicked: {
-                            modelData.action();
-                            historyMenu.close();
-                        }
-                    }
+        menuItems: [
+            {
+                type: "item",
+                icon: "play_arrow",
+                text: I18n.tr("Play Now"),
+                action: () => {
+                    let item = downloadsModel.get(root.activeHistoryIndex);
+                    let p = item.fullPath || (item.downloadPath + "/" + item.title);
+                    Quickshell.execDetached(["xdg-open", p]);
+                }
+            },
+            {
+                type: "item",
+                icon: "open_in_new",
+                text: I18n.tr("Open File"),
+                action: () => {
+                    let item = downloadsModel.get(root.activeHistoryIndex);
+                    let p = item.fullPath || (item.downloadPath + "/" + item.title);
+                    Quickshell.execDetached(["xdg-open", p]);
+                }
+            },
+            {
+                type: "item",
+                icon: "folder",
+                text: I18n.tr("Open Folder"),
+                action: () => {
+                    let item = downloadsModel.get(root.activeHistoryIndex);
+                    let p = item.fullPath || (item.downloadPath + "/" + item.title);
+                    let dir = p.substring(0, p.lastIndexOf("/"));
+                    Quickshell.execDetached(["xdg-open", dir]);
+                }
+            },
+            {
+                type: "item",
+                icon: "delete",
+                text: I18n.tr("Remove from History"),
+                action: () => {
+                    downloadsModel.remove(root.activeHistoryIndex);
+                    root.updateActiveCount();
                 }
             }
-        }
+        ]
     }
 }
