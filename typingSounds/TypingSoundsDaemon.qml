@@ -18,7 +18,15 @@ PluginComponent {
     // whether this plugin should be loaded after a restart.
     readonly property bool soundEnabled: root.pluginData.soundEnabled ?? root.pluginData.enabled ?? true
     readonly property bool mouseEnabled: root.pluginData.mouseEnabled ?? false
-    readonly property string defaultPackPath: Paths.expandTilde("~/.config/DankMaterialShell/plugins/typingSounds/soundpacks/nk-cream")
+    readonly property string pluginDir: {
+        if (root.pluginService && typeof root.pluginService.getPluginPath === "function") {
+            const p = root.pluginService.getPluginPath(root.pluginId);
+            if (p)
+                return p;
+        }
+        return Paths.strip(Paths.config) + "/plugins/" + root.pluginId;
+    }
+    readonly property string defaultPackPath: root.pluginDir + "/soundpacks/nk-cream"
     readonly property string selectedPackPath: root.pluginData.selectedPackPath || root.defaultPackPath
     readonly property string selectedDevicePath: root.pluginData.selectedDevicePath ?? "all"
     property string cacheFormatVersion: ""
@@ -79,7 +87,7 @@ PluginComponent {
         }
         
         checkTools();
-        cacheVersionReader.path = Paths.expandTilde("~/.config/DankMaterialShell/plugins/typingSounds/cache_format.json");
+        cacheVersionReader.path = root.pluginDir + "/cache_format.json";
     }
 
     function cleanup() {
@@ -201,7 +209,7 @@ PluginComponent {
                 console.log("[TypingSounds] Sound pack cache format is outdated. Rebuilding:", root.currentPackId);
                 sliceProc.command = [
                     "python3",
-                    Paths.expandTilde("~/.config/DankMaterialShell/plugins/typingSounds/slice_audio.py"),
+                    root.pluginDir + "/slice_audio.py",
                     "--pack-dir", root.selectedPackPath,
                     "--cache-dir", root.cachePath
                 ];
@@ -214,7 +222,7 @@ PluginComponent {
             root.isPreparing = true;
             sliceProc.command = [
                 "python3",
-                Paths.expandTilde("~/.config/DankMaterialShell/plugins/typingSounds/slice_audio.py"),
+                root.pluginDir + "/slice_audio.py",
                 "--pack-dir", root.selectedPackPath,
                 "--cache-dir", root.cachePath
             ];
@@ -297,7 +305,7 @@ if not cache_is_valid:
             "python3", "-c", script,
             packPath,
             Paths.expandTilde("~/.cache/dms-typing-sounds"),
-            Paths.expandTilde("~/.config/DankMaterialShell/plugins/typingSounds/slice_audio.py")
+            root.pluginDir + "/slice_audio.py"
         ]);
     }
 

@@ -10,6 +10,15 @@ PluginSettings {
 
     pluginId: "typingSounds"
 
+    readonly property string pluginDir: {
+        if (root.pluginService && typeof root.pluginService.getPluginPath === "function") {
+            const p = root.pluginService.getPluginPath(root.pluginId);
+            if (p)
+                return p;
+        }
+        return Paths.strip(Paths.config) + "/plugins/" + root.pluginId;
+    }
+
     // Soundpack discovery lists
     property var packOptions: []
     // Keyboard devices
@@ -38,8 +47,8 @@ for p in sys.argv[1:]:
                 res.append((d, dp))
 print(json.dumps(res))
 `;
-        const localPath = Quickshell.env("HOME") + "/.config/DankMaterialShell/plugins/typingSounds/soundpacks";
-        const userPath = Quickshell.env("HOME") + "/.config/dms-typing-sounds/soundpacks";
+        const localPath = root.pluginDir + "/soundpacks";
+        const userPath = Paths.expandTilde("~/.config/dms-typing-sounds/soundpacks");
 
         Proc.runCommand("typingSounds.scanSoundpacks", ["python3", "-c", script, userPath, localPath], (stdout, exitCode) => {
             if (exitCode !== 0) return;
