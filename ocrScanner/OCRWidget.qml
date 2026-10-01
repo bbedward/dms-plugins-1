@@ -28,6 +28,15 @@ PluginComponent {
     property int imageTrigger: 0
     property int lastScanTime: 0
 
+    readonly property string cacheDir: {
+        const base = StandardPaths.writableLocation(StandardPaths.CacheLocation);
+        return (base ? Paths.strip(base) : Paths.expandTilde("~/.cache")) + "/dms-ocr";
+    }
+
+    Component.onCompleted: {
+        Proc.runCommand("ocr-init-dir", ["mkdir", "-p", cacheDir], null, 0);
+    }
+
     function scanFromClipboard() {
         if (isScanning || isAutoScanning) return;
         
@@ -35,20 +44,19 @@ PluginComponent {
         if (now - lastScanTime < 2000) return;
         lastScanTime = now;
 
-        const tempImage = "/tmp/dms_ocr_input.png";
-        const getClipCmd = "wl-paste -t image/png > " + tempImage + " 2>/dev/null";
+        const tempImage = cacheDir + "/dms_ocr_input.png";
+        const getClipCmd = "mkdir -p '" + cacheDir + "' && wl-paste -t image/png > '" + tempImage + "' 2>/dev/null";
 
         Proc.runCommand(
             "get-clipboard-image",
             ["sh", "-c", getClipCmd],
             (stdout, exitCode) => {
                 if (exitCode === 0) {
-                    const checkCmd = "file --mime-type -b " + tempImage + " | grep -q image && echo HAS_IMAGE";
                     Proc.runCommand(
                         "check-image-type",
-                        ["sh", "-c", checkCmd],
+                        ["file", "--mime-type", "-b", tempImage],
                         (checkOut, checkCode) => {
-                            if (checkCode === 0 && checkOut.trim() === "HAS_IMAGE") {
+                            if (checkCode === 0 && checkOut.trim().startsWith("image/")) {
                                 isScanning = true;
                                 isAutoScanning = true;
                                 runTesseract(tempImage, true);
@@ -68,11 +76,11 @@ PluginComponent {
 
     function scanFromScreenshot() {
         isScanning = true;
-        const tempPath = "/tmp/dms_ocr_screenshot.png";
+        const tempPath = cacheDir + "/dms_ocr_screenshot.png";
 
         Proc.runCommand(
             "screenshot-ocr",
-            ["dms", "screenshot", "region", "--no-confirm", "--no-notify", "--dir", "/tmp", "--filename", "dms_ocr_screenshot.png"],
+            ["dms", "screenshot", "region", "--no-confirm", "--no-notify", "--dir", cacheDir, "--filename", "dms_ocr_screenshot.png"],
             (stdout, exitCode) => {
                 if (exitCode === 0) {
                     sourceImage = tempPath;
@@ -96,23 +104,24 @@ PluginComponent {
     function scanFromUrl(url) {
         if (!url || isScanning) return;
         
-        const convertSvgToPng = function(inputPath, callback) {
-            const outputPath = "/tmp/dms_ocr_svg_" + Date.now() + ".png";
+        const convertSvgToPng = function(inputPath, callback, cleanupInput) {
+            const outputPath = cacheDir + "/dms_ocr_svg_" + Date.now() + ".png";
             Proc.runCommand(
                 "svg-convert",
                 ["rsvg-convert", "-w", "2000", "-h", "2000", "-f", "png", "-o", outputPath, inputPath],
                 (stdout, exitCode) => {
                     if (exitCode === 0) {
-                        callback(outputPath);
+                        callback(outputPath, cleanupInput ? [inputPath, outputPath] : [outputPath]);
                     } else {
                         Proc.runCommand(
                             "svg-convert-fallback",
                             ["convert", "-background", "white", "-alpha", "remove", inputPath, outputPath],
                             (stdout2, exitCode2) => {
                                 if (exitCode2 === 0) {
-                                    callback(outputPath);
+                                    callback(outputPath, cleanupInput ? [inputPath, outputPath] : [outputPath]);
                                 } else {
-                                    callback(null);
+                                    if (cleanupInput) Proc.runCommand("ocr-clean", ["rm", "-f", inputPath], null, 0);
+                                    callback(null, []);
                                 }
                             },
                             0
@@ -123,60 +132,62 @@ PluginComponent {
             );
         };
 
-        const processImage = function(path) {
+        const processImage = function(path, isTemp) {
             if (path.toLowerCase().endsWith(".svg")) {
-                convertSvgToPng(path, function(convertedPath) {
+                convertSvgToPng(path, function(convertedPath, toClean) {
                     if (convertedPath) {
                         sourceImage = convertedPath;
                         imageTrigger++;
                         isScanning = true;
-                        runTesseract(convertedPath);
+                        runTesseract(convertedPath, false, toClean);
                     } else {
                         ToastService.showError("Failed to convert SVG to PNG. Install rsvg-convert or imagemagick.");
                     }
-                });
+                }, isTemp);
             } else {
                 sourceImage = path;
                 imageTrigger++;
                 isScanning = true;
-                runTesseract(path);
+                runTesseract(path, false, isTemp ? [path] : []);
             }
         };
 
         if (url.startsWith("file://")) {
-            processImage(url.substring(7));
+            processImage(url.substring(7), false);
         } else if (url.startsWith("http://") || url.startsWith("https://")) {
-            const tempFile = "/tmp/dms_ocr_dl_" + Date.now();
-            Proc.runCommand("download-image", ["curl", "-L", url, "-o", tempFile], (stdout, exitCode) => {
+            const tempFile = cacheDir + "/dms_ocr_dl_" + Date.now();
+            Proc.runCommand("download-image", ["curl", "-sSL", url, "-o", tempFile], (stdout, exitCode) => {
                 if (exitCode === 0) {
-                    processImage(tempFile);
+                    processImage(tempFile, true);
                 } else {
                     ToastService.showError("Failed to download image from URL.");
                 }
             });
         } else if (url.startsWith("/")) {
-            processImage(url);
+            processImage(url, false);
         } else {
             ToastService.showError("Invalid image source.");
         }
     }
 
-    function runTesseract(imagePath, skipAutoCopy) {
-        if (imagePath.includes("/tmp/dms_ocr_input.png")) {
+    function runTesseract(imagePath, skipAutoCopy, cleanupFiles) {
+        if (imagePath.includes("dms_ocr_input.png")) {
             sourceImage = imagePath;
             imageTrigger++;
         }
 
         let lang = pluginService.loadPluginData(pluginRoot.pluginId, "ocrLanguage", "eng");
         if (!lang || lang === "") lang = "eng";
-        const tesseractCmd = "tesseract '" + imagePath + "' - -l " + lang;
 
         Proc.runCommand(
             "run-tesseract",
-            ["sh", "-c", tesseractCmd],
+            ["tesseract", imagePath, "-", "-l", lang],
             (stdout, exitCode) => {
                 isScanning = false;
                 isAutoScanning = false;
+                if (Array.isArray(cleanupFiles) && cleanupFiles.length > 0) {
+                    Proc.runCommand("ocr-cleanup", ["rm", "-f"].concat(cleanupFiles), null, 0);
+                }
                 if (exitCode === 0) {
                     const result = stdout.trim();
                     if (result === "") {
