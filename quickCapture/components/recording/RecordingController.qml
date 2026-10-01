@@ -369,14 +369,18 @@ Item {
         }
         root.isPaused = !root.isPaused;
         root.recordingState = root.isPaused ? "paused" : "recording";
-        Proc.runCommand("quickCapture.recorderSignal", ["killall", "-SIGUSR2", "gpu-screen-recorder"]);
+        if (recorderProcess.running) {
+            recorderProcess.signal(12); // SIGUSR2
+        }
     }
 
     function stopRecording() {
         if (!root.isRecording && root.recordingState !== "starting")
             return;
         root.recordingState = "stopping";
-        Proc.runCommand("quickCapture.recorderStop", ["killall", "-INT", root.activeRecorderBin || "gpu-screen-recorder"]);
+        if (recorderProcess.running) {
+            recorderProcess.signal(2); // SIGINT
+        }
         safetyTimer.restart();
     }
 
@@ -396,7 +400,9 @@ Item {
             Proc.runCommand("quickCapture.cleanupGif", ["rm", "-f", "--", root.targetGifPath]);
             root.targetGifPath = "";
         }
-        Proc.runCommand("quickCapture.recorderKill", ["killall", "-KILL", root.activeRecorderBin || "gpu-screen-recorder"]);
+        if (recorderProcess.running) {
+            recorderProcess.signal(9); // SIGKILL
+        }
     }
 
     function mergeAudio(videoPath, callback) {

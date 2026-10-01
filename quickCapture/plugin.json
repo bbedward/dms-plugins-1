@@ -25,7 +25,8 @@
     "magick",
     "img2pdf",
     "tesseract",
-    "zbarimg"
+    "zbarimg",
+    "curl"
   ],
   "permissions": [
     "settings_read",
