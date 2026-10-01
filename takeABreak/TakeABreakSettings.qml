@@ -294,14 +294,6 @@ PluginSettings {
         }
     }
 
-    Process {
-        id: resetStatsProc
-        command: ["sh", "-c", "rm -f \"$HOME/.local/share/dms-take-a-break/stats.json\""]
-        onExited: {
-            if (livePlugin && livePlugin.getStats) livePlugin.getStats();
-        }
-    }
-
     Timer {
         id: statsRefreshTimer
         interval: 10000
@@ -441,7 +433,11 @@ PluginSettings {
                     width: (parent.width - parent.spacing) / 2
                     buttonHeight: 32
                     onClicked: {
-                        resetStatsProc.running = true;
+                        if (livePlugin && livePlugin.resetStats) {
+                            livePlugin.resetStats();
+                        } else if (root.pluginService) {
+                            root.pluginService.savePluginState(root.pluginId, "events", []);
+                        }
                     }
                 }
             }

@@ -57,7 +57,7 @@ Item {
 
                     DankIcon {
                         name: "self_improvement"
-                        size: 80
+                        size: Math.round(Theme.iconSizeLarge * 2.5)
                         color: Theme.primary
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
@@ -76,9 +76,9 @@ Item {
                             let s = pluginRoot.breakTimeRemaining % 60;
                             return (m > 0 ? m + ":" : "") + (s < 10 && m > 0 ? "0" : "") + s;
                         }
-                        font.pixelSize: 120
+                        font.pixelSize: Math.round(Theme.fontSizeDisplayLarge * 2.1)
                         font.weight: Font.Bold
-                        font.family: "monospace"
+                        isMonospace: true
                         color: Theme.primary
                         anchors.horizontalCenter: parent.horizontalCenter
                     }

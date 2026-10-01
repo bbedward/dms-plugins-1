@@ -42,77 +42,79 @@ PluginComponent {
     pluginService: PluginService
 
     // ── Statistics ──────────────────────────────────────────────────────────
-    readonly property string statsFilePath: {
-        var home = Quickshell.env("HOME");
-        return home + "/.local/share/dms-take-a-break/stats.json";
-    }
-
     function logEvent(status) {
-        var file = statsFilePath;
-        Proc.runCommand("takeABreak.readStats", ["sh", "-c",
-            "cat \"" + file + "\" 2>/dev/null || echo '{\"events\":[]}'"
-        ], (stdout) => {
-            var stats = JSON.parse(stdout);
+        try {
+            var raw = pluginService ? pluginService.loadPluginState(pluginId, "events", []) : [];
+            var events = Array.isArray(raw) ? raw.slice() : [];
             var type = pluginRoot.nextBreakType === 1 ? "short" : "long";
             var ts = Math.floor(Date.now() / 1000);
-            stats.events.push({ ts: ts, type: type, status: status });
-            var json = JSON.stringify(stats);
-            var escaped = json.replace(/\"/g, '\\"');
-            Proc.runCommand("takeABreak.writeStats", ["sh", "-c",
-                "mkdir -p \"$(dirname \"" + file + "\")\" && printf '%s' \"" + escaped + "\" > \"" + file + "\""
-            ], () => {
-                pluginRoot.getStats();
-            });
-        });
+            events.push({ ts: ts, type: type, status: status });
+            if (events.length > 1000) {
+                events = events.slice(events.length - 1000);
+            }
+            if (pluginService) {
+                pluginService.savePluginState(pluginId, "events", events);
+            }
+            pluginRoot.getStats();
+        } catch (e) {
+            console.warn("[TakeABreak] Failed to log event:", e);
+        }
+    }
+
+    function resetStats() {
+        try {
+            if (pluginService) {
+                pluginService.savePluginState(pluginId, "events", []);
+            }
+            pluginRoot.getStats();
+        } catch (e) {
+            console.warn("[TakeABreak] Failed to reset stats:", e);
+        }
     }
 
     function getStats() {
-        var file = statsFilePath;
-        Proc.runCommand("takeABreak.readStats", ["sh", "-c",
-            "cat \"" + file + "\" 2>/dev/null || echo '{\"events\":[]}'"
-        ], (stdout) => {
-            try {
-                var stats = JSON.parse(stdout);
-                var now = new Date();
-                var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;
-                var weekStart = todayStart - 6 * 86400;
-                var todayTotal = 0, todayCompleted = 0, todaySkipped = 0, todaySnoozed = 0;
-                var weekTotal = 0, weekCompleted = 0, weekSkipped = 0, weekSnoozed = 0;
-                for (var i = 0; i < stats.events.length; i++) {
-                    var e = stats.events[i];
-                    if (e.ts >= todayStart) {
-                        todayTotal++;
-                        if (e.status === "completed") todayCompleted++;
-                        else if (e.status === "skipped") todaySkipped++;
-                        else if (e.status === "snoozed") todaySnoozed++;
-                    }
-                    if (e.ts >= weekStart) {
-                        weekTotal++;
-                        if (e.status === "completed") weekCompleted++;
-                        else if (e.status === "skipped") weekSkipped++;
-                        else if (e.status === "snoozed") weekSnoozed++;
-                    }
+        try {
+            var raw = pluginService ? pluginService.loadPluginState(pluginId, "events", []) : [];
+            var events = Array.isArray(raw) ? raw : [];
+            var now = new Date();
+            var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000;
+            var weekStart = todayStart - 6 * 86400;
+            var todayTotal = 0, todayCompleted = 0, todaySkipped = 0, todaySnoozed = 0;
+            var weekTotal = 0, weekCompleted = 0, weekSkipped = 0, weekSnoozed = 0;
+            for (var i = 0; i < events.length; i++) {
+                var e = events[i];
+                if (e.ts >= todayStart) {
+                    todayTotal++;
+                    if (e.status === "completed") todayCompleted++;
+                    else if (e.status === "skipped") todaySkipped++;
+                    else if (e.status === "snoozed") todaySnoozed++;
                 }
-                var todayResponded = todayCompleted + todaySkipped + todaySnoozed;
-                var weekResponded = weekCompleted + weekSkipped + weekSnoozed;
-                pluginRoot._stats = {
-                    todayRate: todayResponded > 0 ? Math.round(todayCompleted / todayResponded * 100) : -1,
-                    todayCompleted: todayCompleted,
-                    todaySkipped: todaySkipped,
-                    todaySnoozed: todaySnoozed,
-                    todayTotal: todayTotal,
-                    weekRate: weekResponded > 0 ? Math.round(weekCompleted / weekResponded * 100) : -1,
-                    weekCompleted: weekCompleted,
-                    weekSkipped: weekSkipped,
-                    weekSnoozed: weekSnoozed,
-                    weekTotal: weekTotal,
-                    totalAll: stats.events.length
-                };
-                if (typeof _onStatsReady === "function") _onStatsReady();
-            } catch (e) {
-                console.warn("[TakeABreak] Failed to parse stats:", e);
+                if (e.ts >= weekStart) {
+                    weekTotal++;
+                    if (e.status === "completed") weekCompleted++;
+                    else if (e.status === "skipped") weekSkipped++;
+                    else if (e.status === "snoozed") weekSnoozed++;
+                }
             }
-        });
+            var todayResponded = todayCompleted + todaySkipped + todaySnoozed;
+            var weekResponded = weekCompleted + weekSkipped + weekSnoozed;
+            pluginRoot._stats = {
+                todayRate: todayResponded > 0 ? Math.round(todayCompleted / todayResponded * 100) : -1,
+                todayCompleted: todayCompleted,
+                todaySkipped: todaySkipped,
+                todaySnoozed: todaySnoozed,
+                todayTotal: todayTotal,
+                weekRate: weekResponded > 0 ? Math.round(weekCompleted / weekResponded * 100) : -1,
+                weekCompleted: weekCompleted,
+                weekSkipped: weekSkipped,
+                weekSnoozed: weekSnoozed,
+                weekTotal: weekTotal,
+                totalAll: events.length
+            };
+            if (typeof _onStatsReady === "function") _onStatsReady();
+        } catch (e) {
+            console.warn("[TakeABreak] Failed to parse stats:", e);
+        }
     }
     property var _stats: null
     property var _onStatsReady: null
@@ -309,7 +311,7 @@ PluginComponent {
                                     const s = total % 60;
                                     return `${m}:${s < 10 ? "0" : ""}${s}`;
                                 }
-                                font.pixelSize: 36
+                                font.pixelSize: Theme.fontSizeDisplay
                                 font.weight: Font.Bold
                                 isMonospace: true
                                 color: {
@@ -323,8 +325,8 @@ PluginComponent {
                         // Progress Bar Track & Fill
                         Rectangle {
                             width: parent.width
-                            height: 4
-                            radius: 2
+                            height: Theme.spacingXS
+                            radius: height / 2
                             color: Theme.surfaceContainerHighest
                             clip: true
 
