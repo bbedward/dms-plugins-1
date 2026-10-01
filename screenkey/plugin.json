@@ -16,6 +16,9 @@
   },
   "settings": "./ScreenkeySettings.qml",
   "requires_dms": ">=1.5.0",
+  "dependencies": [
+    "python3"
+  ],
   "permissions": [
     "settings_read",
     "settings_write",

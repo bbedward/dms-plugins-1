@@ -13,7 +13,7 @@ dms plugins install screenkey
 
 Or manually:
 ```bash
-git clone https://github.com/loccun/dms-screenkey ~/.config/DankMaterialShell/plugins/screenkey
+git clone https://github.com/hthienloc/dms-plugins ~/.config/DankMaterialShell/plugins/screenkey
 ```
 
 ## Requirements
