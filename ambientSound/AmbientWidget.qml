@@ -816,7 +816,7 @@ PluginComponent {
                             DankSlider {
                                 id: masterSlider
                                 anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width - (root.actionButtonSize * 4) - (Theme.spacingS * 4)
+                                width: parent.width - (root.actionButtonSize * 3) - (Theme.spacingS * 3)
                                 minimum: 0
                                 maximum: 100
                                 step: 5
@@ -840,23 +840,6 @@ PluginComponent {
                                         }
                                     }
                                 }
-                            }
-
-                            // Stop / Clear All button
-                            DankActionButton {
-                                id: stopBtn
-                                readonly property bool canStop: root.playingSounds.length > 0
-                                buttonSize: root.actionButtonSize
-                                circular: true
-                                anchors.verticalCenter: parent.verticalCenter
-                                enabled: canStop
-                                opacity: canStop ? 1.0 : 0.35
-                                backgroundColor: Theme.surfaceContainerHigh
-                                iconName: "cancel"
-                                iconSize: Theme.iconSizeMedium
-                                iconColor: Theme.error
-                                tooltipText: I18n.tr("Stop All")
-                                onClicked: root.stopAll()
                             }
 
                             // Timer button

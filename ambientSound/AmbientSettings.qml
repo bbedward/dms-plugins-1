@@ -421,7 +421,7 @@ PluginSettings {
             items: [
                 I18n.tr("<b>Left-click</b> the pill to open the sound selector."),
                 I18n.tr("<b>Middle-click</b> the pill to toggle your chosen sound preset."),
-                I18n.tr("<b>Right-click</b> the pill to stop all sounds instantly."),
+                I18n.tr("<b>Right-click</b> the pill to toggle mute."),
                 I18n.tr("You can play <b>multiple sounds</b> simultaneously to create your own atmosphere."),
                 I18n.tr("Set the <b>Sleep Timer</b> in the popout to turn off sounds after a delay.")
             ]
