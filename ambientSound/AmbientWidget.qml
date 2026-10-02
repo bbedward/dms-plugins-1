@@ -293,8 +293,11 @@ PluginComponent {
             }
 
             if (existingIdx >= 0) {
-                newPresets[existingIdx].sounds = newPresets[index].sounds.slice();
-                newPresets[existingIdx].volume = newPresets[index].volume;
+                newPresets[existingIdx] = {
+                    name: trimmed,
+                    sounds: (root.playingSounds.length > 0) ? root.playingSounds.slice() : newPresets[index].sounds.slice(),
+                    volume: root.masterVolume
+                };
                 newPresets.splice(index, 1);
                 selectedPresetIndex = existingIdx > index ? existingIdx - 1 : existingIdx;
                 presets = newPresets;
@@ -302,7 +305,11 @@ PluginComponent {
                 activePresetName = trimmed;
                 ToastService.showInfo(I18n.tr("Overwrote preset ") + trimmed);
             } else {
-                newPresets[index].name = trimmed;
+                newPresets[index] = {
+                    name: trimmed,
+                    sounds: (root.playingSounds.length > 0) ? root.playingSounds.slice() : newPresets[index].sounds.slice(),
+                    volume: root.masterVolume
+                };
                 presets = newPresets;
                 pluginService.savePluginData(root.pluginId, "presets", newPresets);
                 activePresetName = trimmed;
