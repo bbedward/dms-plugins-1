@@ -303,8 +303,9 @@ PluginComponent {
                 presets = newPresets;
                 pluginService.savePluginData(root.pluginId, "presets", newPresets);
                 activePresetName = trimmed;
-                ToastService.showInfo(I18n.tr("Overwrote preset ") + trimmed);
+                ToastService.showInfo(I18n.tr("Preset overwritten: ") + trimmed);
             } else {
+                var isSameName = (newPresets[index].name.toLowerCase() === trimmed.toLowerCase());
                 newPresets[index] = {
                     name: trimmed,
                     sounds: (root.playingSounds.length > 0) ? root.playingSounds.slice() : newPresets[index].sounds.slice(),
@@ -313,7 +314,11 @@ PluginComponent {
                 presets = newPresets;
                 pluginService.savePluginData(root.pluginId, "presets", newPresets);
                 activePresetName = trimmed;
-                ToastService.showInfo(I18n.tr("Preset renamed to ") + trimmed);
+                if (isSameName) {
+                    ToastService.showInfo(I18n.tr("Preset overwritten: ") + trimmed);
+                } else {
+                    ToastService.showInfo(I18n.tr("Preset renamed to ") + trimmed);
+                }
             }
         }
         editingIndex = -1;
