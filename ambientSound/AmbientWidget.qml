@@ -172,6 +172,7 @@ PluginComponent {
     property var presets: pluginData.presets || []
     property int editingIndex: -1
     property int selectedPresetIndex: -1
+    property string activePresetName: (selectedPresetIndex >= 0 && selectedPresetIndex < presets.length) ? presets[selectedPresetIndex].name : ""
     property bool renamingPreset: false
     property var lastPlayingSounds: []
 
@@ -213,10 +214,12 @@ PluginComponent {
         presets = newPresets;
         pluginService.savePluginData(root.pluginId, "presets", newPresets);
         selectedPresetIndex = newPresets.length - 1;
+        activePresetName = presetName;
         ToastService.showInfo(I18n.tr("Saved ") + presetName);
     }
 
     function loadPreset(preset) {
+        activePresetName = preset.name;
         stopAll(() => {
             root.isMuted = false;
             root.masterVolume = preset.volume;
@@ -264,15 +267,47 @@ PluginComponent {
         presets = newPresets;
         pluginService.savePluginData(root.pluginId, "presets", newPresets);
         selectedPresetIndex = -1;
+        activePresetName = "";
+    }
+
+    function cancelRename() {
+        if (root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length) {
+            activePresetName = root.presets[root.selectedPresetIndex].name;
+        } else {
+            activePresetName = "";
+        }
+        editingIndex = -1;
+        renamingPreset = false;
     }
 
     function renamePreset(index, newName) {
         if (index >= 0 && index < presets.length && newName && newName.trim() !== "") {
+            var trimmed = newName.trim();
             var newPresets = presets.slice();
-            newPresets[index].name = newName.trim();
-            presets = newPresets;
-            pluginService.savePluginData(root.pluginId, "presets", newPresets);
-            ToastService.showInfo(I18n.tr("Preset renamed to ") + newName.trim());
+            var existingIdx = -1;
+            for (var i = 0; i < newPresets.length; i++) {
+                if (i !== index && newPresets[i].name.toLowerCase() === trimmed.toLowerCase()) {
+                    existingIdx = i;
+                    break;
+                }
+            }
+
+            if (existingIdx >= 0) {
+                newPresets[existingIdx].sounds = newPresets[index].sounds.slice();
+                newPresets[existingIdx].volume = newPresets[index].volume;
+                newPresets.splice(index, 1);
+                selectedPresetIndex = existingIdx > index ? existingIdx - 1 : existingIdx;
+                presets = newPresets;
+                pluginService.savePluginData(root.pluginId, "presets", newPresets);
+                activePresetName = trimmed;
+                ToastService.showInfo(I18n.tr("Overwrote preset ") + trimmed);
+            } else {
+                newPresets[index].name = trimmed;
+                presets = newPresets;
+                pluginService.savePluginData(root.pluginId, "presets", newPresets);
+                activePresetName = trimmed;
+                ToastService.showInfo(I18n.tr("Preset renamed to ") + trimmed);
+            }
         }
         editingIndex = -1;
         renamingPreset = false;
@@ -668,14 +703,19 @@ PluginComponent {
                                 dropdownWidth: width
                                 emptyText: I18n.tr("Select preset…")
                                 options: root.presets.map(function(p) { return p.name; })
-                                currentValue: (root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length)
-                                    ? root.presets[root.selectedPresetIndex].name
-                                    : ""
+                                currentValue: root.activePresetName
+
+                                Connections {
+                                    target: root
+                                    function onActivePresetNameChanged() {
+                                        presetDropdown.currentValue = root.activePresetName;
+                                    }
+                                }
                                 onValueChanged: (newValue) => {
                                     for (var i = 0; i < root.presets.length; i++) {
                                         if (root.presets[i].name === newValue) {
-                                            root.loadPreset(root.presets[i]);
                                             root.selectedPresetIndex = i;
+                                            root.loadPreset(root.presets[i]);
                                             break;
                                         }
                                     }
@@ -688,43 +728,54 @@ PluginComponent {
                                 anchors.fill: parent
                                 anchors.margins: 2
                                 visible: root.renamingPreset
-                                text: (root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length)
-                                    ? root.presets[root.selectedPresetIndex].name : ""
+                                text: root.activePresetName
                                 onAccepted: root.renamePreset(root.selectedPresetIndex, text)
+                                Keys.onEscapePressed: root.cancelRename()
                                 Component.onCompleted: {
                                     if (visible) forceActiveFocus();
                                 }
                             }
                         }
 
-                        // Add preset button (+)
+                        // Add preset button (+) / Confirm rename button (check)
                         DankActionButton {
                             buttonSize: root.actionButtonSize
                             circular: true
-                            iconName: "add"
+                            iconName: root.renamingPreset ? "check" : "add"
                             iconSize: Theme.iconSizeSmall + 2
-                            iconColor: Theme.surfaceText
-                            backgroundColor: Theme.surfaceContainerHigh
-                            tooltipText: I18n.tr("Save Preset")
-                            onClicked: root.savePreset()
+                            iconColor: root.renamingPreset ? Theme.primary : Theme.surfaceText
+                            backgroundColor: root.renamingPreset ? Theme.withAlpha(Theme.primary, 0.18) : Theme.surfaceContainerHigh
+                            tooltipText: root.renamingPreset ? I18n.tr("Confirm") : I18n.tr("Save Preset")
+                            onClicked: {
+                                if (root.renamingPreset) {
+                                    root.renamePreset(root.selectedPresetIndex, renameField.text);
+                                } else {
+                                    root.savePreset();
+                                }
+                            }
                         }
 
-                        // Edit preset button (pencil)
+                        // Edit preset button (pencil) / Cancel rename button (close / x)
                         DankActionButton {
                             readonly property bool canEdit: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
                             buttonSize: root.actionButtonSize
                             circular: true
-                            enabled: canEdit
-                            opacity: canEdit ? 1.0 : 0.35
-                            iconName: "edit"
+                            enabled: root.renamingPreset || canEdit
+                            opacity: (root.renamingPreset || canEdit) ? 1.0 : 0.35
+                            iconName: root.renamingPreset ? "close" : "edit"
                             iconSize: Theme.iconSizeSmall
-                            iconColor: Theme.surfaceText
-                            backgroundColor: Theme.surfaceContainerHigh
-                            tooltipText: I18n.tr("Rename Preset")
+                            iconColor: root.renamingPreset ? Theme.error : Theme.surfaceText
+                            backgroundColor: root.renamingPreset ? Theme.withAlpha(Theme.error, 0.15) : Theme.surfaceContainerHigh
+                            tooltipText: root.renamingPreset ? I18n.tr("Cancel") : I18n.tr("Rename Preset")
                             onClicked: {
-                                root.renamingPreset = true;
-                                renameField.forceActiveFocus();
-                                renameField.selectAll();
+                                if (root.renamingPreset) {
+                                    root.cancelRename();
+                                } else {
+                                    root.renamingPreset = true;
+                                    renameField.text = root.activePresetName;
+                                    renameField.forceActiveFocus();
+                                    renameField.selectAll();
+                                }
                             }
                         }
 
@@ -733,8 +784,8 @@ PluginComponent {
                             readonly property bool canDelete: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
                             buttonSize: root.actionButtonSize
                             circular: true
-                            enabled: canDelete
-                            opacity: canDelete ? 1.0 : 0.35
+                            enabled: !root.renamingPreset && canDelete
+                            opacity: (!root.renamingPreset && canDelete) ? 1.0 : 0.35
                             iconName: "delete"
                             iconSize: Theme.iconSizeSmall
                             iconColor: Theme.error
