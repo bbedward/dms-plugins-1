@@ -521,19 +521,23 @@ PluginComponent {
 
     Component.onDestruction: destroyAllSessions()
 
+    pillRightClickAction: () => root.toggleMute()
+
     // ── Pill (horizontal & vertical) ──
     horizontalBarPill: Component {
         Item {
             implicitWidth: pillRow.implicitWidth
             implicitHeight: pillRow.implicitHeight
 
-            // Mouse area for left click, middle click, and wheel
+            // Mouse area for left click, middle click, right click, and wheel
             MouseArea {
                 anchors.fill: parent
-                acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+                acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
                 cursorShape: Qt.PointingHandCursor
                 onClicked: (mouse) => {
-                    if (mouse.button === Qt.MiddleButton) {
+                    if (mouse.button === Qt.RightButton) {
+                        root.toggleMute();
+                    } else if (mouse.button === Qt.MiddleButton) {
                         var preset = pluginData.middleClickAction || "";
                         if (preset !== "") {
                             root.togglePresetByName(preset);
