@@ -1,5 +1,0 @@
-module dms.common
-DankWindowHeader 1.0 DankWindowHeader.qml
-SectionTitle 1.0 SectionTitle.qml
-SettingsCard 1.0 SettingsCard.qml
-UsageGuide 1.0 UsageGuide.qml
