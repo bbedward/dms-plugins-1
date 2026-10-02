@@ -427,4 +427,38 @@ PluginSettings {
             ]
         }
     }
+
+    SettingsCard {
+        SectionTitle {
+            id: creditsTitle
+            text: I18n.tr("Credits")
+            icon: "favorite"
+            collapsible: true
+            settingKey: "creditsExpanded"
+        }
+
+        Column {
+            width: parent.width
+            spacing: Theme.spacingXS
+            visible: creditsTitle.isExpanded
+            topPadding: Theme.spacingXS
+            bottomPadding: Theme.spacingXS
+
+            StyledText {
+                width: parent.width
+                wrapMode: Text.WordWrap
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.surfaceText
+                text: I18n.tr("UI redesign by <b>Zurvan</b>.")
+            }
+
+            StyledText {
+                width: parent.width
+                wrapMode: Text.WordWrap
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.surfaceVariantText
+                text: I18n.tr("Sound assets and inspiration from Blankie & Blanket.")
+            }
+        }
+    }
 }

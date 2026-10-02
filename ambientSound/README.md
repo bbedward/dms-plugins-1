@@ -43,9 +43,10 @@ GPL-3.0
 
 ## Credits
 
-Sound assets and inspiration sourced from:
-- [Blankie](https://github.com/codybrom/Blankie)
-- [Blanket](https://github.com/rafaelmardojai/blanket)
+- Special thanks to **Zurvan** for helping redesign the UI concept and layout.
+- Sound assets and inspiration sourced from:
+  - [Blankie](https://github.com/codybrom/Blankie)
+  - [Blanket](https://github.com/rafaelmardojai/blanket)
 
 ## Roadmap / TODO
 

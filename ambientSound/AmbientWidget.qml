@@ -13,15 +13,13 @@ PluginComponent {
     readonly property bool showHints: pluginData.showHints ?? true
 
 
-    // Right-click action on pill
-    pillRightClickAction: () => root.toggleMute()
-
     // Layout constants
-    readonly property real cellWidth: Math.floor((root.popoutWidth - (Theme.spacingL * 2) - (root.gridSpacing * 3)) / 4)
-    readonly property real cellHeight: Theme.listItemTwoLineHeight + Theme.spacingS
+    readonly property real cellWidth: Math.floor((root.popoutWidth - (Theme.spacingM * 2) - (root.gridSpacing * 3)) / 4)
+    readonly property real cellHeight: 96
     readonly property real iconSize: Theme.iconSize
     readonly property real fontSize: Theme.fontSizeSmall
-    readonly property real gridSpacing: Theme.spacingS
+    readonly property real gridSpacing: 8
+    readonly property real actionButtonSize: Theme.buttonHeightS
 
     // Plugin directory (for sound files)
     readonly property string pluginDir: {
@@ -172,10 +170,36 @@ PluginComponent {
     // Preset state
     property var presets: pluginData.presets || []
     property int editingIndex: -1
+    property int selectedPresetIndex: -1
+    property bool renamingPreset: false
+    property var lastPlayingSounds: []
+
+    function togglePlayPause() {
+        if (root.playingSounds.length > 0) {
+            root.lastPlayingSounds = root.playingSounds.slice();
+            root.stopAll();
+        } else {
+            if (root.lastPlayingSounds.length > 0) {
+                var toPlay = root.lastPlayingSounds.slice();
+                for (var i = 0; i < toPlay.length; i++) {
+                    root.startSound(toPlay[i]);
+                }
+                root.playingSounds = toPlay;
+            } else if (root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length) {
+                root.loadPreset(root.presets[root.selectedPresetIndex]);
+            } else if (root.presets.length > 0) {
+                root.loadPreset(root.presets[0]);
+                root.selectedPresetIndex = 0;
+            } else if (root.visibleSounds.length > 0) {
+                var firstSoundId = root.soundId(root.visibleSounds[0]);
+                root.toggleSound(firstSoundId);
+            }
+        }
+    }
 
     function savePreset() {
         if (playingSounds.length === 0) {
-            ToastService.showError("Play some sounds first to save as preset!");
+            ToastService.showError(I18n.tr("Play some sounds first to save as preset!"));
             return;
         }
         var newPresets = presets.slice();
@@ -185,8 +209,10 @@ PluginComponent {
             sounds: playingSounds.slice(),
             volume: root.masterVolume
         });
+        presets = newPresets;
         pluginService.savePluginData(root.pluginId, "presets", newPresets);
-        ToastService.showInfo("Saved " + presetName);
+        selectedPresetIndex = newPresets.length - 1;
+        ToastService.showInfo(I18n.tr("Saved ") + presetName);
     }
 
     function loadPreset(preset) {
@@ -231,19 +257,24 @@ PluginComponent {
     }
 
     function deletePreset(index) {
+        if (index < 0 || index >= presets.length) return;
         var newPresets = presets.slice();
         newPresets.splice(index, 1);
+        presets = newPresets;
         pluginService.savePluginData(root.pluginId, "presets", newPresets);
+        selectedPresetIndex = -1;
     }
 
     function renamePreset(index, newName) {
-        if (newName && newName.trim() !== "") {
+        if (index >= 0 && index < presets.length && newName && newName.trim() !== "") {
             var newPresets = presets.slice();
             newPresets[index].name = newName.trim();
+            presets = newPresets;
             pluginService.savePluginData(root.pluginId, "presets", newPresets);
-            ToastService.showInfo("Preset renamed to " + newName);
+            ToastService.showInfo(I18n.tr("Preset renamed to ") + newName.trim());
         }
         editingIndex = -1;
+        renamingPreset = false;
     }
 
     function soundPath(soundData) {
@@ -309,7 +340,8 @@ PluginComponent {
         }
 
         if (!session.stopping && exitCode !== 0) {
-            ToastService.showError("Failed to play " + (getSound(sound)?.name || "sound") + ".");
+            var snd = getSound(sound);
+            ToastService.showError("Failed to play " + (snd ? snd.name : "sound") + ".");
         }
         Qt.callLater(() => session.destroy());
         finishStopCallbacks();
@@ -396,6 +428,7 @@ PluginComponent {
         var newVol = Math.min(100, Math.max(0, root.masterVolume + delta));
         if (newVol !== root.masterVolume) {
             root.masterVolume = newVol;
+            if (newVol > 0 && root.isMuted) root.isMuted = false;
             updateAllVolumes();
         }
     }
@@ -510,7 +543,7 @@ PluginComponent {
                     }
                 }
                 onWheel: (wheel) => {
-                    var delta = wheel.angleDelta.y > 0 ? 10 : -10;
+                    var delta = wheel.angleDelta.y > 0 ? 5 : -5;
                     root.adjustVolume(delta);
                 }
             }
@@ -534,21 +567,12 @@ PluginComponent {
     verticalBarPill: horizontalBarPill
 
     // Popout dimensions
-    popoutWidth: 440
+    popoutWidth: 480
     popoutHeight: {
         let gridRows = Math.ceil(root.visibleSounds.length / 4);
-        let gridHeight = gridRows * root.cellHeight + (gridRows - 1) * root.gridSpacing;
-        let baseH = 90; // Header + MediaHeader + spacing/padding
-        let h = baseH + gridHeight;
-        if (root.presets.length > 0 || root.playingSounds.length > 0) {
-            h += 40; // Save preset button / header row
-            if (root.presets.length > 0) {
-                let presetRows = Math.ceil(root.presets.length / 2);
-                h += presetRows * Theme.buttonHeightXS + (presetRows - 1) * Theme.spacingXS + Theme.spacingS; // Presets flow height
-            }
-        }
-        if (root.showHints && root.playingSounds.length > 0) h += 50;
-        return Math.min(800, h);
+        let gridHeight = gridRows * root.cellHeight + Math.max(0, gridRows - 1) * root.gridSpacing;
+        let baseH = root.actionButtonSize + Theme.buttonHeightM + (Theme.spacingM * 3);
+        return Math.min(760, baseH + gridHeight);
     }
 
     component WhenDoneChip: Rectangle {
@@ -602,231 +626,156 @@ PluginComponent {
     popoutContent: Component {
         PopoutComponent {
             width: root.popoutWidth
-            headerText: "Ambient Sound"
-            detailsText: root.playingSounds.length > 0 ? root.playingSounds.length + " playing" : "Tap to play"
+            headerText: ""
+            detailsText: ""
             showCloseButton: false
-
-            headerActions: Component {
-                Rectangle {
-                    id: timerHeaderChip
-                    visible: true
-                    height: Theme.buttonHeightXXS
-                    implicitWidth: timerChipRow.implicitWidth + Theme.spacingM
-                    radius: height / 2
-                    color: sleepTimer.running
-                        ? Theme.primary
-                        : (root.timerDropdownOpen ? Theme.withAlpha(Theme.primary, 0.15) : (timerMouseArea.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh))
-                    border.width: 1
-                    border.color: sleepTimer.running
-                        ? Theme.primary
-                        : (root.timerDropdownOpen ? Theme.primary : Theme.surfaceVariant)
-
-                    Behavior on color { ColorAnimation { duration: 150 } }
-                    Behavior on border.color { ColorAnimation { duration: 150 } }
-
-                    Row {
-                        id: timerChipRow
-                        anchors.centerIn: parent
-                        spacing: Theme.spacingXS
-
-                        DankIcon {
-                            name: "timer"
-                            size: Theme.iconSizeSmall
-                            color: sleepTimer.running
-                                ? Theme.onPrimary
-                                : (root.timerDropdownOpen ? Theme.primary : Theme.surfaceVariantText)
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        StyledText {
-                            text: sleepTimer.running
-                                ? Math.ceil(sleepTimer.remainingTime / 60000) + "m"
-                                : I18n.tr("Timer")
-                            font.pixelSize: Theme.fontSizeSmall
-                            font.weight: sleepTimer.running ? Font.Bold : Font.Medium
-                            color: sleepTimer.running
-                                ? Theme.onPrimary
-                                : (root.timerDropdownOpen ? Theme.primary : Theme.surfaceVariantText)
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        DankIcon {
-                            name: root.timerDropdownOpen ? "expand_less" : "expand_more"
-                            size: 14
-                            color: sleepTimer.running
-                                ? Theme.onPrimary
-                                : (root.timerDropdownOpen ? Theme.primary : Theme.surfaceVariantText)
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                    }
-
-                    MouseArea {
-                        id: timerMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.timerDropdownOpen = !root.timerDropdownOpen
-                    }
-                }
-            }
 
             Item {
                 width: parent.width
-                implicitHeight: mainContentColumn.implicitHeight
+                implicitHeight: mainContentColumn.implicitHeight + (Theme.spacingM * 2)
 
                 Column {
                     id: mainContentColumn
-                    width: parent.width
-                    spacing: Theme.spacingS
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: Theme.spacingM
+                    spacing: Theme.spacingM
 
-                    // Volume & Control bar
-                    MediaHeader {
-                        volume: root.masterVolume / 100
-                        isMuted: root.isMuted
-                        showStopButton: true
-                        stopButtonEnabled: root.playingSounds.length > 0
-                        onVolumeChangeRequested: v => {
-                            root.masterVolume = v * 100;
-                            if (v > 0 && root.isMuted) root.isMuted = false;
-                            root.updateAllVolumes();
-                        }
-                        onMuteToggled: root.toggleMute()
-                        onStopClicked: root.stopAll()
-                    }
-
-                    // Presets section
-                    Column {
+                    // Top Preset Row
+                    Row {
+                        id: presetRow
                         width: parent.width
-                        spacing: Theme.spacingXS
-                        visible: root.presets.length > 0 || root.playingSounds.length > 0
+                        height: root.actionButtonSize
+                        spacing: Theme.spacingS
 
+                        // Preset Selector (DankDropdown)
                         Item {
-                            width: parent.width
-                            height: Theme.buttonHeightXS
+                            id: presetSelectorContainer
+                            width: parent.width - (root.actionButtonSize * 3 + Theme.spacingS * 3)
+                            height: root.actionButtonSize
 
-                            StyledText {
-                                anchors.left: parent.left
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: I18n.tr("Your Presets")
-                                font.pixelSize: Theme.fontSizeSmall
-                                font.weight: Font.Bold
-                                color: Theme.surfaceVariantText
-                                visible: root.presets.length > 0
-                            }
-
-                            DankButton {
-                                id: saveButton
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: I18n.tr("Save Preset")
-                                iconName: "bookmark_add"
-                                buttonHeight: Theme.buttonHeightXXS
-                                backgroundColor: "transparent"
-                                textColor: Theme.primary
-                                horizontalPadding: Theme.spacingM
-                                visible: root.playingSounds.length > 0
-                                onClicked: root.savePreset()
-                            }
-                        }
-
-                        Flow {
-                            width: parent.width
-                            spacing: Theme.spacingXS
-                            Repeater {
-                                model: root.presets
-                                delegate: Item {
-                                    width: (parent.width - Theme.spacingXS) / 2
-                                    height: Theme.buttonHeightXS
-
-                                    DankButton {
-                                        id: presetButton
-                                        text: modelData.name
-                                        width: parent.width - 48
-                                        height: parent.height
-                                        visible: root.editingIndex !== index
-                                        onClicked: root.loadPreset(modelData)
-                                    }
-
-                                    DankTextField {
-                                        id: editField
-                                        width: parent.width - 48
-                                        height: parent.height
-                                        text: modelData.name
-                                        visible: root.editingIndex === index
-                                        onEditingFinished: root.renamePreset(index, text)
-                                        Component.onCompleted: {
-                                            if (root.editingIndex === index) forceActiveFocus();
-                                        }
-                                    }
-
-                                    DankIcon {
-                                        name: root.editingIndex === index ? "check" : "edit"
-                                        size: Theme.iconSizeSmall
-                                        anchors.right: deleteIcon.left
-                                        anchors.rightMargin: Theme.spacingXS
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        color: Theme.surfaceVariantText
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                if (root.editingIndex === index) {
-                                                    root.renamePreset(index, editField.text);
-                                                } else {
-                                                    root.editingIndex = index;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    DankIcon {
-                                        id: deleteIcon
-                                        name: "close"
-                                        size: Theme.iconSizeSmall
-                                        anchors.right: parent.right
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        color: Theme.error
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: root.deletePreset(index)
+                            DankDropdown {
+                                id: presetDropdown
+                                anchors.fill: parent
+                                visible: !root.renamingPreset
+                                compactMode: true
+                                dropdownWidth: width
+                                emptyText: I18n.tr("Select preset…")
+                                options: root.presets.map(function(p) { return p.name; })
+                                currentValue: (root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length)
+                                    ? root.presets[root.selectedPresetIndex].name
+                                    : ""
+                                onValueChanged: (newValue) => {
+                                    for (var i = 0; i < root.presets.length; i++) {
+                                        if (root.presets[i].name === newValue) {
+                                            root.loadPreset(root.presets[i]);
+                                            root.selectedPresetIndex = i;
+                                            break;
                                         }
                                     }
                                 }
                             }
+
+                            // Inline rename field
+                            DankTextField {
+                                id: renameField
+                                anchors.fill: parent
+                                anchors.margins: 2
+                                visible: root.renamingPreset
+                                text: (root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length)
+                                    ? root.presets[root.selectedPresetIndex].name : ""
+                                onAccepted: root.renamePreset(root.selectedPresetIndex, text)
+                                Component.onCompleted: {
+                                    if (visible) forceActiveFocus();
+                                }
+                            }
+                        }
+
+                        // Add preset button (+)
+                        DankActionButton {
+                            buttonSize: root.actionButtonSize
+                            circular: true
+                            iconName: "add"
+                            iconSize: Theme.iconSizeSmall + 2
+                            iconColor: Theme.surfaceText
+                            backgroundColor: Theme.surfaceContainerHigh
+                            tooltipText: I18n.tr("Save Preset")
+                            onClicked: root.savePreset()
+                        }
+
+                        // Edit preset button (pencil)
+                        DankActionButton {
+                            readonly property bool canEdit: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
+                            buttonSize: root.actionButtonSize
+                            circular: true
+                            enabled: canEdit
+                            opacity: canEdit ? 1.0 : 0.35
+                            iconName: "edit"
+                            iconSize: Theme.iconSizeSmall
+                            iconColor: Theme.surfaceText
+                            backgroundColor: Theme.surfaceContainerHigh
+                            tooltipText: I18n.tr("Rename Preset")
+                            onClicked: {
+                                root.renamingPreset = true;
+                                renameField.forceActiveFocus();
+                                renameField.selectAll();
+                            }
+                        }
+
+                        // Delete preset button (trash)
+                        DankActionButton {
+                            readonly property bool canDelete: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
+                            buttonSize: root.actionButtonSize
+                            circular: true
+                            enabled: canDelete
+                            opacity: canDelete ? 1.0 : 0.35
+                            iconName: "delete"
+                            iconSize: Theme.iconSizeSmall
+                            iconColor: Theme.error
+                            backgroundColor: Theme.surfaceContainerHigh
+                            tooltipText: I18n.tr("Delete Preset")
+                            onClicked: root.deletePreset(root.selectedPresetIndex)
                         }
                     }
 
-                    // Sound grid
-                    Flow {
+                    // Sound Grid
+                    Flickable {
+                        id: gridFlickable
                         width: parent.width
-                        spacing: root.gridSpacing
+                        height: Math.min(soundGrid.implicitHeight, root.popoutHeight - (root.actionButtonSize + Theme.buttonHeightM + (Theme.spacingM * 3)))
+                        contentWidth: width
+                        contentHeight: soundGrid.implicitHeight
+                        clip: true
+                        boundsBehavior: Flickable.StopAtBounds
 
-                        Repeater {
-                            model: root.visibleSounds
-                            delegate: ActionTile {
-                                readonly property string itemId: root.soundId(modelData)
-                                width: root.cellWidth
-                                height: root.cellHeight
-                                iconName: modelData.icon
-                                title: modelData.name.replace("-", " ")
-                                titleFontSize: Theme.fontSizeSmall
-                                subtitle: ""
-                                volumeProgress: {
-                                    var vol = root.soundVolumes[itemId] !== undefined ? root.soundVolumes[itemId] : 100;
-                                    return vol / 100.0;
-                                }
-                                active: root.playingSounds.indexOf(itemId) >= 0
+                        Grid {
+                            id: soundGrid
+                            width: parent.width
+                            columns: 4
+                            spacing: root.gridSpacing
 
-                                onClicked: root.toggleSound(itemId)
-                                onScrollUp: {
-                                    if (active) {
+                            Repeater {
+                                model: root.visibleSounds
+                                delegate: ActionTile {
+                                    readonly property string itemId: root.soundId(modelData)
+                                    width: Math.floor((soundGrid.width - (root.gridSpacing * 3)) / 4)
+                                    height: root.cellHeight
+                                    iconName: modelData.icon
+                                    title: modelData.name.replace("-", " ")
+                                    titleFontSize: Theme.fontSizeSmall
+                                    volumeProgress: {
+                                        var vol = root.soundVolumes[itemId] !== undefined ? root.soundVolumes[itemId] : 100;
+                                        return vol / 100.0;
+                                    }
+                                    active: root.playingSounds.indexOf(itemId) >= 0
+
+                                    onClicked: root.toggleSound(itemId)
+                                    onScrollUp: {
                                         var current = root.soundVolumes[itemId] !== undefined ? root.soundVolumes[itemId] : 100;
                                         root.setSoundVolume(itemId, Math.min(100, current + 5));
                                     }
-                                }
-                                onScrollDown: {
-                                    if (active) {
+                                    onScrollDown: {
                                         var current = root.soundVolumes[itemId] !== undefined ? root.soundVolumes[itemId] : 100;
                                         root.setSoundVolume(itemId, Math.max(0, current - 5));
                                     }
@@ -835,46 +784,157 @@ PluginComponent {
                         }
                     }
 
-                    // Hints
-                    HintSection {
+                    // Bottom Control Bar
+                    Item {
+                        id: bottomBar
                         width: parent.width
-                        showHints: root.showHints && root.playingSounds.length > 0
+                        height: Theme.buttonHeightM
 
-                        HintItem {
-                            icon: "mouse"
-                            text: I18n.tr("Middle-click bar icon to toggle your preset sound.")
-                        }
-                        HintItem {
-                            icon: "mouse"
-                            text: I18n.tr("Right-click bar icon to quickly mute/unmute.")
-                        }
-                        HintItem {
-                            icon: "mouse"
-                            text: I18n.tr("Scroll on a sound tile to adjust its individual volume.")
+                        Row {
+                            anchors.fill: parent
+                            spacing: Theme.spacingS
+
+                            // Mute button
+                            DankActionButton {
+                                id: muteBtn
+                                buttonSize: root.actionButtonSize
+                                circular: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                backgroundColor: Theme.surfaceContainerHigh
+                                iconName: root.isMuted ? "volume_off" : (root.masterVolume > 50 ? "volume_up" : (root.masterVolume > 0 ? "volume_down" : "volume_mute"))
+                                iconSize: Theme.iconSizeMedium
+                                iconColor: root.isMuted ? Theme.error : Theme.surfaceText
+                                tooltipText: root.isMuted ? I18n.tr("Unmute") : I18n.tr("Mute")
+                                onClicked: root.toggleMute()
+                            }
+
+                            // Master Volume Slider
+                            DankSlider {
+                                id: masterSlider
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width - (root.actionButtonSize * 4) - (Theme.spacingS * 4)
+                                minimum: 0
+                                maximum: 100
+                                step: 5
+                                value: root.masterVolume
+                                showValue: true
+                                unit: "%"
+                                wheelEnabled: true
+                                onSliderValueChanged: (v) => {
+                                    if (v !== root.masterVolume) {
+                                        root.masterVolume = v;
+                                        if (v > 0 && root.isMuted) root.isMuted = false;
+                                        root.updateAllVolumes();
+                                    }
+                                }
+
+                                Connections {
+                                    target: root
+                                    function onMasterVolumeChanged() {
+                                        if (masterSlider.value !== root.masterVolume) {
+                                            masterSlider.value = root.masterVolume;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Stop / Clear All button
+                            DankActionButton {
+                                id: stopBtn
+                                readonly property bool canStop: root.playingSounds.length > 0
+                                buttonSize: root.actionButtonSize
+                                circular: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                enabled: canStop
+                                opacity: canStop ? 1.0 : 0.35
+                                backgroundColor: Theme.surfaceContainerHigh
+                                iconName: "cancel"
+                                iconSize: Theme.iconSizeMedium
+                                iconColor: Theme.error
+                                tooltipText: I18n.tr("Stop All")
+                                onClicked: root.stopAll()
+                            }
+
+                            // Timer button
+                            DankActionButton {
+                                id: timerBtn
+                                buttonSize: root.actionButtonSize
+                                circular: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                backgroundColor: sleepTimer.running
+                                    ? Theme.primary
+                                    : (root.timerDropdownOpen ? Theme.withAlpha(Theme.primary, 0.18) : Theme.surfaceContainerHigh)
+                                iconName: "timer"
+                                iconSize: Theme.iconSizeMedium
+                                iconColor: sleepTimer.running ? Theme.onPrimary : (root.timerDropdownOpen ? Theme.primary : Theme.surfaceText)
+                                tooltipText: I18n.tr("Sleep Timer")
+                                onClicked: {
+                                    root.timerDropdownOpen = !root.timerDropdownOpen;
+                                }
+
+                                // Small badge if running
+                                Rectangle {
+                                    anchors.top: parent.top
+                                    anchors.right: parent.right
+                                    anchors.margins: -2
+                                    height: 16
+                                    implicitWidth: timerBadgeText.implicitWidth + 8
+                                    radius: 8
+                                    color: Theme.primary
+                                    visible: sleepTimer.running && !root.timerDropdownOpen
+
+                                    StyledText {
+                                        id: timerBadgeText
+                                        anchors.centerIn: parent
+                                        text: Math.ceil(sleepTimer.remainingTime / 60000) + "m"
+                                        font.pixelSize: 9
+                                        font.weight: Font.Bold
+                                        color: Theme.onPrimary
+                                    }
+                                }
+                            }
+
+                            // Play / Pause / Resume button
+                            DankActionButton {
+                                id: playPauseBtn
+                                buttonSize: root.actionButtonSize
+                                circular: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                backgroundColor: Theme.primary
+                                iconName: root.playingSounds.length > 0 ? "pause" : "play_arrow"
+                                iconSize: Theme.iconSize
+                                iconColor: Theme.onPrimary
+                                tooltipText: root.playingSounds.length > 0 ? I18n.tr("Pause") : I18n.tr("Resume")
+                                onClicked: root.togglePlayPause()
+                            }
                         }
                     }
                 }
 
-                // Backdrop: dismiss dropdown on outside click
+                // Backdrop for popups
                 MouseArea {
                     anchors.fill: parent
                     z: 99
                     visible: root.timerDropdownOpen
-                    onClicked: root.timerDropdownOpen = false
+                    onClicked: {
+                        root.timerDropdownOpen = false;
+                        root.renamingPreset = false;
+                    }
                 }
 
-                // Floating timer/whenDone dropdown — anchored top-right (under the Timer chip)
+                // Timer / When Done Dropdown
                 Rectangle {
                     id: timerDropdownCard
                     z: 100
                     visible: opacity > 0
                     opacity: root.timerDropdownOpen ? 1.0 : 0.0
                     scale: root.timerDropdownOpen ? 1.0 : 0.95
-                    transformOrigin: Item.TopRight
+                    transformOrigin: Item.BottomRight
 
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    width: Math.min(parent.width, 380)
+                    anchors.bottom: mainContentColumn.bottom
+                    anchors.bottomMargin: 64
+                    anchors.right: mainContentColumn.right
+                    width: Math.min(parent.width - (Theme.spacingM * 2), 380)
 
                     height: timerDropdownContent.implicitHeight + (Theme.spacingS * 2)
                     radius: Theme.cornerRadius
