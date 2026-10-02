@@ -65,6 +65,11 @@ Every plugin declares its surface type in `plugin.json`. Choose the simplest, mo
 ### Theme Tokens & Visual Consistency
 
 DMS uses an opinionated Material Design 3 (M3) design system exposed globally via the `Theme` singleton (`qs.Common`). Every plugin must adhere strictly to these tokens for seamless visual integration with the desktop shell.
+Detailed guides:
+- [Design Tokens & Sizing Guide](docs/design-system.md) (`Theme.buttonHeight*`, `Theme.iconSize*`, spacing, corner radius, colors)
+- [Component Selection Guide](docs/components-guide.md) (`DankActionButton`, `DankDropdown`, `DankSlider`, `StyledText`)
+- [Built-ins & Native Services](docs/builtins-and-services.md) (Native CLI replacements & QML services)
+- [Testing & Verification](docs/testing-and-verification.md) (IPC reload, compatibility scripts, linting)
 
 #### 1. Surface Hierarchy & Layering
 DMS builds depth through tonal surface elevation rather than heavy drop shadows:
