@@ -34,7 +34,7 @@ PluginSettings {
         { name: "city", icon: "location_city" },
         { name: "train", icon: "train" },
         { name: "boat", icon: "sailing" },
-        { name: "acoustic-guitar", icon: "music_note" },
+        { name: "guitar", icon: "music_note" },
         { name: "warm-piano", icon: "piano" },
         { name: "ambient-music", icon: "library_music" },
         { name: "lofi-beats", icon: "headphones" },
