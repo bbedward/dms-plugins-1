@@ -10,7 +10,7 @@ Rectangle {
     property string subtitle: ""
     property bool active: false
     property color activeColor: Theme.primary
-    property color onActiveColor: Theme.onPrimary
+    property color activeContentColor: Theme.primaryText
     property color borderColor: "transparent"
     property real borderWidth: 0
     property color textColor: Theme.surfaceText
@@ -33,6 +33,8 @@ Rectangle {
 
     onVolumeProgressChanged: arcCanvas.requestPaint()
     onActiveChanged: arcCanvas.requestPaint()
+    onActiveColorChanged: arcCanvas.requestPaint()
+    onActiveContentColorChanged: arcCanvas.requestPaint()
 
     Column {
         anchors.centerIn: parent
@@ -69,7 +71,7 @@ Rectangle {
                     // Background track
                     ctx.beginPath();
                     ctx.strokeStyle = root.active
-                        ? Qt.rgba(1, 1, 1, 0.25)
+                        ? Theme.withAlpha(root.activeContentColor, 0.25)
                         : Theme.withAlpha(Theme.surfaceVariantText, 0.22);
                     ctx.arc(cx, cy, radius, startAngle, endAngle, false);
                     ctx.stroke();
@@ -79,7 +81,7 @@ Rectangle {
                     if (progress > 0) {
                         ctx.beginPath();
                         ctx.strokeStyle = root.active
-                            ? root.onActiveColor
+                            ? root.activeContentColor
                             : Theme.withAlpha(Theme.surfaceVariantText, 0.75);
                         var progEnd = startAngle + (progress * span);
                         ctx.arc(cx, cy, radius, startAngle, progEnd, false);
@@ -95,7 +97,7 @@ Rectangle {
                 name: root.iconName
                 size: 22
                 anchors.centerIn: parent
-                color: root.active ? root.onActiveColor : Theme.surfaceVariantText
+                color: root.active ? root.activeContentColor : Theme.surfaceVariantText
             }
         }
 
@@ -103,7 +105,7 @@ Rectangle {
             text: root.title
             font.pixelSize: root.titleFontSize
             font.weight: Font.Medium
-            color: root.active ? root.onActiveColor : Theme.surfaceVariantText
+            color: root.active ? root.activeContentColor : Theme.surfaceVariantText
             anchors.horizontalCenter: parent.horizontalCenter
             elide: Text.ElideRight
             width: root.width - Theme.spacingS
