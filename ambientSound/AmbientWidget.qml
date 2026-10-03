@@ -704,7 +704,8 @@ PluginComponent {
                         // Preset Selector (DankDropdown)
                         Item {
                             id: presetSelectorContainer
-                            width: parent.width - (root.actionButtonSize * 3 + Theme.spacingS * 3)
+                            readonly property int visibleButtonCount: root.renamingPreset ? 3 : 2
+                            width: parent.width - (root.actionButtonSize + Theme.spacingS) * visibleButtonCount
                             height: root.actionButtonSize
 
                             DankDropdown {
@@ -767,6 +768,26 @@ PluginComponent {
                             }
                         }
 
+                        // Delete preset button (trash), only shown in edit mode
+                        DankActionButton {
+                            readonly property bool canDelete: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
+                            visible: root.renamingPreset
+                            buttonSize: root.actionButtonSize
+                            circular: true
+                            enabled: canDelete
+                            opacity: canDelete ? 1.0 : 0.35
+                            iconName: "delete"
+                            iconSize: Theme.iconSizeSmall
+                            iconColor: Theme.error
+                            backgroundColor: Theme.surfaceContainerHigh
+                            tooltipText: I18n.tr("Delete Preset")
+                            onClicked: {
+                                root.deletePreset(root.selectedPresetIndex);
+                                root.editingIndex = -1;
+                                root.renamingPreset = false;
+                            }
+                        }
+
                         // Edit preset button (pencil) / Cancel rename button (close / x)
                         DankActionButton {
                             readonly property bool canEdit: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
@@ -789,21 +810,6 @@ PluginComponent {
                                     renameField.selectAll();
                                 }
                             }
-                        }
-
-                        // Delete preset button (trash)
-                        DankActionButton {
-                            readonly property bool canDelete: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
-                            buttonSize: root.actionButtonSize
-                            circular: true
-                            enabled: !root.renamingPreset && canDelete
-                            opacity: (!root.renamingPreset && canDelete) ? 1.0 : 0.35
-                            iconName: "delete"
-                            iconSize: Theme.iconSizeSmall
-                            iconColor: Theme.error
-                            backgroundColor: Theme.surfaceContainerHigh
-                            tooltipText: I18n.tr("Delete Preset")
-                            onClicked: root.deletePreset(root.selectedPresetIndex)
                         }
                     }
 
