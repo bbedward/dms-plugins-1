@@ -2,7 +2,7 @@
   "id": "bongoCat",
   "name": "Bongo Cat",
   "description": "A reactive Bongo Cat that taps along with your typing",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "license": "MIT",
   "author": "Loc Huynh",
   "icon": "pets",
