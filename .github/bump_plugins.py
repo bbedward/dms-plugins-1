@@ -99,8 +99,9 @@ for plugin_dir in sorted(Path(".").iterdir()):
     if not manifest.exists():
         continue
 
-    # Latest commit modifying plugin.json
-    last_bump = git_cmd("log", "-n", "1", "--format=%H", "--", str(manifest))
+    # Latest release bump commit touching plugin.json. Plain commits that edit plugin.json
+    # (e.g. dependency changes) must not count as a baseline, or earlier fixes are skipped.
+    last_bump = git_cmd("log", "-n", "1", "--format=%H", "--grep=^chore(release):", "--", str(manifest))
     range_spec = f"{last_bump}..HEAD" if last_bump else "HEAD"
 
     # Retrieve commits in plugin_dir since last bump
