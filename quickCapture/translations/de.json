@@ -261,7 +261,7 @@
     "Could not crop image": "Bild konnte nicht zugeschnitten werden"
   },
   "Credits": {
-    "Credits": ""
+    "Credits": "Mitwirkende"
   },
   "Crop / Resize": {
     "Crop / Resize": "Zuschneiden / Größe ändern"
@@ -393,7 +393,7 @@
     "Floating": "Schwebend"
   },
   "Floating window and continuous editing workflow.": {
-    "Floating window and continuous editing workflow.": ""
+    "Floating window and continuous editing workflow.": "Schwebendes Fenster und kontinuierlicher Bearbeitungs-Workflow."
   },
   "Focused Screen": {
     "Focused Screen": "Fokussierter Bildschirm"
@@ -696,7 +696,7 @@
     "Palette Preset": "Palette-Voreinstellung"
   },
   "Paste from Clipboard": {
-    "Paste from Clipboard": ""
+    "Paste from Clipboard": "Aus Zwischenablage einfügen"
   },
   "Pause": {
     "Pause": "Pause"
@@ -783,7 +783,7 @@
     "Radial Menu": "Radialmenü"
   },
   "Radial menu and tool interaction patterns.": {
-    "Radial menu and tool interaction patterns.": ""
+    "Radial menu and tool interaction patterns.": "Radialmenü und Werkzeug-Interaktionsmuster."
   },
   "Ratio": {
     "Ratio": "Verhältnis"
@@ -1107,7 +1107,7 @@
     "Toolbar Position": "Position der Symbolleiste"
   },
   "Toolbar design and layout inspiration.": {
-    "Toolbar design and layout inspiration.": ""
+    "Toolbar design and layout inspiration.": "Design der Symbolleiste und Layout-Inspiration."
   },
   "Tools": {
     "Tools": "Werkzeuge"
