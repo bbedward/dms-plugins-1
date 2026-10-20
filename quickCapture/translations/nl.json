@@ -1,21 +1,21 @@
 {
   "%1 Font": {
-    "%1 Font": ""
+    "%1 Font": "Lettertype %1"
   },
   "%1 is not installed": {
-    "%1 is not installed": ""
+    "%1 is not installed": "%1 is niet geïnstalleerd"
   },
   "1 Connecting Line": {
-    "1 Connecting Line": ""
+    "1 Connecting Line": "1 verbindingslijn"
   },
   "2 Connecting Lines": {
-    "2 Connecting Lines": ""
+    "2 Connecting Lines": "2 verbindingslijnen"
   },
   "Action": {
     "Action": "Actie"
   },
   "Action on %1": {
-    "Action on %1": ""
+    "Action on %1": "Actie bij %1"
   },
   "Adaptive": {
     "Adaptive": "Adaptief"
@@ -24,88 +24,88 @@
     "Add": "Toevoegen"
   },
   "Add Text Note": {
-    "Add Text Note": ""
+    "Add Text Note": "Tekstnotitie toevoegen"
   },
   "Alignment": {
-    "Alignment": ""
+    "Alignment": "Uitlijning"
   },
   "All Outputs": {
-    "All Outputs": ""
+    "All Outputs": "Alle schermen"
   },
   "Annotating": {
-    "Annotating": ""
+    "Annotating": "Annoteren"
   },
   "Annotation Tools": {
-    "Annotation Tools": ""
+    "Annotation Tools": "Annotatiehulpmiddelen"
   },
   "Anonymous Copy": {
-    "Anonymous Copy": ""
+    "Anonymous Copy": "Anoniem kopiëren"
   },
   "Arrow": {
-    "Arrow": ""
+    "Arrow": "Pijl"
   },
   "Aspect Ratio": {
-    "Aspect Ratio": ""
+    "Aspect Ratio": "Beeldverhouding"
   },
   "Audio": {
     "Audio": "Audio"
   },
   "Audio & Overlay": {
-    "Audio & Overlay": ""
+    "Audio & Overlay": "Audio & overlay"
   },
   "Audio Codec": {
     "Audio Codec": "Audio-codec"
   },
   "Audio recording is disabled when using the %1 backend.": {
-    "Audio recording is disabled when using the %1 backend.": ""
+    "Audio recording is disabled when using the %1 backend.": "Audio-opname is uitgeschakeld bij gebruik van de %1-backend."
   },
   "Auto": {
     "Auto": "Auto"
   },
   "Auto (Screen Scale)": {
-    "Auto (Screen Scale)": ""
+    "Auto (Screen Scale)": "Automatisch (schermschaal)"
   },
   "Auto Balance": {
-    "Auto Balance": ""
+    "Auto Balance": "Automatisch balanceren"
   },
   "Auto-apply background defaults": {
-    "Auto-apply background defaults": ""
+    "Auto-apply background defaults": "Achtergrondstandaarden automatisch toepassen"
   },
   "Auto-close the loop when ending near the start point.": {
-    "Auto-close the loop when ending near the start point.": ""
+    "Auto-close the loop when ending near the start point.": "De lus automatisch sluiten wanneer je eindigt bij het beginpunt."
   },
   "Auto-minimize": {
-    "Auto-minimize": ""
+    "Auto-minimize": "Automatisch minimaliseren"
   },
   "Auto-select a tool preset on hover, without releasing the mouse.": {
-    "Auto-select a tool preset on hover, without releasing the mouse.": ""
+    "Auto-select a tool preset on hover, without releasing the mouse.": "Automatisch een hulpmiddelvoorinstelling selecteren bij aanwijzen, zonder de muis los te laten."
   },
   "Auto-tiling": {
-    "Auto-tiling": ""
+    "Auto-tiling": "Automatisch tegelen"
   },
   "Automatically minimize the float window after a delay": {
-    "Automatically minimize the float window after a delay": ""
+    "Automatically minimize the float window after a delay": "Het zwevende venster na een vertraging automatisch minimaliseren"
   },
   "Automatically stack windows to avoid overlap": {
-    "Automatically stack windows to avoid overlap": ""
+    "Automatically stack windows to avoid overlap": "Vensters automatisch stapelen om overlap te voorkomen"
   },
   "Back to Annotation": {
-    "Back to Annotation": ""
+    "Back to Annotation": "Terug naar annotatie"
   },
   "Background": {
     "Background": "Achtergrond"
   },
   "Background Defaults": {
-    "Background Defaults": ""
+    "Background Defaults": "Achtergrondstandaarden"
   },
   "Background Images": {
-    "Background Images": ""
+    "Background Images": "Achtergrondafbeeldingen"
   },
   "Background Mode": {
-    "Background Mode": ""
+    "Background Mode": "Achtergrondmodus"
   },
   "Background Presets": {
-    "Background Presets": ""
+    "Background Presets": "Achtergrondvoorinstellingen"
   },
   "Background image": {
     "Background image": "Achtergrondafbeelding"
@@ -114,13 +114,13 @@
     "Balanced": "Gebalanceerd"
   },
   "Bar Interactions": {
-    "Bar Interactions": ""
+    "Bar Interactions": "Balkinteracties"
   },
   "Blink Recording Dot": {
-    "Blink Recording Dot": ""
+    "Blink Recording Dot": "Opnamestip laten knipperen"
   },
   "Blur Background Image": {
-    "Blur Background Image": ""
+    "Blur Background Image": "Achtergrondafbeelding vervagen"
   },
   "Bold": {
     "Bold": "Vet"
@@ -132,7 +132,7 @@
     "Border Width": "Randdikte"
   },
   "Both": {
-    "Both": ""
+    "Both": "Beide"
   },
   "Bottom": {
     "Bottom": "Onder"
@@ -147,49 +147,52 @@
     "Bottom Right": "Rechtsonder"
   },
   "Callout": {
-    "Callout": ""
+    "Callout": "Callout"
   },
   "Callout Zoom": {
-    "Callout Zoom": ""
+    "Callout Zoom": "Callout-zoom"
   },
   "Cancel": {
     "Cancel": "Annuleren"
   },
   "Capture": {
-    "Capture": ""
+    "Capture": "Vastleggen"
   },
   "Capture Actions": {
-    "Capture Actions": ""
+    "Capture Actions": "Vastlegacties"
   },
   "Capture Options": {
-    "Capture Options": ""
+    "Capture Options": "Vastlegopties"
   },
   "Capturing...": {
-    "Capturing...": ""
+    "Capturing...": "Vastleggen..."
   },
   "Center": {
-    "Center": ""
+    "Center": "Midden"
   },
   "Choose Color": {
     "Choose Color": "Kleur kiezen"
   },
   "Choose notifications shown after copy or save.": {
-    "Choose notifications shown after copy or save.": ""
+    "Choose notifications shown after copy or save.": "Kies welke meldingen worden getoond na kopiëren of opslaan."
   },
   "Choose the editor shape for portrait or landscape screens.": {
-    "Choose the editor shape for portrait or landscape screens.": ""
+    "Choose the editor shape for portrait or landscape screens.": "Kies de vorm van de editor voor staande of liggende schermen."
+  },
+  "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": {
+    "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": ""
   },
   "Choose whether the editor opens as a modal overlay or a movable floating window.": {
-    "Choose whether the editor opens as a modal overlay or a movable floating window.": ""
+    "Choose whether the editor opens as a modal overlay or a movable floating window.": "Kies of de editor opent als modale overlay of als verplaatsbaar zwevend venster."
   },
   "Choose which monitor to capture during full screen recording.": {
-    "Choose which monitor to capture during full screen recording.": ""
+    "Choose which monitor to capture during full screen recording.": "Kies welke monitor wordt opgenomen bij een opname van het volledige scherm."
   },
   "Clean Text Eraser": {
-    "Clean Text Eraser": ""
+    "Clean Text Eraser": "Tekst netjes wissen"
   },
   "Clear saved region selection before each capture": {
-    "Clear saved region selection before each capture": ""
+    "Clear saved region selection before each capture": "Opgeslagen regioselectie wissen voor elke opname"
   },
   "Clipboard": {
     "Clipboard": "Klembord"
@@ -198,7 +201,7 @@
     "Close": "Sluiten"
   },
   "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.": {
-    "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.": ""
+    "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.": "Bedieningscentrum sluiten voor het vastleggen wanneer dit vanuit het paneel van het bedieningscentrum wordt gestart. Sneltoetsen en IPC-opnamen worden niet beïnvloed."
   },
   "Color": {
     "Color": "Kleur"
@@ -207,28 +210,28 @@
     "Color %1 copied": "Kleur %1 gekopieerd"
   },
   "Color Palette": {
-    "Color Palette": ""
+    "Color Palette": "Kleurenpalet"
   },
   "Color Picker": {
     "Color Picker": "Kleurkiezer"
   },
   "Configure up to %1 quick-access tool presets. Right-click during capture to open the radial menu.": {
-    "Configure up to %1 quick-access tool presets. Right-click during capture to open the radial menu.": ""
+    "Configure up to %1 quick-access tool presets. Right-click during capture to open the radial menu.": "Configureer tot %1 snel toegankelijke hulpmiddelvoorinstellingen. Klik met rechts tijdens het vastleggen om het radiale menu te openen."
   },
   "Conic Gradient": {
-    "Conic Gradient": ""
+    "Conic Gradient": "Conisch verloop"
   },
   "Container Format": {
-    "Container Format": ""
+    "Container Format": "Containerformaat"
   },
   "Controls the preview pixel budget while editing. Lower it if you experience lag. Does not affect the final saved image quality.": {
-    "Controls the preview pixel budget while editing. Lower it if you experience lag. Does not affect the final saved image quality.": ""
+    "Controls the preview pixel budget while editing. Lower it if you experience lag. Does not affect the final saved image quality.": "Bepaalt het pixelbudget van het voorbeeld tijdens het bewerken. Verlaag dit als je vertraging ervaart. Heeft geen invloed op de kwaliteit van de uiteindelijk opgeslagen afbeelding."
   },
   "Converting recording to GIF...": {
-    "Converting recording to GIF...": ""
+    "Converting recording to GIF...": "Opname converteren naar GIF..."
   },
   "Copied Anonymously": {
-    "Copied Anonymously": ""
+    "Copied Anonymously": "Anoniem gekopieerd"
   },
   "Copied to clipboard": {
     "Copied to clipboard": "Gekopieerd naar klembord"
@@ -240,88 +243,91 @@
     "Copy": "Kopiëren"
   },
   "Copy & Save": {
-    "Copy & Save": ""
+    "Copy & Save": "Kopiëren & opslaan"
   },
   "Copy Color": {
-    "Copy Color": ""
+    "Copy Color": "Kleur kopiëren"
   },
   "Copy Current Palette": {
-    "Copy Current Palette": ""
+    "Copy Current Palette": "Huidig palet kopiëren"
   },
   "Copy and customize this preset": {
-    "Copy and customize this preset": ""
+    "Copy and customize this preset": "Deze voorinstelling kopiëren en aanpassen"
   },
   "Copy vector / Paste / Duplicate": {
-    "Copy vector / Paste / Duplicate": ""
+    "Copy vector / Paste / Duplicate": "Vector kopiëren / Plakken / Dupliceren"
   },
   "Corner Radius": {
     "Corner Radius": "Hoekradius"
   },
   "Could not crop image": {
-    "Could not crop image": ""
+    "Could not crop image": "Kan afbeelding niet bijsnijden"
   },
   "Credits": {
-    "Credits": ""
+    "Credits": "Credits"
   },
   "Crop / Resize": {
-    "Crop / Resize": ""
+    "Crop / Resize": "Bijsnijden / Formaat wijzigen"
   },
   "Custom": {
     "Custom": "Aangepast"
   },
+  "DankBar": {
+    "DankBar": ""
+  },
   "Dark": {
-    "Dark": ""
+    "Dark": "Donker"
   },
   "Darken the image to improve foreground contrast": {
-    "Darken the image to improve foreground contrast": ""
+    "Darken the image to improve foreground contrast": "De afbeelding verdonkeren om het contrast van de voorgrond te verbeteren"
   },
   "Dashed Line": {
-    "Dashed Line": ""
+    "Dashed Line": "Streepjeslijn"
   },
   "Default Microphone": {
-    "Default Microphone": ""
+    "Default Microphone": "Standaardmicrofoon"
   },
   "Default Output": {
-    "Default Output": ""
+    "Default Output": "Standaarduitvoer"
   },
   "Default Watermark": {
-    "Default Watermark": ""
+    "Default Watermark": "Standaardwatermerk"
   },
   "Delete": {
     "Delete": "Verwijderen"
   },
   "Dim Background Image": {
-    "Dim Background Image": ""
+    "Dim Background Image": "Achtergrondafbeelding dimmen"
   },
   "Dim Intensity": {
-    "Dim Intensity": ""
+    "Dim Intensity": "Dimsterkte"
   },
   "Discard & Close": {
-    "Discard & Close": ""
+    "Discard & Close": "Verwerpen & sluiten"
   },
   "Display": {
     "Display": "Beeldscherm"
   },
   "Display Mode": {
-    "Display Mode": ""
+    "Display Mode": "Weergavemodus"
   },
   "Done": {
-    "Done": ""
+    "Done": "Gereed"
   },
   "Dotted Line": {
-    "Dotted Line": ""
+    "Dotted Line": "Stippellijn"
   },
   "Drag Image": {
-    "Drag Image": ""
+    "Drag Image": "Afbeelding slepen"
   },
   "Draw an outer ring using the stamp number color": {
-    "Draw an outer ring using the stamp number color": ""
+    "Draw an outer ring using the stamp number color": "Een buitenring tekenen in de kleur van het stempelnummer"
   },
   "Drop image onto bar icon to annotate it": {
-    "Drop image onto bar icon to annotate it": ""
+    "Drop image onto bar icon to annotate it": "Zet een afbeelding neer op het balkpictogram om deze te annoteren"
   },
   "Each command accepts action: %1 (open editor) or %2 (always-on-top window).": {
-    "Each command accepts action: %1 (open editor) or %2 (always-on-top window).": ""
+    "Each command accepts action: %1 (open editor) or %2 (always-on-top window).": "Elke opdracht accepteert action: %1 (editor openen) of %2 (venster dat altijd bovenaan blijft)."
   },
   "Edge Spacing": {
     "Edge Spacing": "Randafstand"
@@ -330,220 +336,223 @@
     "Edit": "Bewerken"
   },
   "Edit Color Palette": {
-    "Edit Color Palette": ""
+    "Edit Color Palette": "Kleurenpalet bewerken"
   },
   "Edit Text Note": {
-    "Edit Text Note": ""
+    "Edit Text Note": "Tekstnotitie bewerken"
   },
   "Editor": {
-    "Editor": ""
+    "Editor": "Editor"
   },
   "Ellipse": {
-    "Ellipse": ""
+    "Ellipse": "Ellips"
   },
   "Enable background automatically when opening the editor": {
-    "Enable background automatically when opening the editor": ""
+    "Enable background automatically when opening the editor": "Achtergrond automatisch inschakelen bij openen van de editor"
   },
   "Eraser": {
-    "Eraser": ""
+    "Eraser": "Gum"
   },
   "Failed to convert recording to GIF.": {
-    "Failed to convert recording to GIF.": ""
+    "Failed to convert recording to GIF.": "Converteren van opname naar GIF mislukt."
   },
   "Failed to copy screenshot": {
-    "Failed to copy screenshot": ""
+    "Failed to copy screenshot": "Kopiëren van schermafbeelding mislukt"
   },
   "Failed to create float window.": {
-    "Failed to create float window.": ""
+    "Failed to create float window.": "Aanmaken van zwevend venster mislukt."
   },
   "Failed to download image.": {
-    "Failed to download image.": ""
+    "Failed to download image.": "Downloaden van afbeelding mislukt."
   },
   "Failed to generate blurred background image": {
-    "Failed to generate blurred background image": ""
+    "Failed to generate blurred background image": "Genereren van vervaagde achtergrondafbeelding mislukt"
   },
   "Failed to load image: %1": {
-    "Failed to load image: %1": ""
+    "Failed to load image: %1": "Laden van afbeelding mislukt: %1"
   },
   "Failed to save screenshot": {
-    "Failed to save screenshot": ""
+    "Failed to save screenshot": "Opslaan van schermafbeelding mislukt"
   },
   "File": {
     "File": "Bestand"
   },
   "Filename Pattern": {
-    "Filename Pattern": ""
+    "Filename Pattern": "Bestandsnaampatroon"
   },
   "Flip Horizontal": {
-    "Flip Horizontal": ""
+    "Flip Horizontal": "Horizontaal spiegelen"
   },
   "Flip Vertical": {
-    "Flip Vertical": ""
+    "Flip Vertical": "Verticaal spiegelen"
   },
   "Float": {
     "Float": "Zweven"
   },
   "Float Window": {
-    "Float Window": ""
+    "Float Window": "Zwevend venster"
   },
   "Float service not available.": {
-    "Float service not available.": ""
+    "Float service not available.": "Zweefservice niet beschikbaar."
   },
   "Floating": {
     "Floating": "Zwevend"
   },
+  "Floating Pill": {
+    "Floating Pill": ""
+  },
   "Floating window and continuous editing workflow.": {
-    "Floating window and continuous editing workflow.": ""
+    "Floating window and continuous editing workflow.": "Zwevend venster en doorlopende bewerkingsworkflow."
   },
   "Focused Screen": {
-    "Focused Screen": ""
+    "Focused Screen": "Scherm met focus"
   },
   "Folder": {
-    "Folder": ""
+    "Folder": "Map"
   },
   "Font Size": {
     "Font Size": "Lettergrootte"
   },
   "Font family used for number stamp labels": {
-    "Font family used for number stamp labels": ""
+    "Font family used for number stamp labels": "Lettertypefamilie voor labels van nummerstempels"
   },
   "Format tokens: %Y (Year), %y (2-digit year), %m (Month), %d (Day), %H (Hour), %M (Minute), %S (Second), {zzz} (Ms)": {
-    "Format tokens: %Y (Year), %y (2-digit year), %m (Month), %d (Day), %H (Hour), %M (Minute), %S (Second), {zzz} (Ms)": ""
+    "Format tokens: %Y (Year), %y (2-digit year), %m (Month), %d (Day), %H (Hour), %M (Minute), %S (Second), {zzz} (Ms)": "Opmaaktokens: %Y (jaar), %y (jaar in 2 cijfers), %m (maand), %d (dag), %H (uur), %M (minuut), %S (seconde), {zzz} (ms)"
   },
   "Format tokens: {user} (Username), \\n (New Line), %Y (Year), %y (2-digit year), %m (Month), %d (Day), %H (Hour), %M (Minute), %S (Second)": {
-    "Format tokens: {user} (Username), \\n (New Line), %Y (Year), %y (2-digit year), %m (Month), %d (Day), %H (Hour), %M (Minute), %S (Second)": ""
+    "Format tokens: {user} (Username), \\n (New Line), %Y (Year), %y (2-digit year), %m (Month), %d (Day), %H (Hour), %M (Minute), %S (Second)": "Opmaaktokens: {user} (gebruikersnaam), \\n (nieuwe regel), %Y (jaar), %y (jaar in 2 cijfers), %m (maand), %d (dag), %H (uur), %M (minuut), %S (seconde)"
   },
   "Format: %1 (%2 FPS)": {
-    "Format: %1 (%2 FPS)": ""
+    "Format: %1 (%2 FPS)": "Formaat: %1 (%2 FPS)"
   },
   "Framerate": {
-    "Framerate": ""
+    "Framerate": "Framerate"
   },
   "Free": {
-    "Free": ""
+    "Free": "Vrij"
   },
   "Fullscreen": {
     "Fullscreen": "Volledig scherm"
   },
   "Fullscreen Target": {
-    "Fullscreen Target": ""
+    "Fullscreen Target": "Doel volledig scherm"
   },
   "GIF Framerate": {
-    "GIF Framerate": ""
+    "GIF Framerate": "GIF-framerate"
   },
   "GPU encoder failed. Retrying with %1...": {
-    "GPU encoder failed. Retrying with %1...": ""
+    "GPU encoder failed. Retrying with %1...": "GPU-encoder mislukt. Opnieuw proberen met %1..."
   },
   "General Shortcuts": {
-    "General Shortcuts": ""
+    "General Shortcuts": "Algemene sneltoetsen"
   },
   "Gradient Angle": {
-    "Gradient Angle": ""
+    "Gradient Angle": "Verloophoek"
   },
   "Gradient End": {
-    "Gradient End": ""
+    "Gradient End": "Einde verloop"
   },
   "Gradient Start": {
-    "Gradient Start": ""
+    "Gradient Start": "Begin verloop"
   },
   "Help": {
     "Help": "Hulp"
   },
   "Hide Annotations": {
-    "Hide Annotations": ""
+    "Hide Annotations": "Annotaties verbergen"
   },
   "Hide Control Center": {
-    "Hide Control Center": ""
+    "Hide Control Center": "Bedieningscentrum verbergen"
   },
   "Hide Control Center by Default": {
-    "Hide Control Center by Default": ""
+    "Hide Control Center by Default": "Bedieningscentrum standaard verbergen"
   },
   "Hide Control Center on Capture": {
-    "Hide Control Center on Capture": ""
+    "Hide Control Center on Capture": "Bedieningscentrum verbergen bij vastleggen"
   },
   "High": {
     "High": "Hoog"
   },
   "Highlighter": {
-    "Highlighter": ""
+    "Highlighter": "Markeerstift"
   },
   "History": {
     "History": "Geschiedenis"
   },
   "Hold %1 for Loupe": {
-    "Hold %1 for Loupe": ""
+    "Hold %1 for Loupe": "Houd %1 ingedrukt voor loep"
   },
   "Hover Trigger Delay": {
-    "Hover Trigger Delay": ""
+    "Hover Trigger Delay": "Vertraging bij aanwijzen"
   },
   "IPC Commands": {
-    "IPC Commands": ""
+    "IPC Commands": "IPC-opdrachten"
   },
   "Image": {
     "Image": "Afbeelding"
   },
   "Image + Text": {
-    "Image + Text": ""
+    "Image + Text": "Afbeelding + tekst"
   },
   "Image Background": {
-    "Image Background": ""
+    "Image Background": "Afbeeldingsachtergrond"
   },
   "Image Error": {
-    "Image Error": ""
+    "Image Error": "Afbeeldingsfout"
   },
   "Image Folder": {
-    "Image Folder": ""
+    "Image Folder": "Afbeeldingenmap"
   },
   "Image Size": {
-    "Image Size": ""
+    "Image Size": "Afbeeldingsgrootte"
   },
   "Image is too small (%1×%2). Minimum: %3px": {
-    "Image is too small (%1×%2). Minimum: %3px": ""
+    "Image is too small (%1×%2). Minimum: %3px": "Afbeelding is te klein (%1×%2). Minimum: %3px"
   },
   "Image selected automatically when using Image Background mode": {
-    "Image selected automatically when using Image Background mode": ""
+    "Image selected automatically when using Image Background mode": "Afbeelding die automatisch wordt gekozen in de modus Afbeeldingsachtergrond"
   },
   "Include Cursor": {
-    "Include Cursor": ""
+    "Include Cursor": "Cursor opnemen"
   },
   "Initial Width": {
-    "Initial Width": ""
+    "Initial Width": "Beginbreedte"
   },
   "Initial state for the Control Center toggle.": {
-    "Initial state for the Control Center toggle.": ""
+    "Initial state for the Control Center toggle.": "Beginstatus van de schakelaar voor het bedieningscentrum."
   },
   "Inline": {
-    "Inline": ""
+    "Inline": "Inline"
   },
   "Input Mode": {
-    "Input Mode": ""
+    "Input Mode": "Invoermodus"
   },
   "Insert Image": {
-    "Insert Image": ""
+    "Insert Image": "Afbeelding invoegen"
   },
   "Interaction / Result": {
-    "Interaction / Result": ""
+    "Interaction / Result": "Interactie / resultaat"
   },
   "Invalid or corrupted image file.": {
-    "Invalid or corrupted image file.": ""
+    "Invalid or corrupted image file.": "Ongeldig of beschadigd afbeeldingsbestand."
   },
   "Italic": {
-    "Italic": ""
+    "Italic": "Cursief"
   },
   "JPEG Quality": {
-    "JPEG Quality": ""
+    "JPEG Quality": "JPEG-kwaliteit"
   },
   "Key": {
     "Key": "Toets"
   },
   "Keybinding overlay size in interactive region selector.": {
-    "Keybinding overlay size in interactive region selector.": ""
+    "Keybinding overlay size in interactive region selector.": "Grootte van de sneltoetsoverlay in de interactieve regiokiezer."
   },
   "Landscape": {
-    "Landscape": ""
+    "Landscape": "Liggend"
   },
   "Last Region": {
-    "Last Region": ""
+    "Last Region": "Laatste regio"
   },
   "Left": {
     "Left": "Links"
@@ -552,7 +561,7 @@
     "Left Center": "Middenlinks"
   },
   "Left Click": {
-    "Left Click": ""
+    "Left Click": "Linksklik"
   },
   "Light": {
     "Light": "Licht"
@@ -561,85 +570,85 @@
     "Line": "Lijn"
   },
   "Linear Gradient": {
-    "Linear Gradient": ""
+    "Linear Gradient": "Lineair verloop"
   },
   "Live Preview": {
-    "Live Preview": ""
+    "Live Preview": "Live voorbeeld"
   },
   "Low": {
     "Low": "Laag"
   },
   "Magnifier Loupe": {
-    "Magnifier Loupe": ""
+    "Magnifier Loupe": "Vergrootloep"
   },
   "Max Height (%1 = no limit)": {
-    "Max Height (%1 = no limit)": ""
+    "Max Height (%1 = no limit)": "Max. hoogte (%1 = geen limiet)"
   },
   "Medium": {
     "Medium": "Middel"
   },
   "Menu Item Right Click": {
-    "Menu Item Right Click": ""
+    "Menu Item Right Click": "Rechtsklik op menu-item"
   },
   "Merging audio tracks...": {
-    "Merging audio tracks...": ""
+    "Merging audio tracks...": "Audiosporen samenvoegen..."
   },
   "Microphone": {
     "Microphone": "Microfoon"
   },
   "Microphone Device": {
-    "Microphone Device": ""
+    "Microphone Device": "Microfoonapparaat"
   },
   "Middle Click": {
-    "Middle Click": ""
+    "Middle Click": "Middelklik"
   },
   "Middle Click Action": {
-    "Middle Click Action": ""
+    "Middle Click Action": "Actie bij middelklik"
   },
   "Minimize Delay": {
-    "Minimize Delay": ""
+    "Minimize Delay": "Vertraging minimaliseren"
   },
   "Modal": {
-    "Modal": ""
+    "Modal": "Modaal"
   },
   "More Tools": {
-    "More Tools": ""
+    "More Tools": "Meer hulpmiddelen"
   },
   "Niri Binding Example": {
-    "Niri Binding Example": ""
+    "Niri Binding Example": "Voorbeeld niri-koppeling"
   },
   "No Background": {
     "No Background": "Geen achtergrond"
   },
   "No Image Specified": {
-    "No Image Specified": ""
+    "No Image Specified": "Geen afbeelding opgegeven"
   },
   "No QR code detected": {
-    "No QR code detected": ""
+    "No QR code detected": "Geen QR-code gedetecteerd"
   },
   "No output available": {
-    "No output available": ""
+    "No output available": "Geen uitvoer beschikbaar"
   },
   "No saved images yet": {
-    "No saved images yet": ""
+    "No saved images yet": "Nog geen opgeslagen afbeeldingen"
   },
   "No supported images found": {
-    "No supported images found": ""
+    "No supported images found": "Geen ondersteunde afbeeldingen gevonden"
   },
   "No text detected": {
-    "No text detected": ""
+    "No text detected": "Geen tekst gedetecteerd"
   },
   "No valid image file or URL found in drop.": {
-    "No valid image file or URL found in drop.": ""
+    "No valid image file or URL found in drop.": "Geen geldig afbeeldingsbestand of geldige URL gevonden in het neergezette item."
   },
   "No valid image, URL, or path in clipboard.": {
-    "No valid image, URL, or path in clipboard.": ""
+    "No valid image, URL, or path in clipboard.": "Geen geldige afbeelding, URL of pad op het klembord."
   },
   "None": {
     "None": "Geen"
   },
   "Note: Starting tool mode overrides tool thickness and color defaults if the starting tool matches it.": {
-    "Note: Starting tool mode overrides tool thickness and color defaults if the starting tool matches it.": ""
+    "Note: Starting tool mode overrides tool thickness and color defaults if the starting tool matches it.": "Let op: de modus voor het beginhulpmiddel overschrijft de standaarddikte en -kleur van het hulpmiddel als het beginhulpmiddel overeenkomt."
   },
   "Notification": {
     "Notification": "Melding"
@@ -648,19 +657,22 @@
     "Notifications": "Meldingen"
   },
   "OCR": {
-    "OCR": ""
+    "OCR": "OCR"
   },
   "OCR Result": {
-    "OCR Result": ""
+    "OCR Result": "OCR-resultaat"
   },
   "OCR failed": {
-    "OCR failed": ""
+    "OCR failed": "OCR mislukt"
   },
   "Off": {
     "Off": "Uit"
   },
   "Off (Hidden)": {
-    "Off (Hidden)": ""
+    "Off (Hidden)": "Uit (verborgen)"
+  },
+  "On": {
+    "On": ""
   },
   "Opacity": {
     "Opacity": "Dekking"
@@ -669,178 +681,181 @@
     "Open": "Openen"
   },
   "Open %1 menu (Popout)": {
-    "Open %1 menu (Popout)": ""
+    "Open %1 menu (Popout)": "Menu %1 openen (uitklappaneel)"
   },
   "Open Image": {
-    "Open Image": ""
+    "Open Image": "Afbeelding openen"
   },
   "Open folder": {
     "Open folder": "Map openen"
   },
   "Outline Variant": {
-    "Outline Variant": ""
+    "Outline Variant": "Outline Variant"
   },
   "Output Format": {
-    "Output Format": ""
+    "Output Format": "Uitvoerformaat"
   },
   "Output format applies only to disk saves. Clipboard copies are always PNG.": {
-    "Output format applies only to disk saves. Clipboard copies are always PNG.": ""
+    "Output format applies only to disk saves. Clipboard copies are always PNG.": "Het uitvoerformaat geldt alleen voor opslaan op schijf. Kopieën naar het klembord zijn altijd PNG."
   },
   "Overlay Opacity": {
-    "Overlay Opacity": ""
+    "Overlay Opacity": "Dekking overlay"
   },
   "Padding": {
     "Padding": "Opvulling"
   },
   "Palette Preset": {
-    "Palette Preset": ""
+    "Palette Preset": "Paletvoorinstelling"
   },
   "Paste from Clipboard": {
-    "Paste from Clipboard": ""
+    "Paste from Clipboard": "Plakken van klembord"
   },
   "Pause": {
     "Pause": "Pauzeren"
   },
   "Pause / Resume": {
-    "Pause / Resume": ""
+    "Pause / Resume": "Pauzeren / hervatten"
   },
   "Paused": {
     "Paused": "Gepauzeerd"
   },
   "Pausing is not supported with %1.": {
-    "Pausing is not supported with %1.": ""
+    "Pausing is not supported with %1.": "Pauzeren wordt niet ondersteund met %1."
   },
   "Pen": {
-    "Pen": ""
+    "Pen": "Pen"
   },
   "Pen Auto-Close": {
-    "Pen Auto-Close": ""
+    "Pen Auto-Close": "Pen automatisch sluiten"
   },
   "Pick Color": {
-    "Pick Color": ""
+    "Pick Color": "Kleur kiezen"
   },
   "Pick a palette preset or customize individual color slots.": {
-    "Pick a palette preset or customize individual color slots.": ""
+    "Pick a palette preset or customize individual color slots.": "Kies een paletvoorinstelling of pas afzonderlijke kleurvakken aan."
   },
   "Pixelate": {
     "Pixelate": "Pixelvorming"
   },
   "Pixelate Intensity": {
-    "Pixelate Intensity": ""
+    "Pixelate Intensity": "Sterkte pixelvorming"
   },
   "Popup": {
-    "Popup": ""
+    "Popup": "Pop-up"
   },
   "Portrait": {
-    "Portrait": ""
+    "Portrait": "Staand"
   },
   "Position": {
     "Position": "Positie"
   },
   "Post-Capture Notification": {
-    "Post-Capture Notification": ""
+    "Post-Capture Notification": "Melding na vastleggen"
   },
   "Preset": {
-    "Preset": ""
+    "Preset": "Voorinstelling"
   },
   "Preset %1": {
-    "Preset %1": ""
+    "Preset %1": "Voorinstelling %1"
   },
   "Presets": {
-    "Presets": ""
+    "Presets": "Voorinstellingen"
   },
   "Preview": {
     "Preview": "Voorbeeld"
   },
   "Preview Quality": {
-    "Preview Quality": ""
+    "Preview Quality": "Voorbeeldkwaliteit"
   },
   "Primary": {
     "Primary": "Primair"
   },
   "Primary Screen": {
-    "Primary Screen": ""
+    "Primary Screen": "Primair scherm"
   },
   "QR Result": {
-    "QR Result": ""
+    "QR Result": "QR-resultaat"
   },
   "QR scan failed": {
-    "QR scan failed": ""
+    "QR scan failed": "QR-scan mislukt"
   },
   "Quality": {
     "Quality": "Kwaliteit"
   },
   "Quick Capture": {
-    "Quick Capture": ""
+    "Quick Capture": "Snel vastleggen"
   },
   "Quick Capture Error": {
-    "Quick Capture Error": ""
+    "Quick Capture Error": "Fout bij snel vastleggen"
   },
   "Radial Gradient": {
-    "Radial Gradient": ""
+    "Radial Gradient": "Radiaal verloop"
   },
   "Radial Menu": {
-    "Radial Menu": ""
+    "Radial Menu": "Radiaal menu"
   },
   "Radial menu and tool interaction patterns.": {
-    "Radial menu and tool interaction patterns.": ""
+    "Radial menu and tool interaction patterns.": "Radiaal menu en interactiepatronen voor hulpmiddelen."
   },
   "Ratio": {
-    "Ratio": ""
+    "Ratio": "Verhouding"
   },
   "Ready": {
     "Ready": "Gereed"
   },
   "Recent Edits": {
-    "Recent Edits": ""
+    "Recent Edits": "Recente bewerkingen"
   },
   "Record Microphone": {
-    "Record Microphone": ""
+    "Record Microphone": "Microfoon opnemen"
   },
   "Record System Audio": {
-    "Record System Audio": ""
+    "Record System Audio": "Systeemaudio opnemen"
   },
   "Recording": {
-    "Recording": ""
+    "Recording": "Opname"
   },
   "Recording Backend": {
-    "Recording Backend": ""
+    "Recording Backend": "Opnamebackend"
   },
   "Recording Folder": {
-    "Recording Folder": ""
+    "Recording Folder": "Opnamemap"
   },
   "Recording Paused": {
-    "Recording Paused": ""
+    "Recording Paused": "Opname gepauzeerd"
+  },
+  "Recording Status Location": {
+    "Recording Status Location": ""
   },
   "Recording ended with error code %1.": {
-    "Recording ended with error code %1.": ""
+    "Recording ended with error code %1.": "Opname beëindigd met foutcode %1."
   },
   "Recording...": {
-    "Recording...": ""
+    "Recording...": "Opnemen..."
   },
   "Rectangle": {
-    "Rectangle": ""
+    "Rectangle": "Rechthoek"
   },
   "Redact": {
-    "Redact": ""
+    "Redact": "Onleesbaar maken"
   },
   "Redo": {
-    "Redo": ""
+    "Redo": "Opnieuw"
   },
   "Refresh": {
     "Refresh": "Verversen"
   },
   "Region": {
-    "Region": ""
+    "Region": "Regio"
   },
   "Region HUD Scale": {
-    "Region HUD Scale": ""
+    "Region HUD Scale": "Schaal regio-HUD"
   },
   "Reset": {
     "Reset": "Herstellen"
   },
   "Reset Last Region": {
-    "Reset Last Region": ""
+    "Reset Last Region": "Laatste regio wissen"
   },
   "Resume": {
     "Resume": "Hervatten"
@@ -852,91 +867,91 @@
     "Right Center": "Middenrechts"
   },
   "Right Click": {
-    "Right Click": ""
+    "Right Click": "Rechtsklik"
   },
   "Right Click Action": {
-    "Right Click Action": ""
+    "Right Click Action": "Actie bij rechtsklik"
   },
   "Rotate Left": {
-    "Rotate Left": ""
+    "Rotate Left": "Linksom draaien"
   },
   "Rotate Right": {
-    "Rotate Right": ""
+    "Rotate Right": "Rechtsom draaien"
   },
   "Round Highlighter Tips": {
-    "Round Highlighter Tips": ""
+    "Round Highlighter Tips": "Ronde markeerstiftpunten"
   },
   "Round Rectangle Corners": {
-    "Round Rectangle Corners": ""
+    "Round Rectangle Corners": "Afgeronde rechthoekhoeken"
   },
   "Rounded Rectangle": {
-    "Rounded Rectangle": ""
+    "Rounded Rectangle": "Afgeronde rechthoek"
   },
   "Save": {
     "Save": "Opslaan"
   },
   "Save As": {
-    "Save As": ""
+    "Save As": "Opslaan als"
   },
   "Save Screenshot As": {
-    "Save Screenshot As": ""
+    "Save Screenshot As": "Schermafbeelding opslaan als"
   },
   "Saved %1 (%2)": {
-    "Saved %1 (%2)": ""
+    "Saved %1 (%2)": "%1 opgeslagen (%2)"
   },
   "Scale Editor to Screenshot Size": {
-    "Scale Editor to Screenshot Size": ""
+    "Scale Editor to Screenshot Size": "Editor schalen naar grootte van schermafbeelding"
   },
   "Scan QR": {
-    "Scan QR": ""
+    "Scan QR": "QR scannen"
   },
   "Screen Recording": {
-    "Screen Recording": ""
+    "Screen Recording": "Schermopname"
   },
   "Screen Recording Error": {
-    "Screen Recording Error": ""
+    "Screen Recording Error": "Fout bij schermopname"
   },
   "Screen Recording Saved": {
-    "Screen Recording Saved": ""
+    "Screen Recording Saved": "Schermopname opgeslagen"
   },
   "Screen recording timed out or was cancelled.": {
-    "Screen recording timed out or was cancelled.": ""
+    "Screen recording timed out or was cancelled.": "Schermopname is verlopen of geannuleerd."
   },
   "Screenshot": {
-    "Screenshot": ""
+    "Screenshot": "Schermafbeelding"
   },
   "Screenshot Copied": {
-    "Screenshot Copied": ""
+    "Screenshot Copied": "Schermafbeelding gekopieerd"
   },
   "Screenshot Folder": {
-    "Screenshot Folder": ""
+    "Screenshot Folder": "Map voor schermafbeeldingen"
   },
   "Screenshot Saved": {
-    "Screenshot Saved": ""
+    "Screenshot Saved": "Schermafbeelding opgeslagen"
   },
   "Screenshot copied anonymously with randomized name and stripped metadata.": {
-    "Screenshot copied anonymously with randomized name and stripped metadata.": ""
+    "Screenshot copied anonymously with randomized name and stripped metadata.": "Schermafbeelding anoniem gekopieerd met willekeurige naam en zonder metadata."
   },
   "Screenshot copied to clipboard and saved to %1": {
-    "Screenshot copied to clipboard and saved to %1": ""
+    "Screenshot copied to clipboard and saved to %1": "Schermafbeelding gekopieerd naar klembord en opgeslagen in %1"
   },
   "Screenshot copied to clipboard but failed to save file: %1": {
-    "Screenshot copied to clipboard but failed to save file: %1": ""
+    "Screenshot copied to clipboard but failed to save file: %1": "Schermafbeelding gekopieerd naar klembord, maar opslaan van bestand mislukt: %1"
   },
   "Screenshot copied with randomized name.": {
-    "Screenshot copied with randomized name.": ""
+    "Screenshot copied with randomized name.": "Schermafbeelding gekopieerd met willekeurige naam."
   },
   "Screenshot failed (mode: %1).": {
-    "Screenshot failed (mode: %1).": ""
+    "Screenshot failed (mode: %1).": "Schermafbeelding mislukt (modus: %1)."
   },
   "Screenshot saved to %1": {
-    "Screenshot saved to %1": ""
+    "Screenshot saved to %1": "Schermafbeelding opgeslagen in %1"
   },
   "Scroll Interval": {
-    "Scroll Interval": ""
+    "Scroll Interval": "Scrollinterval"
   },
   "Scroll capture: select a region, scroll content, then press %1 to finish.": {
-    "Scroll capture: select a region, scroll content, then press %1 to finish.": ""
+    "Scroll capture: select a region, scroll content, then press %1 to finish.": "Scrollopname: selecteer een regio, scroll door de inhoud en druk daarna op %1 om te voltooien."
   },
   "Scrolling": {
     "Scrolling": "Scrollen"
@@ -945,169 +960,169 @@
     "Select": "Selecteren"
   },
   "Select Color Slots %1": {
-    "Select Color Slots %1": ""
+    "Select Color Slots %1": "Kleurvakken %1 selecteren"
   },
   "Select Image to Annotate": {
-    "Select Image to Annotate": ""
+    "Select Image to Annotate": "Afbeelding selecteren om te annoteren"
   },
   "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1).": {
-    "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1).": ""
+    "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1).": "Selecteer de backend voor schermopname. Automatisch probeert eerst de GPU en valt terug op de CPU (%1)."
   },
   "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1). Note: %1 does not support pausing.": {
-    "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1). Note: %1 does not support pausing.": ""
+    "Select screen recording backend. Auto attempts GPU first and falls back to CPU (%1). Note: %1 does not support pausing.": "Selecteer de backend voor schermopname. Automatisch probeert eerst de GPU en valt terug op de CPU (%1). Let op: %1 ondersteunt geen pauzeren."
   },
   "Selected Tool / Action": {
-    "Selected Tool / Action": ""
+    "Selected Tool / Action": "Geselecteerd hulpmiddel / actie"
   },
   "Settings": {
     "Settings": "Instellingen"
   },
   "Shadow Strength": {
-    "Shadow Strength": ""
+    "Shadow Strength": "Schaduwsterkte"
   },
   "Shapes": {
-    "Shapes": ""
+    "Shapes": "Vormen"
   },
   "Shortcut Action": {
-    "Shortcut Action": ""
+    "Shortcut Action": "Sneltoetsactie"
   },
   "Show Annotations": {
-    "Show Annotations": ""
+    "Show Annotations": "Annotaties tonen"
   },
   "Show Control Center": {
-    "Show Control Center": ""
+    "Show Control Center": "Bedieningscentrum tonen"
   },
   "Show Keyboard Shortcut Hints": {
-    "Show Keyboard Shortcut Hints": ""
+    "Show Keyboard Shortcut Hints": "Sneltoetstips tonen"
   },
   "Show Pill Border": {
-    "Show Pill Border": ""
+    "Show Pill Border": "Pilrand tonen"
   },
   "Show Region Border": {
-    "Show Region Border": ""
+    "Show Region Border": "Regiorand tonen"
   },
   "Show Screenshot Border": {
-    "Show Screenshot Border": ""
+    "Show Screenshot Border": "Rand van schermafbeelding tonen"
   },
   "Show Toolbar": {
-    "Show Toolbar": ""
+    "Show Toolbar": "Werkbalk tonen"
   },
   "Show Toolbar Border": {
-    "Show Toolbar Border": ""
+    "Show Toolbar Border": "Werkbalkrand tonen"
   },
   "Show only the image on a transparent background": {
-    "Show only the image on a transparent background": ""
+    "Show only the image on a transparent background": "Alleen de afbeelding tonen op een transparante achtergrond"
   },
   "Skip confirmation": {
     "Skip confirmation": "Bevestiging overslaan"
   },
   "Slot %1": {
-    "Slot %1": ""
+    "Slot %1": "Vak %1"
   },
   "Soften image details so screenshot content stands out": {
-    "Soften image details so screenshot content stands out": ""
+    "Soften image details so screenshot content stands out": "Afbeeldingsdetails verzachten zodat de inhoud van de schermafbeelding opvalt"
   },
   "Solid Color": {
-    "Solid Color": ""
+    "Solid Color": "Effen kleur"
   },
   "Solid Fill": {
-    "Solid Fill": ""
+    "Solid Fill": "Effen vulling"
   },
   "Solid Line": {
-    "Solid Line": ""
+    "Solid Line": "Doorgetrokken lijn"
   },
   "Spawn Position": {
-    "Spawn Position": ""
+    "Spawn Position": "Startpositie"
   },
   "Specific Output": {
-    "Specific Output": ""
+    "Specific Output": "Specifiek scherm"
   },
   "Spotlight": {
     "Spotlight": "Spotlight"
   },
   "Spotlight Opacity": {
-    "Spotlight Opacity": ""
+    "Spotlight Opacity": "Dekking spotlight"
   },
   "Stamp": {
-    "Stamp": ""
+    "Stamp": "Stempel"
   },
   "Stamp Contrast Ring": {
-    "Stamp Contrast Ring": ""
+    "Stamp Contrast Ring": "Contrastring stempel"
   },
   "Stamp Size": {
-    "Stamp Size": ""
+    "Stamp Size": "Stempelgrootte"
   },
   "Starting Preset": {
-    "Starting Preset": ""
+    "Starting Preset": "Beginvoorinstelling"
   },
   "Starting Tool": {
-    "Starting Tool": ""
+    "Starting Tool": "Beginhulpmiddel"
   },
   "Starting Tool Mode": {
-    "Starting Tool Mode": ""
+    "Starting Tool Mode": "Modus beginhulpmiddel"
   },
   "Stop & Save": {
-    "Stop & Save": ""
+    "Stop & Save": "Stoppen & opslaan"
   },
   "Surface Container Highest": {
-    "Surface Container Highest": ""
+    "Surface Container Highest": "Surface Container Highest"
   },
   "Switch to your custom preset": {
-    "Switch to your custom preset": ""
+    "Switch to your custom preset": "Wissel naar je aangepaste voorinstelling"
   },
   "System Audio Device": {
-    "System Audio Device": ""
+    "System Audio Device": "Systeemaudioapparaat"
   },
   "Target Output Name": {
-    "Target Output Name": ""
+    "Target Output Name": "Naam doelscherm"
   },
   "Text": {
     "Text": "Tekst"
   },
   "Text Background": {
-    "Text Background": ""
+    "Text Background": "Tekstachtergrond"
   },
   "Text Background Roundness": {
-    "Text Background Roundness": ""
+    "Text Background Roundness": "Afronding tekstachtergrond"
   },
   "Text Size": {
-    "Text Size": ""
+    "Text Size": "Tekstgrootte"
   },
   "Thickness": {
     "Thickness": "Dikte"
   },
   "This palette preset is read-only. Select one of the options below to switch to the Custom Palette and edit colors:": {
-    "This palette preset is read-only. Select one of the options below to switch to the Custom Palette and edit colors:": ""
+    "This palette preset is read-only. Select one of the options below to switch to the Custom Palette and edit colors:": "Deze paletvoorinstelling is alleen-lezen. Kies een van de onderstaande opties om over te schakelen naar het aangepaste palet en kleuren te bewerken:"
   },
   "Toast": {
     "Toast": "Toast-melding"
   },
   "Toggle Annotations": {
-    "Toggle Annotations": ""
+    "Toggle Annotations": "Annotaties aan/uit"
   },
   "Toggle Start / Stop": {
-    "Toggle Start / Stop": ""
+    "Toggle Start / Stop": "Starten / stoppen"
   },
   "Toggle between %1 latest presets": {
-    "Toggle between %1 latest presets": ""
+    "Toggle between %1 latest presets": "Wisselen tussen de %1 laatste voorinstellingen"
   },
   "Tool": {
-    "Tool": ""
+    "Tool": "Hulpmiddel"
   },
   "Tool Defaults": {
-    "Tool Defaults": ""
+    "Tool Defaults": "Standaarden hulpmiddelen"
   },
   "Toolbar": {
-    "Toolbar": ""
+    "Toolbar": "Werkbalk"
   },
   "Toolbar Palette": {
-    "Toolbar Palette": ""
+    "Toolbar Palette": "Werkbalkpalet"
   },
   "Toolbar Position": {
-    "Toolbar Position": ""
+    "Toolbar Position": "Werkbalkpositie"
   },
   "Toolbar design and layout inspiration.": {
-    "Toolbar design and layout inspiration.": ""
+    "Toolbar design and layout inspiration.": "Inspiratie voor ontwerp en indeling van de werkbalk."
   },
   "Tools": {
     "Tools": "Hulpmiddelen"
@@ -1125,63 +1140,63 @@
     "Top Right": "Rechtsboven"
   },
   "Transparent": {
-    "Transparent": ""
+    "Transparent": "Transparant"
   },
   "Transparent Background": {
-    "Transparent Background": ""
+    "Transparent Background": "Transparante achtergrond"
   },
   "Trigger on Hover": {
-    "Trigger on Hover": ""
+    "Trigger on Hover": "Activeren bij aanwijzen"
   },
   "Type note...": {
-    "Type note...": ""
+    "Type note...": "Typ notitie..."
   },
   "Underline": {
-    "Underline": ""
+    "Underline": "Onderstrepen"
   },
   "Undo": {
-    "Undo": ""
+    "Undo": "Ongedaan maken"
   },
   "Usage Guide": {
-    "Usage Guide": ""
+    "Usage Guide": "Gebruikshandleiding"
   },
   "Use Existing Custom": {
-    "Use Existing Custom": ""
+    "Use Existing Custom": "Bestaand aangepast palet gebruiken"
   },
   "Use Floating Editor": {
-    "Use Floating Editor": ""
+    "Use Floating Editor": "Zwevende editor gebruiken"
   },
   "Use Modal Editor": {
-    "Use Modal Editor": ""
+    "Use Modal Editor": "Modale editor gebruiken"
   },
   "Variant": {
-    "Variant": ""
+    "Variant": "Variant"
   },
   "Very High": {
     "Very High": "Zeer hoog"
   },
   "Video": {
-    "Video": ""
+    "Video": "Video"
   },
   "Video Codec": {
-    "Video Codec": ""
+    "Video Codec": "Videocodec"
   },
   "Watermark": {
-    "Watermark": ""
+    "Watermark": "Watermerk"
   },
   "Watermark Type": {
-    "Watermark Type": ""
+    "Watermark Type": "Type watermerk"
   },
   "WebP Quality": {
-    "WebP Quality": ""
+    "WebP Quality": "WebP-kwaliteit"
   },
   "When enabled, the editor shrinks to match the captured region instead of filling %1% of the screen.": {
-    "When enabled, the editor shrinks to match the captured region instead of filling %1% of the screen.": ""
+    "When enabled, the editor shrinks to match the captured region instead of filling %1% of the screen.": "Indien ingeschakeld, krimpt de editor tot de vastgelegde regio in plaats van %1% van het scherm te vullen."
   },
   "Window": {
-    "Window": ""
+    "Window": "Venster"
   },
   "Window / Portal": {
-    "Window / Portal": ""
+    "Window / Portal": "Venster / portal"
   }
 }

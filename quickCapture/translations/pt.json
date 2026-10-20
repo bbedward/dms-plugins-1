@@ -179,6 +179,9 @@
   "Choose the editor shape for portrait or landscape screens.": {
     "Choose the editor shape for portrait or landscape screens.": ""
   },
+  "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": {
+    "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": ""
+  },
   "Choose whether the editor opens as a modal overlay or a movable floating window.": {
     "Choose whether the editor opens as a modal overlay or a movable floating window.": ""
   },
@@ -268,6 +271,9 @@
   },
   "Custom": {
     "Custom": "Customizado"
+  },
+  "DankBar": {
+    "DankBar": ""
   },
   "Dark": {
     "Dark": ""
@@ -391,6 +397,9 @@
   },
   "Floating": {
     "Floating": "Flutuante"
+  },
+  "Floating Pill": {
+    "Floating Pill": ""
   },
   "Floating window and continuous editing workflow.": {
     "Floating window and continuous editing workflow.": ""
@@ -662,6 +671,9 @@
   "Off (Hidden)": {
     "Off (Hidden)": ""
   },
+  "On": {
+    "On": ""
+  },
   "Opacity": {
     "Opacity": "Opacidade"
   },
@@ -811,6 +823,9 @@
   },
   "Recording Paused": {
     "Recording Paused": ""
+  },
+  "Recording Status Location": {
+    "Recording Status Location": ""
   },
   "Recording ended with error code %1.": {
     "Recording ended with error code %1.": ""

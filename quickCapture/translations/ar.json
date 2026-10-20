@@ -179,6 +179,9 @@
   "Choose the editor shape for portrait or landscape screens.": {
     "Choose the editor shape for portrait or landscape screens.": "اختر شكل المحرر للشاشات العمودية أو الأفقية."
   },
+  "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": {
+    "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": ""
+  },
   "Choose whether the editor opens as a modal overlay or a movable floating window.": {
     "Choose whether the editor opens as a modal overlay or a movable floating window.": "اختر ما إذا كان المحرر يفتح كطبقة تراكب مشروطة أو نافذة عائمة قابلة للتحريك."
   },
@@ -261,13 +264,16 @@
     "Could not crop image": "تعذر اقتصاص الصورة"
   },
   "Credits": {
-    "Credits": ""
+    "Credits": "الرصيد"
   },
   "Crop / Resize": {
     "Crop / Resize": "قص / تغيير الحجم"
   },
   "Custom": {
     "Custom": "خيار مخصص"
+  },
+  "DankBar": {
+    "DankBar": ""
   },
   "Dark": {
     "Dark": "داكن"
@@ -392,8 +398,11 @@
   "Floating": {
     "Floating": "عائم"
   },
+  "Floating Pill": {
+    "Floating Pill": ""
+  },
   "Floating window and continuous editing workflow.": {
-    "Floating window and continuous editing workflow.": ""
+    "Floating window and continuous editing workflow.": "نافذة عائمة وسير عمل تحرير مستمر."
   },
   "Focused Screen": {
     "Focused Screen": "الشاشة المركزة"
@@ -662,6 +671,9 @@
   "Off (Hidden)": {
     "Off (Hidden)": "إيقاف (مخفي)"
   },
+  "On": {
+    "On": ""
+  },
   "Opacity": {
     "Opacity": "الشفافية"
   },
@@ -696,7 +708,7 @@
     "Palette Preset": "إعدادات اللوحة المسبقة"
   },
   "Paste from Clipboard": {
-    "Paste from Clipboard": ""
+    "Paste from Clipboard": "لصق من الحافظة"
   },
   "Pause": {
     "Pause": "إيقاف مؤقت"
@@ -783,7 +795,7 @@
     "Radial Menu": "قائمة شعاعية"
   },
   "Radial menu and tool interaction patterns.": {
-    "Radial menu and tool interaction patterns.": ""
+    "Radial menu and tool interaction patterns.": "قائمة دائرية وأنماط تفاعل الأدوات."
   },
   "Ratio": {
     "Ratio": "نسبة"
@@ -811,6 +823,9 @@
   },
   "Recording Paused": {
     "Recording Paused": "تم إيقاف التسجيل مؤقتاً"
+  },
+  "Recording Status Location": {
+    "Recording Status Location": ""
   },
   "Recording ended with error code %1.": {
     "Recording ended with error code %1.": "انتهى التسجيل برمز خطأ %1."
@@ -1107,7 +1122,7 @@
     "Toolbar Position": "موقع شريط الأدوات"
   },
   "Toolbar design and layout inspiration.": {
-    "Toolbar design and layout inspiration.": ""
+    "Toolbar design and layout inspiration.": "تصميم شريط الأدوات وإلهام التخطيط."
   },
   "Tools": {
     "Tools": "الأدوات"

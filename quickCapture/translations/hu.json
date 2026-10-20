@@ -179,6 +179,9 @@
   "Choose the editor shape for portrait or landscape screens.": {
     "Choose the editor shape for portrait or landscape screens.": "Válaszd ki a szerkesztő elrendezését álló vagy fekvő képernyőkhöz."
   },
+  "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": {
+    "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": ""
+  },
   "Choose whether the editor opens as a modal overlay or a movable floating window.": {
     "Choose whether the editor opens as a modal overlay or a movable floating window.": "Válaszd ki, hogy a szerkesztő modális rétegként vagy mozgatható lebegő ablakként nyíljon meg."
   },
@@ -198,7 +201,7 @@
     "Close": "Bezárás"
   },
   "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.": {
-    "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.": "Vezérlőközpont bezárása a rögzítés előtt, ha a Vezérlőközpont panelről indítják. A gyorsbillentyűket és az IPC rögzítéseket nem érinti."
+    "Close Control Center before capturing when triggered from the Control Center panel. Shortcuts and IPC captures are unaffected.": "Vezérlőközpont bezárása a rögzítés előtt, ha a Vezérlőközpont panelről indítják. A gyorsbillentyűket és az IPC-rögzítéseket nem érinti."
   },
   "Color": {
     "Color": "Szín"
@@ -261,13 +264,16 @@
     "Could not crop image": "A kép kivágása nem sikerült"
   },
   "Credits": {
-    "Credits": ""
+    "Credits": "Köszönet"
   },
   "Crop / Resize": {
     "Crop / Resize": "Körbevágás / Átméretezés"
   },
   "Custom": {
     "Custom": "Egyéni"
+  },
+  "DankBar": {
+    "DankBar": ""
   },
   "Dark": {
     "Dark": "Sötét"
@@ -392,8 +398,11 @@
   "Floating": {
     "Floating": "Lebegő"
   },
+  "Floating Pill": {
+    "Floating Pill": ""
+  },
   "Floating window and continuous editing workflow.": {
-    "Floating window and continuous editing workflow.": ""
+    "Floating window and continuous editing workflow.": "Lebegő ablak és folyamatos szerkesztési munkafolyamat."
   },
   "Focused Screen": {
     "Focused Screen": "Fókuszált képernyő"
@@ -662,6 +671,9 @@
   "Off (Hidden)": {
     "Off (Hidden)": "Ki (rejtett)"
   },
+  "On": {
+    "On": ""
+  },
   "Opacity": {
     "Opacity": "Átlátszatlanság"
   },
@@ -696,7 +708,7 @@
     "Palette Preset": "Paletta előbeállítás"
   },
   "Paste from Clipboard": {
-    "Paste from Clipboard": ""
+    "Paste from Clipboard": "Beillesztés a vágólapról"
   },
   "Pause": {
     "Pause": "Szüneteltetés"
@@ -783,7 +795,7 @@
     "Radial Menu": "Körkörös menü"
   },
   "Radial menu and tool interaction patterns.": {
-    "Radial menu and tool interaction patterns.": ""
+    "Radial menu and tool interaction patterns.": "Körkörös menü és eszköz-interakciós minták."
   },
   "Ratio": {
     "Ratio": "Arány"
@@ -811,6 +823,9 @@
   },
   "Recording Paused": {
     "Recording Paused": "Felvétel szüneteltetve"
+  },
+  "Recording Status Location": {
+    "Recording Status Location": ""
   },
   "Recording ended with error code %1.": {
     "Recording ended with error code %1.": "A rögzítés hibával fejeződött be. Hibakód: %1."
@@ -1107,7 +1122,7 @@
     "Toolbar Position": "Eszköztár pozíciója"
   },
   "Toolbar design and layout inspiration.": {
-    "Toolbar design and layout inspiration.": ""
+    "Toolbar design and layout inspiration.": "Eszköztár-kialakítási és elrendezési inspiráció."
   },
   "Tools": {
     "Tools": "Eszközök"

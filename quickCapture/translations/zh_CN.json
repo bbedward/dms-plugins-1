@@ -179,6 +179,9 @@
   "Choose the editor shape for portrait or landscape screens.": {
     "Choose the editor shape for portrait or landscape screens.": "为竖屏或横屏屏幕选择编辑器形状。"
   },
+  "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": {
+    "Choose where the recording status and controls appear: Auto (DankBar if present, otherwise Floating Pill), DankBar, Floating Pill, or Both.": ""
+  },
   "Choose whether the editor opens as a modal overlay or a movable floating window.": {
     "Choose whether the editor opens as a modal overlay or a movable floating window.": "选择编辑器以模态覆盖层还是可移动的悬浮窗口打开。"
   },
@@ -268,6 +271,9 @@
   },
   "Custom": {
     "Custom": "自定义"
+  },
+  "DankBar": {
+    "DankBar": ""
   },
   "Dark": {
     "Dark": "深色"
@@ -391,6 +397,9 @@
   },
   "Floating": {
     "Floating": "浮动"
+  },
+  "Floating Pill": {
+    "Floating Pill": ""
   },
   "Floating window and continuous editing workflow.": {
     "Floating window and continuous editing workflow.": ""
@@ -662,6 +671,9 @@
   "Off (Hidden)": {
     "Off (Hidden)": ""
   },
+  "On": {
+    "On": ""
+  },
   "Opacity": {
     "Opacity": "不透明度"
   },
@@ -811,6 +823,9 @@
   },
   "Recording Paused": {
     "Recording Paused": ""
+  },
+  "Recording Status Location": {
+    "Recording Status Location": ""
   },
   "Recording ended with error code %1.": {
     "Recording ended with error code %1.": "录制以错误代码 %1 结束。"
