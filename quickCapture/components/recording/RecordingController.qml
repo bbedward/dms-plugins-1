@@ -179,7 +179,7 @@ Item {
         id: safetyTimer
         interval: 20000
         onTriggered: {
-            if (root.recordingState !== "starting")
+            if (root.recordingState !== "starting" && root.recordingState !== "stopping")
                 return;
             root.cancelRecording();
             root.sendNotification(I18n.trFor("quickCapture", "Screen recording timed out or was cancelled."), true);
@@ -369,19 +369,59 @@ Item {
         }
         root.isPaused = !root.isPaused;
         root.recordingState = root.isPaused ? "paused" : "recording";
-        if (recorderProcess.running) {
-            recorderProcess.signal(12); // SIGUSR2
+        signalRecorder(12, success => {
+            if (!root.isRecording)
+                return;
+            if (!success) {
+                root.isPaused = !root.isPaused;
+                root.recordingState = root.isPaused ? "paused" : "recording";
+            }
+        });
+    }
+
+    // bwrap doesn't forward signals into the Flatpak sandbox, so target the sandboxed recorder directly
+    function signalRecorder(sig, callback) {
+        if (!recorderProcess.running) {
+            if (callback)
+                callback(false);
+            return;
         }
+        if (!root.isFlatpakActive) {
+            recorderProcess.signal(sig);
+            if (callback)
+                callback(true);
+            return;
+        }
+        const escapedPath = Helpers.escapeRegex(root.outputPath);
+        Proc.runCommand("quickCapture.signalFlatpakRecorder", ["pkill", "-" + sig, "-f", "--", "^gpu-screen-recorder .*-o " + escapedPath + "(\\s|$)"], (stdout, exitCode) => {
+            const success = exitCode === 0;
+            if (!success) {
+                console.warn("quickCapture: failed to signal Flatpak recorder via pkill (exit " + exitCode + ")");
+            }
+            if (callback) {
+                callback(success);
+            }
+        });
     }
 
     function stopRecording() {
         if (!root.isRecording && root.recordingState !== "starting")
             return;
         root.recordingState = "stopping";
-        if (recorderProcess.running) {
-            recorderProcess.signal(2); // SIGINT
-        }
         safetyTimer.restart();
+        signalRecorder(2, success => {
+            if (root.recordingState !== "stopping")
+                return;
+            if (!success) {
+                safetyTimer.stop();
+                if (root.isFlatpakActive && recorderProcess.running) {
+                    console.warn("quickCapture: Flatpak pkill failed; falling back to direct process signal");
+                    recorderProcess.signal(2);
+                } else {
+                    root.recordingState = root.isPaused ? "paused" : "recording";
+                }
+            }
+        });
     }
 
     function cancelRecording() {
@@ -400,9 +440,11 @@ Item {
             Proc.runCommand("quickCapture.cleanupGif", ["rm", "-f", "--", root.targetGifPath]);
             root.targetGifPath = "";
         }
-        if (recorderProcess.running) {
-            recorderProcess.signal(9); // SIGKILL
-        }
+        signalRecorder(9, success => {
+            if (!success && root.isFlatpakActive && recorderProcess.running) {
+                recorderProcess.signal(9);
+            }
+        });
     }
 
     function mergeAudio(videoPath, callback) {
