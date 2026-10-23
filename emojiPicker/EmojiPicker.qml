@@ -8,7 +8,7 @@ import qs.Common
 import qs.Modals.Common
 import qs.Modules.Plugins
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import "./shared"
 import "emoji-data.js" as EmojiData
 
@@ -325,7 +325,7 @@ PluginComponent {
         }
     }
 
-    DankModal {
+    DModal {
         id: pickerModal
         layerNamespace: "dms:plugins:emojiPicker"
         modalWidth: root.pickerWidth
@@ -578,7 +578,7 @@ PluginComponent {
                 }
             }
 
-            DankDropdown {
+            DDropdown {
                 id: skinToneDropdown
                 showTrigger: false
                 popupAnchorItem: skinToneBtn
@@ -690,7 +690,7 @@ PluginComponent {
                             id: categoryRepeater
                             model: root.categoryOrder
 
-                            DankActionButton {
+                            DActionButton {
                                 required property string modelData
                                 required property int index
                                 iconName: root.categoryIcons[modelData] || "category"
@@ -738,7 +738,7 @@ PluginComponent {
                         verticalAlignment: Text.AlignVCenter
                     }
 
-                    DankButton {
+                    DButton {
                         visible: !root.query && root.selectedCategory === "recent" && root.recentEmojis.length > 0
                         text: I18n.trFor("emojiPicker", "Clear All")
                         iconName: "delete_sweep"
@@ -749,7 +749,7 @@ PluginComponent {
                     }
                 }
 
-                DankGridView {
+                DGridView {
                     id: emojiGrid
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -895,7 +895,7 @@ PluginComponent {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: Theme.spacingXS
 
-                            DankKeycap {
+                            DKeycap {
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: parent.modelData.keys
                             }

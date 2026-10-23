@@ -17,6 +17,11 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SOURCE_SHARED = REPO_ROOT / "shared"
 
+PRESERVE_PLUGIN_COMPONENTS = {
+    "ambientSound": {"ActionTile"},
+}
+
+
 def get_available_components(source_dir: Path):
     components = {}
     for f in source_dir.glob("*.qml"):
@@ -77,10 +82,30 @@ def sync_plugin(plugin_dir: Path, available_components: dict):
             if file.endswith(".qml"):
                 plugin_qml_files.append(Path(root) / file)
 
+    target_shared = plugin_dir / "shared"
+    legacy_common = plugin_dir / "dms-common"
+
+    # Remove legacy dms-common if present
+    if legacy_common.exists():
+        shutil.rmtree(legacy_common)
+
+    canonical_files = {src_file.name for src_file in available_components.values()}
+    preserve_names = PRESERVE_PLUGIN_COMPONENTS.get(plugin_dir.name, set())
+    preserved_entries = []
+    if target_shared.exists():
+        preserved_entries = [
+            entry for entry in target_shared.iterdir()
+            if (entry.name not in canonical_files or entry.stem in preserve_names)
+            and entry.name not in {"qmldir", "assets"}
+        ]
+
     # 3. Detect direct dependencies
     used_components = set()
     for qml_file in plugin_qml_files:
         used_components.update(get_dependencies_in_file(qml_file, available_names))
+    for entry in preserved_entries:
+        if entry.is_file() and entry.suffix == ".qml":
+            used_components.update(get_dependencies_in_file(entry, available_names))
 
     # 4. Resolve transitive dependencies inside shared components
     added_new = True
@@ -95,40 +120,51 @@ def sync_plugin(plugin_dir: Path, available_components: dict):
                     used_components.add(d)
                     added_new = True
 
-    target_shared = plugin_dir / "shared"
-    legacy_common = plugin_dir / "dms-common"
-
-    # Remove legacy dms-common if present
-    if legacy_common.exists():
-        shutil.rmtree(legacy_common)
-
-    if not used_components:
+    if not used_components and not preserved_entries:
         if target_shared.exists():
             shutil.rmtree(target_shared)
         return 0
 
     # 5. Populate plugin's shared/ directory
-    if target_shared.exists():
-        shutil.rmtree(target_shared)
-    target_shared.mkdir(parents=True, exist_ok=True)
+    staging = plugin_dir / "shared.__sync"
+    if staging.exists():
+        shutil.rmtree(staging)
+    staging.mkdir(parents=True)
 
-    qmldir_lines = ["module dms.common"]
     for comp in sorted(used_components):
+        if comp in preserve_names:
+            continue
         src_file = available_components[comp]
-        dst_file = target_shared / src_file.name
-        shutil.copy2(src_file, dst_file)
-        is_singleton = bool(re.search(r"^\s*pragma\s+Singleton\b", src_file.read_text(encoding="utf-8"), re.MULTILINE))
-        prefix = "singleton " if is_singleton else ""
-        qmldir_lines.append(f"{prefix}{comp} 1.0 {src_file.name}")
+        shutil.copy2(src_file, staging / src_file.name)
 
     # Copy assets if FeedbackCard or NoteCard or any component uses them
     src_assets = SOURCE_SHARED / "assets"
     if src_assets.exists() and ("FeedbackCard" in used_components):
-        dst_assets = target_shared / "assets"
-        shutil.copytree(src_assets, dst_assets)
+        shutil.copytree(src_assets, staging / "assets", dirs_exist_ok=True)
 
-    qmldir_path = target_shared / "qmldir"
+    plugin_assets = target_shared / "assets"
+    if plugin_assets.exists():
+        shutil.copytree(plugin_assets, staging / "assets", dirs_exist_ok=True)
+
+    for entry in preserved_entries:
+        destination = staging / entry.name
+        if entry.is_dir():
+            shutil.copytree(entry, destination, dirs_exist_ok=True)
+        else:
+            shutil.copy2(entry, destination)
+
+    qmldir_lines = ["module dms.common"]
+    for qml_file in sorted(staging.glob("*.qml")):
+        is_singleton = bool(re.search(r"^\s*pragma\s+Singleton\b", qml_file.read_text(encoding="utf-8"), re.MULTILINE))
+        prefix = "singleton " if is_singleton else ""
+        qmldir_lines.append(f"{prefix}{qml_file.stem} 1.0 {qml_file.name}")
+
+    qmldir_path = staging / "qmldir"
     qmldir_path.write_text("\n".join(qmldir_lines) + "\n", encoding="utf-8")
+
+    if target_shared.exists():
+        shutil.rmtree(target_shared)
+    staging.rename(target_shared)
     return len(used_components)
 
 def main():

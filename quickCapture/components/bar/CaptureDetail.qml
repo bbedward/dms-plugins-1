@@ -1,7 +1,7 @@
 import QtQuick
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Defaults.js" as Defaults
 import "../../shared"
 
@@ -135,7 +135,7 @@ Item {
                     }
                 }
 
-                DankIcon {
+                DIcon {
                     anchors.centerIn: parent
                     name: tile.modelData.icon
                     size: Theme.iconSize - 4
@@ -157,7 +157,7 @@ Item {
             }
         }
 
-        DankRipple {
+        DRipple {
             id: tileRipple
             anchors.fill: parent
             rippleColor: tile.highlighted ? Theme.onPrimaryContainer : Theme.primary
@@ -201,7 +201,7 @@ Item {
                 }
             }
 
-            DankIcon {
+            DIcon {
                 anchors.centerIn: parent
                 name: "keep"
                 size: 12
@@ -283,7 +283,7 @@ Item {
             }
         }
 
-        DankIcon {
+        DIcon {
             anchors.centerIn: parent
             name: cBtn.iconName
             size: Theme.iconSizeSmall
@@ -417,7 +417,7 @@ Item {
                             anchors.centerIn: parent
                             spacing: 6
 
-                            DankIcon {
+                            DIcon {
                                 name: seg.modelData.icon
                                 size: Theme.iconSizeSmall
                                 color: seg.selected ? seg.activeFg : (segArea.containsMouse ? Theme.onSecondaryContainer : Theme.surfaceVariantText)
@@ -555,7 +555,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: Theme.spacingXS
 
-                        DankIcon {
+                        DIcon {
                             name: "display_settings"
                             size: 15
                             color: Theme.primary
@@ -614,7 +614,7 @@ Item {
                                         anchors.centerIn: parent
                                         spacing: 5
 
-                                        DankIcon {
+                                        DIcon {
                                             name: "monitor"
                                             size: 13
                                             color: ccChipMouse.containsMouse ? Theme.onPrimaryContainer : Theme.primary
@@ -747,7 +747,7 @@ Item {
                                         color: ccMicCard.on ? Theme.primary : Theme.surfaceContainerHighest
                                         anchors.verticalCenter: parent.verticalCenter
 
-                                        DankIcon {
+                                        DIcon {
                                             anchors.centerIn: parent
                                             name: ccMicCard.on ? "mic" : "mic_off"
                                             size: Theme.iconSizeSmall
@@ -810,7 +810,7 @@ Item {
                                         color: ccAudioCard.on ? Theme.primary : Theme.surfaceContainerHighest
                                         anchors.verticalCenter: parent.verticalCenter
 
-                                        DankIcon {
+                                        DIcon {
                                             anchors.centerIn: parent
                                             name: ccAudioCard.on ? "volume_up" : "volume_off"
                                             size: Theme.iconSizeSmall
@@ -863,7 +863,7 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Theme.spacingS
 
-                                DankIcon {
+                                DIcon {
                                     name: "movie"
                                     size: Theme.iconSizeSmall
                                     color: Theme.primary

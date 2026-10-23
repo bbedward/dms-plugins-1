@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Constants.js" as Constants
 import "../core/Helpers.js" as Helpers
 
@@ -280,7 +280,7 @@ Item {
                     Repeater {
                         model: groupRow.modelData.options
 
-                        delegate: DankActionButton {
+                        delegate: DActionButton {
                             required property var modelData
                             readonly property bool active: root.isActive(groupRow.modelData, modelData)
                             iconName: modelData.icon

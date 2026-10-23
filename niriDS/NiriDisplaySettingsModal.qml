@@ -3,10 +3,10 @@ import Quickshell
 import qs.Common
 import qs.Modals.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import "./shared"
 
-DankModal {
+DModal {
     id: root
 
     layerNamespace: "dms:plugins:niriDS"
@@ -180,7 +180,7 @@ DankModal {
                         bottomPadding: Theme.spacingS
                     }
 
-                    DankListView {
+                    DListView {
                         width: parent.width
                         spacing: Theme.spacingS
                         height: (60 * root.optionCount) + Theme.spacingS
@@ -214,7 +214,7 @@ DankModal {
                                 return enabledCount === 1 && !(modelData && modelData.disabled);
                             }
 
-                            DankIcon {
+                            DIcon {
                                 id: iIcon
                                 name: (modelData && modelData.name && NiriDS.isInternalName(modelData.name)) ? "computer" : "tv"
                                 size: Theme.iconSize

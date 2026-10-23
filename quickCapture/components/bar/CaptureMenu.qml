@@ -3,7 +3,7 @@ import Quickshell
 import qs.Common
 import qs.Modules.Plugins
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Defaults.js" as Defaults
 import "../../shared"
 
@@ -146,7 +146,7 @@ PopoutComponent {
             anchors.centerIn: parent
             spacing: 6
 
-            DankIcon {
+            DIcon {
                 name: fBtn.iconName
                 size: Theme.iconSizeSmall
                 color: btnMouse.containsMouse ? Theme.onSecondaryContainer : Theme.surfaceVariantText
@@ -188,7 +188,7 @@ PopoutComponent {
             anchors.verticalCenter: parent.verticalCenter
             spacing: Theme.spacingXS
 
-            DankIcon {
+            DIcon {
                 name: infoRow.icon
                 size: 14
                 color: infoRow.accent ? Theme.primary : Theme.surfaceVariantText
@@ -317,7 +317,7 @@ PopoutComponent {
                     anchors.centerIn: parent
                     spacing: 6
 
-                    DankIcon {
+                    DIcon {
                         name: segment.modelData.icon
                         size: Theme.iconSizeSmall
                         color: segment.selected ? segment.activeFg : (segmentArea.containsMouse ? Theme.onSecondaryContainer : Theme.surfaceVariantText)
@@ -469,7 +469,7 @@ PopoutComponent {
                             }
                         }
 
-                        DankIcon {
+                        DIcon {
                             anchors.centerIn: parent
                             name: "display_settings"
                             size: Theme.iconSizeSmall
@@ -486,7 +486,7 @@ PopoutComponent {
                     }
                 }
 
-                DankIcon {
+                DIcon {
                     anchors.right: parent.right
                     anchors.rightMargin: Theme.spacingM
                     anchors.verticalCenter: parent.verticalCenter
@@ -861,7 +861,7 @@ PopoutComponent {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: Theme.spacingXS
 
-                        DankIcon {
+                        DIcon {
                             name: "movie"
                             size: 15
                             color: Theme.primary

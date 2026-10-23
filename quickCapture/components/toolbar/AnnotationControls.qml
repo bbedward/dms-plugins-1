@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Constants.js" as Constants
 
 Item {
@@ -22,7 +22,7 @@ Item {
         spacing: Theme.spacingXS
         anchors.centerIn: parent
 
-        DankActionButton {
+        DActionButton {
             iconName: "near_me"
             buttonSize: Constants.btnSize
             iconSize: Constants.iconSize
@@ -32,7 +32,7 @@ Item {
             onClicked: control.toolSelected("select")
         }
 
-        DankActionButton {
+        DActionButton {
             iconName: control.showAnnotations ? "visibility" : "visibility_off"
             buttonSize: Constants.btnSize
             iconSize: Constants.iconSize
@@ -42,7 +42,7 @@ Item {
             onClicked: control.annotationsToggled()
         }
 
-        DankActionButton {
+        DActionButton {
             iconName: "crop"
             buttonSize: Constants.btnSize
             iconSize: Constants.iconSize

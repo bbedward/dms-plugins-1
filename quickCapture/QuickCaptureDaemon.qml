@@ -539,7 +539,7 @@ PluginComponent {
         }
     }
 
-    DankModal {
+    DModal {
         id: historyModal
         shouldBeVisible: false
         positioning: "center"
@@ -563,7 +563,7 @@ PluginComponent {
         }
     }
 
-    DankModal {
+    DModal {
         id: menuModal
         shouldBeVisible: false
         positioning: "center"

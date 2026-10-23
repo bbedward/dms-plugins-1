@@ -3,7 +3,7 @@ import QtQuick.Controls
 import Quickshell.Io
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import "./shared"
 
@@ -627,7 +627,7 @@ PluginComponent {
                         NumberAnimation { duration: Theme.shortDuration; easing.type: Easing.OutCubic }
                     }
 
-                    DankIcon {
+                    DIcon {
                         id: dankIcon
                         anchors.centerIn: parent
                         opacity: root.showVolumeIndicator ? 0.0 : 1.0
@@ -700,7 +700,7 @@ PluginComponent {
             anchors.centerIn: parent
             spacing: Theme.spacingXXS
 
-            DankIcon {
+            DIcon {
                 name: chipRoot.iconName
                 size: Theme.iconSizeSmall
                 color: chipRoot.selected ? Theme.primary : Theme.surfaceVariantText
@@ -752,14 +752,14 @@ PluginComponent {
                         height: root.actionButtonSize
                         spacing: Theme.spacingS
 
-                        // Preset Selector (DankDropdown)
+                        // Preset Selector (DDropdown)
                         Item {
                             id: presetSelectorContainer
                             readonly property int visibleButtonCount: root.renamingPreset ? 3 : 2
                             width: parent.width - (root.actionButtonSize + Theme.spacingS) * visibleButtonCount
                             height: root.actionButtonSize
 
-                            DankDropdown {
+                            DDropdown {
                                 id: presetDropdown
                                 anchors.fill: parent
                                 visible: !root.renamingPreset
@@ -787,7 +787,7 @@ PluginComponent {
                             }
 
                             // Inline rename field
-                            DankTextField {
+                            DTextField {
                                 id: renameField
                                 anchors.fill: parent
                                 anchors.margins: 2
@@ -802,7 +802,7 @@ PluginComponent {
                         }
 
                         // Add preset button (+) / Confirm rename button (check)
-                        DankActionButton {
+                        DActionButton {
                             buttonSize: root.actionButtonSize
                             circular: true
                             iconName: root.renamingPreset ? "check" : "add"
@@ -820,7 +820,7 @@ PluginComponent {
                         }
 
                         // Delete preset button (trash), only shown in edit mode
-                        DankActionButton {
+                        DActionButton {
                             readonly property bool canDelete: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
                             visible: root.renamingPreset
                             buttonSize: root.actionButtonSize
@@ -840,7 +840,7 @@ PluginComponent {
                         }
 
                         // Edit preset button (pencil) / Cancel rename button (close / x)
-                        DankActionButton {
+                        DActionButton {
                             readonly property bool canEdit: root.selectedPresetIndex >= 0 && root.selectedPresetIndex < root.presets.length
                             buttonSize: root.actionButtonSize
                             circular: true
@@ -920,7 +920,7 @@ PluginComponent {
                             spacing: Theme.spacingS
 
                             // Mute button
-                            DankActionButton {
+                            DActionButton {
                                 id: muteBtn
                                 buttonSize: root.actionButtonSize
                                 circular: true
@@ -934,7 +934,7 @@ PluginComponent {
                             }
 
                             // Master Volume Slider
-                            DankSlider {
+                            DSlider {
                                 id: masterSlider
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: parent.width - (root.actionButtonSize * 3) - (Theme.spacingS * 3)
@@ -964,7 +964,7 @@ PluginComponent {
                             }
 
                             // Timer button
-                            DankActionButton {
+                            DActionButton {
                                 id: timerBtn
                                 buttonSize: root.actionButtonSize
                                 circular: true
@@ -1003,7 +1003,7 @@ PluginComponent {
                             }
 
                             // Play / Pause / Resume button
-                            DankActionButton {
+                            DActionButton {
                                 id: playPauseBtn
                                 buttonSize: root.actionButtonSize
                                 circular: true
@@ -1069,7 +1069,7 @@ PluginComponent {
 
                             Repeater {
                                 model: root.sleepPresets
-                                delegate: DankButton {
+                                delegate: DButton {
                                     text: modelData.label
                                     width: (parent.width - (parent.spacing * (root.sleepPresets.length - 1))) / root.sleepPresets.length
                                     height: Theme.buttonHeightXS
@@ -1090,7 +1090,7 @@ PluginComponent {
                             spacing: Theme.spacingS
                             visible: sleepTimer.running
 
-                            DankIcon {
+                            DIcon {
                                 name: "hourglass_top"
                                 size: Theme.iconSizeMedium
                                 color: Theme.primary
@@ -1106,7 +1106,7 @@ PluginComponent {
                                 width: parent.width - 80 - parent.spacing * 2 - Theme.iconSizeMedium
                             }
 
-                            DankButton {
+                            DButton {
                                 text: I18n.tr("Cancel")
                                 width: 80
                                 height: Theme.buttonHeightXS

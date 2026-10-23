@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Defaults.js" as Defaults
 import "../../shared"
 
@@ -180,7 +180,7 @@ Item {
                     }
                 }
 
-                DankIcon {
+                DIcon {
                     anchors.centerIn: parent
                     name: tile.modelData.icon
                     size: Theme.iconSize - 2
@@ -207,7 +207,7 @@ Item {
             }
         }
 
-        DankRipple {
+        DRipple {
             id: tileRipple
             anchors.fill: parent
             rippleColor: tile.highlighted ? Theme.onPrimaryContainer : Theme.primary
@@ -260,7 +260,7 @@ Item {
                 }
             }
 
-            DankIcon {
+            DIcon {
                 anchors.centerIn: parent
                 name: "keep"
                 size: 13
@@ -341,7 +341,7 @@ Item {
             }
         }
 
-        DankIcon {
+        DIcon {
             anchors.centerIn: parent
             name: cBtn.iconName
             size: Theme.iconSizeSmall
@@ -372,7 +372,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             spacing: Theme.spacingXS
 
-            DankIcon {
+            DIcon {
                 name: infoRow.icon
                 size: 14
                 color: infoRow.accent ? Theme.primary : Theme.surfaceVariantText
@@ -516,7 +516,7 @@ Item {
                             anchors.centerIn: parent
                             spacing: 6
 
-                            DankIcon {
+                            DIcon {
                                 name: seg.modelData.icon
                                 size: Theme.iconSizeSmall
                                 color: seg.selected ? seg.activeFg : (segMouse.containsMouse ? Theme.onSecondaryContainer : Theme.surfaceVariantText)
@@ -652,7 +652,7 @@ Item {
                             color: Theme.secondaryContainer
                             anchors.verticalCenter: parent.verticalCenter
 
-                            DankIcon {
+                            DIcon {
                                 anchors.centerIn: parent
                                 name: "display_settings"
                                 size: 15
@@ -717,7 +717,7 @@ Item {
                                         anchors.centerIn: parent
                                         spacing: 6
 
-                                        DankIcon {
+                                        DIcon {
                                             name: "monitor"
                                             size: 14
                                             color: chipMouse.containsMouse ? Theme.onPrimaryContainer : Theme.primary
@@ -951,7 +951,7 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Theme.spacingS
 
-                                DankIcon {
+                                DIcon {
                                     name: "movie"
                                     size: 16
                                     color: Theme.primary

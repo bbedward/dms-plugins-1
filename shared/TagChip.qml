@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 StyledRect {
     id: root
@@ -22,7 +22,7 @@ StyledRect {
         anchors.centerIn: parent
         spacing: 6
 
-        DankIcon {
+        DIcon {
             visible: root.iconName !== ""
             name: root.iconName
             size: 14

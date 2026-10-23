@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Rectangle {
     id: root
@@ -91,7 +91,7 @@ Rectangle {
         anchors.leftMargin: Theme.spacingS
         spacing: Theme.spacingS
 
-        DankIcon {
+        DIcon {
             name: (root.iconType === "icon" && root.currentIcon) ? root.currentIcon : (root.iconType === "text" ? "text_fields" : "add")
             size: 16
             color: root.currentIcon ? Theme.surfaceText : Theme.outline
@@ -108,7 +108,7 @@ Rectangle {
         }
     }
 
-    DankIcon {
+    DIcon {
         visible: !root.showText
         name: (root.iconType === "icon" && root.currentIcon) ? root.currentIcon : (root.iconType === "text" ? "text_fields" : "add")
         size: 16
@@ -116,7 +116,7 @@ Rectangle {
         anchors.centerIn: parent
     }
 
-    DankIcon {
+    DIcon {
         visible: root.showText
         name: iconPopup.visible ? "expand_less" : "expand_more"
         size: 16
@@ -169,7 +169,7 @@ Rectangle {
                 anchors.rightMargin: Theme.spacingS
                 z: 1
 
-                DankIcon {
+                DIcon {
                     name: "close"
                     size: 16
                     color: closeMouseArea.containsMouse ? Theme.error : Theme.outline
@@ -185,7 +185,7 @@ Rectangle {
                 }
             }
 
-            DankFlickable {
+            DFlickable {
                 anchors.fill: parent
                 anchors.margins: Theme.spacingS
                 contentHeight: dropdownContent.height
@@ -228,7 +228,7 @@ Rectangle {
                                         border.color: root.currentIcon === modelData ? Theme.primary : Theme.withAlpha(Theme.primary, 0)
                                         border.width: 2
 
-                                        DankIcon {
+                                        DIcon {
                                             name: parent.modelData
                                             size: 20
                                             color: root.currentIcon === parent.modelData ? Theme.primary : Theme.surfaceText

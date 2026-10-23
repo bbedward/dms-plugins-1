@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Rectangle {
     id: root
@@ -22,7 +22,7 @@ Rectangle {
     border.width: 1
     opacity: root.disabled ? 0.4 : 1.0
 
-    DankIcon {
+    DIcon {
         name: root.iconName
         size: Theme.iconSize
         color: Theme.surfaceText
@@ -44,7 +44,7 @@ Rectangle {
         elide: Text.ElideRight
     }
 
-    DankKeycap {
+    DKeycap {
         id: shortcutKeycap
         visible: root.shortcut !== ""
         text: root.shortcut

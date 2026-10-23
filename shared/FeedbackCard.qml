@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 SettingsCard {
     id: root
@@ -41,7 +41,7 @@ SettingsCard {
                 wrapMode: Text.Wrap
             }
 
-            DankButton {
+            DButton {
                 text: I18n.tr("Open Repository")
                 iconName: "open_in_new"
                 backgroundColor: Theme.withAlpha(Theme.primary, 0.15)

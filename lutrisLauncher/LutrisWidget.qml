@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import "./shared"
 
@@ -371,7 +371,7 @@ PluginComponent {
     }
 
     horizontalBarPill: Component {
-        DankIcon {
+        DIcon {
             name: (root.isLaunching || root.isLoading) ? "refresh" : "sports_esports"
             size: Theme.iconSizeSmall
             color: (root.isLaunching || root.isLoading) ? Theme.warning : Theme.primary
@@ -399,7 +399,7 @@ PluginComponent {
     }
 
     verticalBarPill: Component {
-        DankIcon {
+        DIcon {
             name: (root.isLaunching || root.isLoading) ? "refresh" : "sports_esports"
             size: Theme.iconSizeSmall
             color: (root.isLaunching || root.isLoading) ? Theme.warning : Theme.primary
@@ -462,7 +462,7 @@ PluginComponent {
                         height: 44
                         spacing: Theme.spacingS
 
-                        DankTextField {
+                        DTextField {
                             id: searchField
                             width: parent.width - (36 + Theme.spacingS) * 5 - Theme.spacingS
                             height: parent.height
@@ -499,14 +499,14 @@ PluginComponent {
                             height: parent.height
                             spacing: Theme.spacingXS
 
-                            DankButton {
+                            DButton {
                                 width: 36; height: 36; iconName: sortModes[sortMode].icon
                                 backgroundColor: Theme.surfaceContainerHigh
                                 textColor: Theme.surfaceText
                                 onClicked: root.cycleSortMode()
                             }
 
-                            DankButton {
+                            DButton {
                                 width: 36; height: 36; iconName: "star"
                                 backgroundColor: root.favoriteOnly ? Theme.warning : Theme.surfaceContainerHigh
                                 textColor: root.favoriteOnly ? Theme.onPrimary : Theme.surfaceText
@@ -517,7 +517,7 @@ PluginComponent {
                                 }
                             }
 
-                            DankButton {
+                            DButton {
                                 width: 36; height: 36; iconName: "visibility_off"
                                 backgroundColor: root.blacklistOnly ? Theme.error : Theme.surfaceContainerHigh
                                 textColor: root.blacklistOnly ? Theme.onPrimary : Theme.surfaceText
@@ -528,7 +528,7 @@ PluginComponent {
                                 }
                             }
 
-                            DankButton {
+                            DButton {
                                 width: Theme.buttonHeightXS; height: Theme.buttonHeightXS; iconName: "refresh"
                                 backgroundColor: Theme.surfaceContainerHigh
                                 textColor: root.isLoading ? Theme.surfaceVariantText : Theme.surfaceText
@@ -645,7 +645,7 @@ PluginComponent {
                                             radius: parent.radius
                                             visible: model.id === root.launchingId
 
-                                            DankIcon {
+                                            DIcon {
                                                 anchors.centerIn: parent
                                                 name: "sync"
                                                 size: 48
@@ -686,7 +686,7 @@ PluginComponent {
                                             Behavior on opacity { NumberAnimation { duration: 150 } }
                                         }
 
-                                        DankIcon {
+                                        DIcon {
                                             anchors.centerIn: parent
                                             name: model.isVirtual ? "add" : "image"
                                             size: 32
@@ -770,7 +770,7 @@ PluginComponent {
                                                     horizontalAlignment: Text.AlignHCenter
                                                 }
 
-                                                DankButton {
+                                                DButton {
                                                     width: parent.width - Theme.spacingS
                                                     height: Theme.buttonHeightXS
                                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -799,7 +799,7 @@ PluginComponent {
                                                     width: parent.width
                                                 }
 
-                                                DankButton {
+                                                DButton {
                                                     width: Theme.buttonHeightS
                                                     height: Theme.buttonHeightXXS
                                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -812,7 +812,7 @@ PluginComponent {
                                             }
                                         }
 
-                                        DankButton {
+                                        DButton {
                                             width: 32
                                             height: 32
                                             anchors.left: parent.left
@@ -851,7 +851,7 @@ PluginComponent {
                             spacing: Theme.spacingM
                             visible: root.isLoading
                             
-                            DankIcon {
+                            DIcon {
                                 name: "refresh"
                                 size: 48
                                 color: Theme.primary
@@ -875,7 +875,7 @@ PluginComponent {
                             spacing: Theme.spacingM
                             visible: !root.isLoading && filteredGamesModel.count === 0
                             
-                            DankIcon {
+                            DIcon {
                                 name: root.searchQuery !== "" ? "search_off" : "sports_esports"
                                 size: 48
                                 color: Theme.surfaceContainerHighest
@@ -890,7 +890,7 @@ PluginComponent {
                                 width: parent.width
                             }
                             
-                            DankButton {
+                            DButton {
                                 text: I18n.trFor("lutrisLauncher", "Clear Filters")
                                 visible: root.searchQuery !== "" || root.favoriteOnly || root.blacklistOnly
                                 anchors.horizontalCenter: parent.horizontalCenter

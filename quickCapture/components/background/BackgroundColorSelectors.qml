@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Constants.js" as Constants
 
 Grid {
@@ -63,7 +63,7 @@ Grid {
         width: Constants.verticalSelectorItemWidth
         height: controlRoot.itemSize
 
-        DankActionButton {
+        DActionButton {
             anchors.centerIn: parent
             buttonSize: controlRoot.itemSize
             iconName: "blur_on"
@@ -94,7 +94,7 @@ Grid {
             anchors.centerIn: parent
             spacing: Theme.spacingXS
 
-            DankIcon {
+            DIcon {
                 name: "dark_mode"
                 size: controlRoot.iconSize
                 color: controlRoot.imageDimEnabled ? Theme.primary : Theme.surfaceText
@@ -112,7 +112,7 @@ Grid {
             anchors.centerIn: parent
             spacing: 1
 
-            DankIcon {
+            DIcon {
                 name: "dark_mode"
                 size: controlRoot.iconSize
                 color: controlRoot.imageDimEnabled ? Theme.primary : Theme.surfaceText
@@ -203,7 +203,7 @@ Grid {
         width: Constants.verticalSelectorItemWidth
         height: controlRoot.itemSize
 
-        DankActionButton {
+        DActionButton {
             anchors.fill: parent
             iconName: "colorize"
             iconSize: controlRoot.iconSize
@@ -234,7 +234,7 @@ Grid {
         width: Constants.verticalSelectorItemWidth
         height: controlRoot.itemSize
 
-        DankActionButton {
+        DActionButton {
             buttonSize: controlRoot.itemSize
             iconName: "auto_awesome"
             iconSize: controlRoot.iconSize

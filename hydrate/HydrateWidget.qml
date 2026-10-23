@@ -4,7 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import qs.Common
 import qs.Modules.Plugins
-import qs.Widgets
+import qs.DCommon.Widgets
 
 PluginComponent {
     // Pure Neutral (Matches bar)
@@ -156,7 +156,7 @@ PluginComponent {
             spacing: (root.pillText !== "" || root.showProgressBar) ? Theme.spacingS : 0
             anchors.verticalCenter: parent ? parent.verticalCenter : undefined
 
-            DankIcon {
+            DIcon {
                 name: root.pillIconName
                 size: Theme.iconSizeSmall
                 color: root.pillIconColor
@@ -197,7 +197,7 @@ PluginComponent {
             spacing: (root.pillText !== "" || root.showProgressBar) ? Theme.spacingS : 0
             anchors.horizontalCenter: parent ? parent.horizontalCenter : undefined
 
-            DankIcon {
+            DIcon {
                 name: root.pillIconName
                 size: Theme.iconSizeSmall
                 color: root.pillIconColor
@@ -398,7 +398,7 @@ PluginComponent {
                     spacing: Theme.spacingS
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    DankButton {
+                    DButton {
                         width: (parent.width - Theme.spacingS * 2) / 3
                         iconName: "local_bar"
                         text: "250ml"
@@ -407,7 +407,7 @@ PluginComponent {
                         onClicked: logWater(250)
                     }
 
-                    DankButton {
+                    DButton {
                         width: (parent.width - Theme.spacingS * 2) / 3
                         iconName: "local_cafe"
                         text: "350ml"
@@ -416,7 +416,7 @@ PluginComponent {
                         onClicked: logWater(350)
                     }
 
-                    DankButton {
+                    DButton {
                         width: (parent.width - Theme.spacingS * 2) / 3
                         iconName: "local_drink"
                         text: "500ml"
@@ -427,7 +427,7 @@ PluginComponent {
                 }
 
                 // Reset progress button
-                DankButton {
+                DButton {
                     width: parent.width
                     text: I18n.trFor("hydrate", "Reset Progress")
                     backgroundColor: Theme.surfaceContainerHighest

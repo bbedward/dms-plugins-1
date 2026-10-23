@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Rectangle {
     id: root
@@ -107,7 +107,7 @@ Rectangle {
                 anchors.centerIn: parent
                 spacing: 4
 
-                DankIcon {
+                DIcon {
                     name: "refresh"
                     size: 16
                     color: Theme.surfaceText
@@ -179,7 +179,7 @@ Rectangle {
                 anchors.centerIn: parent
                 spacing: 4
 
-                DankIcon {
+                DIcon {
                     name: "check"
                     size: 16
                     color: Theme.surfaceContainerHigh

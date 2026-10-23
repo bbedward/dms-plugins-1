@@ -5,7 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Services
 
@@ -90,7 +90,7 @@ PluginSettings {
             x: Theme.spacingM
             spacing: Theme.spacingS
 
-            DankButton {
+            DButton {
                 text: livePlugin && livePlugin.isPaused ? I18n.tr("Resume") : I18n.tr("Pause")
                 iconName: livePlugin && livePlugin.isPaused ? "play_arrow" : "pause"
                 backgroundColor: Theme.surfaceContainerHigh
@@ -100,7 +100,7 @@ PluginSettings {
                 onClicked: if (livePlugin) livePlugin.isPaused = !livePlugin.isPaused
             }
 
-            DankButton {
+            DButton {
                 text: I18n.tr("Reset Session")
                 iconName: "refresh"
                 backgroundColor: Theme.surfaceContainerHigh
@@ -413,7 +413,7 @@ PluginSettings {
                 width: parent.width
                 spacing: Theme.spacingS
 
-                DankButton {
+                DButton {
                     text: I18n.tr("Refresh")
                     iconName: "refresh"
                     backgroundColor: Theme.surfaceContainerHigh
@@ -425,7 +425,7 @@ PluginSettings {
                     }
                 }
 
-                DankButton {
+                DButton {
                     text: I18n.tr("Reset Stats")
                     iconName: "delete_sweep"
                     backgroundColor: Theme.errorContainer
@@ -459,7 +459,7 @@ PluginSettings {
                 width: parent.width
                 spacing: Theme.spacingS
 
-                DankButton {
+                DButton {
                     text: (livePlugin && livePlugin.isPreWarning) ? I18n.tr("Hide Pre-Warning") : I18n.tr("Preview Pre-Warning")
                     iconName: (livePlugin && livePlugin.isPreWarning) ? "notifications_off" : "notifications"
                     backgroundColor: (livePlugin && livePlugin.isPreWarning) ? Theme.primaryContainer : Theme.surfaceContainerHigh
@@ -469,7 +469,7 @@ PluginSettings {
                     onClicked: previewPreWarningProc.running = true
                 }
 
-                DankButton {
+                DButton {
                     text: (livePlugin && livePlugin.isBreakActive) ? I18n.tr("Hide Overlay") : I18n.tr("Preview Fullscreen Break")
                     iconName: (livePlugin && livePlugin.isBreakActive) ? "fullscreen_exit" : "fullscreen"
                     backgroundColor: (livePlugin && livePlugin.isBreakActive) ? Theme.primaryContainer : Theme.surfaceContainerHigh
@@ -480,7 +480,7 @@ PluginSettings {
                 }
             }
 
-            DankButton {
+            DButton {
                 text: I18n.tr("Test Alert Sound")
                 iconName: "volume_up"
                 backgroundColor: Theme.surfaceContainerHigh

@@ -18,6 +18,12 @@ import argparse
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
+try:
+    from refactor_dcommon import DCOMMON_ONLY, SHARED_TYPES
+except ImportError:
+    DCOMMON_ONLY = set()
+    SHARED_TYPES = set()
+
 # Base fallback symbol mapping for known QML and DMS modules
 KNOWN_MODULE_SYMBOLS: Dict[str, Set[str]] = {
     "Quickshell.Io": {
@@ -49,7 +55,8 @@ KNOWN_MODULE_SYMBOLS: Dict[str, Set[str]] = {
         "FileDialog", "ColorDialog", "FolderDialog", "FontDialog", "MessageDialog"
     },
     "QtMultimedia": {
-        "MediaPlayer", "AudioOutput", "SoundEffect", "VideoOutput"
+        "MediaPlayer", "AudioOutput", "MediaDevices", "Camera", "CaptureSession",
+        "SoundEffect", "VideoOutput"
     },
     "QtCore": {
         "StandardPaths", "Settings", "QByteArray", "QUrl", "QDateTime",
@@ -70,8 +77,9 @@ KNOWN_MODULE_SYMBOLS: Dict[str, Set[str]] = {
         "PluginComponent", "PluginService", "PluginSettings",
         "DesktopPluginComponent", "BasePill"
     },
+    "qs.DCommon.Widgets": DCOMMON_ONLY | SHARED_TYPES,
     "qs.Modals.Common": {
-        "DankModal", "DankModalHost", "ModalBackground"
+        "DankModal", "DankModalHost", "ModalBackground", "DModal"
     },
     "qs.Modals.FileBrowser": {
         "DankFileBrowser", "FileBrowserModal", "FileBrowserSurfaceModal"
@@ -113,6 +121,7 @@ def load_dms_tree_symbols():
             # Map directories to modules
             mapping = {
                 "qs.Widgets": qs_dir / "Widgets",
+                "qs.DCommon.Widgets": dms_dir / "dux-qml-common/DCommon/Widgets",
                 "qs.Common": qs_dir / "Common",
                 "qs.Services": qs_dir / "Services",
                 "qs.Modules.Plugins": qs_dir / "Modules/Plugins",

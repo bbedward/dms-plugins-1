@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Item {
     id: root
@@ -124,7 +124,7 @@ Item {
                     width: Math.min(implicitWidth, parent.width - (infoIcon.visible ? 20 : 0))
                 }
 
-                DankIcon {
+                DIcon {
                     id: infoIcon
                     name: "info"
                     size: 16
@@ -152,7 +152,7 @@ Item {
                     radius: 14
                     color: resetArea.containsMouse ? Theme.primaryHoverLight : "transparent"
                 }
-                DankIcon {
+                DIcon {
                     name: "restart_alt"
                     size: 16
                     color: Theme.primary
@@ -170,7 +170,7 @@ Item {
         }
 
         // ── Button Group (Full Width) ─────────────────────────────────────────
-        DankButtonGroup {
+        DButtonGroup {
             id: buttonGroup
             width: parent.width
             buttonHeight: 32
@@ -184,6 +184,6 @@ Item {
             }
         }
 
-        DankTooltipV2 { id: sharedTooltip }
+        DTooltipV2 { id: sharedTooltip }
     }
 }

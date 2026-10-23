@@ -11,7 +11,7 @@ Welcome to the documentation for the `dms-plugins` ecosystem.
    - Dynamic token tables: Colors, button heights, icon sizes, spacing, corner radii, typography.
 
 2. **[Components Reference](components.md)**
-   - Official DMS widgets (`DankActionButton`, `DankDropdown`, `DankSlider`, `DankButton`).
+   - Official DMS widgets (`DActionButton`, `DDropdown`, `DSlider`, `DButton`).
    - Repository shared components (`SettingsCard`, `UsageGuide`, `CreditsList`, settings rows).
 
 3. **[Conventions & Native Services](conventions.md)**

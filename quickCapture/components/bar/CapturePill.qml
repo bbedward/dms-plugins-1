@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Defaults.js" as Defaults
 
 Item {
@@ -44,7 +44,7 @@ Item {
             }
         }
 
-        DankIcon {
+        DIcon {
             visible: !root.showRecordingStatus
             width: visible ? Theme.iconSizeSmall : 0
             implicitWidth: visible ? Theme.iconSizeSmall : 0

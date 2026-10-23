@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../../shared"
 
 Rectangle {
@@ -114,7 +114,7 @@ Rectangle {
                 }
             }
 
-            DankIcon {
+            DIcon {
                 anchors.centerIn: parent
                 name: root.icon
                 size: Theme.iconSizeSmall
@@ -134,7 +134,7 @@ Rectangle {
         }
     }
 
-    DankRipple {
+    DRipple {
         id: ripple
         anchors.fill: parent
         rippleColor: root.highlighted ? Theme.onPrimaryContainer : Theme.primary
@@ -176,7 +176,7 @@ Rectangle {
             }
         }
 
-        DankIcon {
+        DIcon {
             anchors.centerIn: parent
             name: "keep"
             size: 14

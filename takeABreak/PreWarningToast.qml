@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 PanelWindow {
     id: root
@@ -143,7 +143,7 @@ PanelWindow {
 
             Row {
                 spacing: Theme.spacingS
-                DankIcon {
+                DIcon {
                     name: "hourglass_empty"
                     size: 24
                     color: Theme.primary
@@ -171,7 +171,7 @@ PanelWindow {
                 width: parent.width
                 spacing: Theme.spacingS
 
-                DankButton {
+                DButton {
                     text: I18n.tr("Snooze (5m)")
                     iconName: "snooze"
                     backgroundColor: Theme.primaryContainer

@@ -1,7 +1,7 @@
 import QtQuick
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Item {
     id: root
@@ -102,7 +102,7 @@ Item {
                     width: Math.min(implicitWidth, parent.width - (infoIcon.visible ? 20 : 0))
                 }
 
-                DankIcon {
+                DIcon {
                     id: infoIcon
                     name: "info"
                     size: 16
@@ -130,7 +130,7 @@ Item {
                     radius: 14
                     color: resetArea.containsMouse ? Theme.primaryHoverLight : "transparent"
                 }
-                DankIcon {
+                DIcon {
                     name: "restart_alt"
                     size: 16
                     color: Theme.primary
@@ -163,7 +163,7 @@ Item {
                 anchors.centerIn: parent
                 spacing: Theme.spacingS
                 
-                DankIcon {
+                DIcon {
                     name: "palette"
                     size: 14
                     color: root.resolvedColor.hslLightness > 0.6 ? "#000000" : "#ffffff"
@@ -195,6 +195,6 @@ Item {
             }
         }
 
-        DankTooltipV2 { id: sharedTooltip }
+        DTooltipV2 { id: sharedTooltip }
     }
 }

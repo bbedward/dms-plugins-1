@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Row {
     id: root
@@ -19,7 +19,7 @@ Row {
     signal muteToggled()
     signal stopClicked()
 
-    DankIcon {
+    DIcon {
         name: root.isMuted || root.volume === 0 ? "volume_off" : "volume_up"
         size: Theme.iconSizeMedium
         color: root.isMuted ? Theme.error : (root.stopButtonEnabled ? Theme.primary : Theme.surfaceVariantText)
@@ -31,7 +31,7 @@ Row {
         }
     }
 
-    DankSlider {
+    DSlider {
         id: volumeSlider
         value: root.volume * 100
         width: parent.width - (root.showStopButton ? (Theme.iconSize * 2 + Theme.spacingS * 2) : (Theme.iconSize + Theme.spacingS))
@@ -63,7 +63,7 @@ Row {
         }
     }
 
-    DankIcon {
+    DIcon {
         name: "cancel"
         size: Theme.iconSize
         color: root.stopButtonEnabled ? Theme.error : Theme.surfaceVariantText

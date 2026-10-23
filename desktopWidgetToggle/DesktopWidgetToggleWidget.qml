@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Services
 
@@ -69,7 +69,7 @@ PluginComponent {
                         border.width: 1
                         opacity: isDisabled ? 0.4 : 1.0
 
-                        DankIcon {
+                        DIcon {
                             id: popoutItemIcon
                             name: modelData.icon || "widgets"
                             size: 24
@@ -93,7 +93,7 @@ PluginComponent {
                             elide: Text.ElideRight
                         }
 
-                        DankToggle {
+                        DToggle {
                             id: popoutItemToggle
                             checked: popoutItem.isActive
                             enabled: !popoutItem.isDisabled
@@ -170,7 +170,7 @@ PluginComponent {
                             anchors.centerIn: parent
                             spacing: Theme.spacingXS
 
-                            DankIcon {
+                            DIcon {
                                 name: modelData.icon || "widgets"
                                 size: Theme.barIconSize(rootWidget.barThickness, -4, rootWidget.barConfig?.maximizeWidgetIcons, rootWidget.barConfig?.iconScale)
                                 color: btn.isActive ? Theme.onPrimary : Theme.surfaceText
@@ -213,7 +213,7 @@ PluginComponent {
 
                 readonly property bool hasActive: rootWidget.activeGroupIds.length > 0
 
-                DankIcon {
+                DIcon {
                     name: "widgets"
                     size: Theme.iconSizeSmall
                     color: minimalPill.hasActive ? Theme.primary : Theme.surfaceVariantText
@@ -269,7 +269,7 @@ PluginComponent {
                         color: isActive ? Theme.primary : (isDisabled ? Theme.surfaceContainerLow : Theme.surfaceContainerHigh)
                         opacity: isDisabled ? 0.4 : 1.0
 
-                        DankIcon {
+                        DIcon {
                             name: modelData.icon || "widgets"
                             size: Theme.barIconSize(rootWidget.barThickness, -4, rootWidget.barConfig?.maximizeWidgetIcons, rootWidget.barConfig?.iconScale)
                             color: btn.isActive ? Theme.onPrimary : Theme.surfaceText
@@ -312,7 +312,7 @@ PluginComponent {
 
                 readonly property bool hasActive: rootWidget.activeGroupIds.length > 0
 
-                DankIcon {
+                DIcon {
                     name: "widgets"
                     size: Theme.iconSizeSmall
                     color: minimalVerticalPill.hasActive ? Theme.primary : Theme.surfaceVariantText

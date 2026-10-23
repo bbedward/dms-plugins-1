@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Item {
     id: rootOverlay
@@ -55,7 +55,7 @@ Item {
                     anchors.centerIn: parent
                     spacing: Theme.spacingL
 
-                    DankIcon {
+                    DIcon {
                         name: "self_improvement"
                         size: Math.round(Theme.iconSizeLarge * 2.5)
                         color: Theme.primary

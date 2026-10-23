@@ -1,6 +1,5 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
 import "./KeyIcons.js" as KeyIcons
 import "./keycapColors.js" as KeycapColors
 

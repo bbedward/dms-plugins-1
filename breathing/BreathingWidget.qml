@@ -3,7 +3,7 @@ import QtQuick.Controls
 import Quickshell
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import "./shared"
 
@@ -560,7 +560,7 @@ PluginComponent {
                 anchors.centerIn: parent
                 spacing: Theme.spacingXS
 
-                DankIcon {
+                DIcon {
                     name: root.isPaused ? "pause" : 
                           (breathPhase === "inhale" ? "trending_up" : 
                            breathPhase === "hold" || breathPhase === "holdAfterExhale" ? "horizontal_rule" :
@@ -790,7 +790,7 @@ PluginComponent {
                                 anchors.centerIn: parent
                                 spacing: 2
 
-                                DankIcon {
+                                DIcon {
                                     name: root.isPaused ? "pause" : (
                                         breathPhase === "inhale" ? "trending_up" : 
                                         breathPhase === "hold" || breathPhase === "holdAfterExhale" ? "horizontal_rule" :
@@ -909,7 +909,7 @@ PluginComponent {
 
                         Repeater {
                             model: root.timePresets
-                            delegate: DankButton {
+                            delegate: DButton {
                                 width: (parent.width - (parent.spacing * (root.timePresets.length - 1))) / root.timePresets.length
                                 height: Theme.buttonHeightXXS
                                 text: modelData.label
@@ -924,7 +924,7 @@ PluginComponent {
                         width: parent.width
                         spacing: Theme.spacingS
 
-                        DankButton {
+                        DButton {
                             text: root.isRunning ? (root.isPaused ? I18n.tr("Resume") : I18n.tr("Pause")) : I18n.tr("Start")
                             width: (parent.width - parent.spacing) / 2
                             height: Theme.buttonHeightS
@@ -938,7 +938,7 @@ PluginComponent {
                             }
                         }
 
-                        DankButton {
+                        DButton {
                             text: I18n.tr("Stop")
                             width: (parent.width - parent.spacing) / 2
                             height: Theme.buttonHeightS
@@ -956,7 +956,7 @@ PluginComponent {
                         width: parent.width
                         spacing: Theme.spacingS
 
-                        DankActionButton {
+                        DActionButton {
                             buttonSize: Theme.buttonHeightXS
                             circular: true
                             anchors.verticalCenter: parent.verticalCenter
@@ -968,7 +968,7 @@ PluginComponent {
                             onClicked: root.toggleMute()
                         }
 
-                        DankSlider {
+                        DSlider {
                             anchors.verticalCenter: parent.verticalCenter
                             width: parent.width - (Theme.buttonHeightXS * 2) - (Theme.spacingS * 2)
                             minimum: 0
@@ -981,7 +981,7 @@ PluginComponent {
                             }
                         }
 
-                        DankActionButton {
+                        DActionButton {
                             buttonSize: Theme.buttonHeightXS
                             circular: true
                             anchors.verticalCenter: parent.verticalCenter

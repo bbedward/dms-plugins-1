@@ -2,7 +2,7 @@ import QtQuick
 import qs.Common
 import qs.Modules.Plugins
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 
 PluginSettings {
     id: root
@@ -118,7 +118,7 @@ PluginSettings {
                     anchors.centerIn: parent
                     spacing: Theme.spacingXS + 2
 
-                    DankIcon {
+                    DIcon {
                         name: chip.modelData.icon
                         size: Theme.iconSizeSmall - 1
                         color: chip.active ? Theme.primary : Theme.surfaceVariantText

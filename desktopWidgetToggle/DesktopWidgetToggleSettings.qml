@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import "./shared"
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Services
 
@@ -142,7 +142,7 @@ PluginSettings {
             icon: "widgets"
         }
 
-        DankTabBar {
+        DTabBar {
             id: groupTabBar
             width: parent.width
             tabHeight: 48
@@ -190,7 +190,7 @@ PluginSettings {
                                 anchors.centerIn: parent
                                 spacing: Theme.spacingXS
 
-                                DankIcon {
+                                DIcon {
                                     name: "settings"
                                     size: Theme.iconSizeSmall
                                     color: rootSettings.selectedGroupSubTabIndex === 0 ? Theme.onPrimary : Theme.surfaceText
@@ -224,7 +224,7 @@ PluginSettings {
                                 anchors.centerIn: parent
                                 spacing: Theme.spacingXS
 
-                                DankIcon {
+                                DIcon {
                                     name: "widgets"
                                     size: Theme.iconSizeSmall
                                     color: rootSettings.selectedGroupSubTabIndex === 1 ? Theme.onPrimary : Theme.surfaceText
@@ -267,7 +267,7 @@ PluginSettings {
                             color: Theme.surfaceVariantText
                         }
 
-                        DankTextField {
+                        DTextField {
                             width: parent.width
                             height: 40
                             text: activeGroupDetails.currentGroup ? (activeGroupDetails.currentGroup.name || "") : ""
@@ -308,7 +308,7 @@ PluginSettings {
                                 }
                             }
 
-                            DankButton {
+                            DButton {
                                 width: 40
                                 height: 40
                                 iconName: (activeGroupDetails.currentGroup && activeGroupDetails.currentGroup.showIcon !== false) ? "visibility" : "visibility_off"
@@ -324,7 +324,7 @@ PluginSettings {
                         }
                     }
 
-                    DankButton {
+                    DButton {
                         id: deleteBtn
                         text: I18n.tr("Delete")
                         iconName: "delete"
@@ -353,7 +353,7 @@ PluginSettings {
                         color: Theme.surfaceText
                     }
 
-                    DankToggle {
+                    DToggle {
                         width: parent.width
                         text: I18n.tr("Show on Overlay")
                         description: I18n.tr("Show widgets in this group in the desktop overlay layer")
@@ -365,7 +365,7 @@ PluginSettings {
                         }
                     }
 
-                    DankToggle {
+                    DToggle {
                         visible: CompositorService.isNiri
                         width: parent.width
                         text: I18n.tr("Show on Overview")
@@ -378,7 +378,7 @@ PluginSettings {
                         }
                     }
 
-                    DankToggle {
+                    DToggle {
                         visible: CompositorService.isNiri
                         width: parent.width
                         text: I18n.tr("Show on Overview Only")
@@ -391,7 +391,7 @@ PluginSettings {
                         }
                     }
 
-                    DankToggle {
+                    DToggle {
                         width: parent.width
                         text: I18n.tr("Click Through")
                         description: I18n.tr("Allow clicks to pass through widgets in this group")
@@ -403,7 +403,7 @@ PluginSettings {
                         }
                     }
 
-                    DankToggle {
+                    DToggle {
                         width: parent.width
                         text: I18n.tr("Hide when inactive")
                         description: I18n.tr("Hide the widgets in this group entirely when the group is inactive.")
@@ -445,7 +445,7 @@ PluginSettings {
                 spacing: Theme.spacingM
                 visible: rootSettings.selectedGroupSubTabIndex === 1
 
-                DankToggle {
+                DToggle {
                     width: parent.width
                     text: I18n.tr("Individual Widget Behavior")
                     description: I18n.tr("Configure behavior for each widget separately instead of using group-wide settings.")
@@ -485,7 +485,7 @@ PluginSettings {
                             spacing: Theme.spacingS
                             visible: (SettingsData.desktopWidgetInstances || []).length > 0
 
-                            DankButton {
+                            DButton {
                                 text: I18n.tr("Select All")
                                 buttonHeight: 32
                                 horizontalPadding: Theme.spacingM
@@ -494,7 +494,7 @@ PluginSettings {
                                 onClicked: rootSettings.selectAllWidgetsInGroup(rootSettings.selectedGroupIndex, true)
                             }
 
-                            DankButton {
+                            DButton {
                                 text: I18n.tr("Deselect All")
                                 buttonHeight: 32
                                 horizontalPadding: Theme.spacingM
@@ -519,7 +519,7 @@ PluginSettings {
                                 return (activeGroupDetails.currentGroup.widgets || []).includes(modelData.id);
                             }
 
-                            DankToggle {
+                            DToggle {
                                 width: parent.width
                                 text: modelData.name || modelData.widgetType
                                 description: "ID: " + modelData.id

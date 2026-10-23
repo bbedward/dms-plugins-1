@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Services
 import qs.Modules.Plugins
 
@@ -133,7 +133,7 @@ print(json.dumps(devs))
                         anchors.margins: Theme.spacingM
                         spacing: Theme.spacingM
 
-                        DankIcon {
+                        DIcon {
                             name: "warning"
                             size: Theme.iconSizeSmall
                             color: Theme.warning
@@ -173,7 +173,7 @@ print(json.dumps(devs))
                         Row {
                             spacing: Theme.spacingS
 
-                            DankIcon {
+                            DIcon {
                                 name: "keyboard"
                                 size: Theme.iconSizeSmall
                                 color: Theme.surfaceVariantText
@@ -189,7 +189,7 @@ print(json.dumps(devs))
                             }
                         }
 
-                        DankDropdown {
+                        DDropdown {
                             width: parent.width
                             height: 38
                             compactMode: true
@@ -229,7 +229,7 @@ print(json.dumps(devs))
                         Row {
                             spacing: Theme.spacingS
 
-                            DankIcon {
+                            DIcon {
                                 name: "tune"
                                 size: Theme.iconSizeSmall
                                 color: Theme.surfaceVariantText
@@ -251,7 +251,7 @@ print(json.dumps(devs))
                             spacing: Theme.spacingS
                             rowSpacing: Theme.spacingXS
 
-                            DankToggle {
+                            DToggle {
                                 width: (parent.width - parent.spacing) / 2
                                 text: I18n.tr("Shortcuts")
                                 Binding on checked {
@@ -263,7 +263,7 @@ print(json.dumps(devs))
                                 }
                             }
 
-                            DankToggle {
+                            DToggle {
                                 width: (parent.width - parent.spacing) / 2
                                 text: I18n.tr("Normal Keys")
                                 Binding on checked {
@@ -275,7 +275,7 @@ print(json.dumps(devs))
                                 }
                             }
 
-                            DankToggle {
+                            DToggle {
                                 width: (parent.width - parent.spacing) / 2
                                 text: I18n.tr("Mouse Clicks")
                                 Binding on checked {
@@ -287,7 +287,7 @@ print(json.dumps(devs))
                                 }
                             }
 
-                            DankToggle {
+                            DToggle {
                                 width: (parent.width - parent.spacing) / 2
                                 text: I18n.tr("Held Modifiers")
                                 Binding on checked {
@@ -299,7 +299,7 @@ print(json.dumps(devs))
                                 }
                             }
 
-                            DankToggle {
+                            DToggle {
                                 width: (parent.width - parent.spacing) / 2
                                 text: I18n.tr("macOS Symbols")
                                 Binding on checked {
@@ -329,7 +329,7 @@ print(json.dumps(devs))
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: Theme.spacingM
 
-                        DankIcon {
+                        DIcon {
                             name: (root.daemon?.visualizerEnabled ?? false) ? "visibility" : "visibility_off"
                             size: Theme.iconSizeSmall
                             color: (root.daemon?.visualizerEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
@@ -346,7 +346,7 @@ print(json.dumps(devs))
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        DankToggle {
+                        DToggle {
                             id: visualizerToggle
                             hideText: true
                             anchors.verticalCenter: parent.verticalCenter
@@ -360,7 +360,7 @@ print(json.dumps(devs))
                         }
                     }
 
-                    DankActionButton {
+                    DActionButton {
                         anchors.right: parent.right
                         anchors.rightMargin: Theme.spacingM
                         anchors.verticalCenter: parent.verticalCenter

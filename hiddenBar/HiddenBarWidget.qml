@@ -5,7 +5,7 @@ import Quickshell.Io
 import qs.Common
 import qs.Modules.Plugins
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 
 PluginComponent {
     id: pluginRoot
@@ -781,7 +781,7 @@ PluginComponent {
             opacity: shouldBeHidden ? 0 : (isActuallyExpanded ? 1 : 0.6)
             clip: true
 
-            DankIcon {
+            DIcon {
                 id: pillIcon
 
                 anchors.centerIn: parent

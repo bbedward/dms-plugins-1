@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Rectangle {
     id: root
@@ -69,7 +69,7 @@ Rectangle {
         Row {
             spacing: root.large ? Theme.spacingL * 2 : Theme.spacingM
             
-            DankIcon {
+            DIcon {
                 name: root.iconName
                 size: root.large ? 64 : (root.compact ? 24 : 48)
                 color: root.active ? Theme.onPrimary : Theme.surfaceVariantText

@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modals.FileBrowser
 
 Item {
@@ -119,7 +119,7 @@ Item {
                     width: Math.min(implicitWidth, parent.width - (infoIcon.visible ? 20 : 0))
                 }
 
-                DankIcon {
+                DIcon {
                     id: infoIcon
                     name: "info"
                     size: 16
@@ -147,7 +147,7 @@ Item {
                     radius: 14
                     color: resetArea.containsMouse ? Theme.primaryHoverLight : "transparent"
                 }
-                DankIcon {
+                DIcon {
                     name: "restart_alt"
                     size: 16
                     color: Theme.primary
@@ -169,7 +169,7 @@ Item {
             width: parent.width
             spacing: Theme.spacingS
 
-            DankTextField {
+            DTextField {
                 id: textField
                 width: parent.width - (pickerBtn.visible ? 42 + Theme.spacingS : 0)
                 placeholderText: root.placeholder
@@ -177,7 +177,7 @@ Item {
                 onActiveFocusChanged: if (!activeFocus) root.commit()
             }
 
-            DankButton {
+            DButton {
                 id: pickerBtn
                 visible: root.isDirectory || root.isFile
                 iconName: root.isDirectory ? "folder_open" : "file_open"
@@ -192,7 +192,7 @@ Item {
             }
         }
 
-        DankTooltipV2 { id: sharedTooltip }
+        DTooltipV2 { id: sharedTooltip }
 
         FileBrowserSurfaceModal {
             id: browserModal

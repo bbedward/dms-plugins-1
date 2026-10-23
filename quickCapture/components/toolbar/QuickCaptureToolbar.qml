@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../.."
 import "../background"
 import "../core/Helpers.js" as Helpers
@@ -183,7 +183,7 @@ Rectangle {
         width: Constants.btnSize
         height: Constants.btnSize
 
-        DankActionButton {
+        DActionButton {
             id: button
             anchors.fill: parent
             buttonSize: Constants.btnSize
@@ -271,7 +271,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
-                DankSlider {
+                DSlider {
                     id: widthSlider
                     minimum: parent.toolMeta.min
                     maximum: parent.toolMeta.max
@@ -298,7 +298,7 @@ Rectangle {
                 visible: !root.isVertical
                 spacing: Theme.spacingXS
 
-                DankActionButton {
+                DActionButton {
                     iconName: "undo"
                     buttonSize: Constants.btnSize
                     iconSize: Constants.iconSize
@@ -308,7 +308,7 @@ Rectangle {
                     onClicked: root.undoRequested()
                 }
 
-                DankActionButton {
+                DActionButton {
                     iconName: "redo"
                     buttonSize: Constants.btnSize
                     iconSize: Constants.iconSize
@@ -327,7 +327,7 @@ Rectangle {
                 visible: !root.isVertical
                 spacing: Theme.spacingXS
 
-                DankActionButton {
+                DActionButton {
                     iconName: "push_pin"
                     buttonSize: Constants.btnSize
                     iconSize: Constants.iconSize
@@ -349,7 +349,7 @@ Rectangle {
                     onRightClicked: root.saveAsRequested()
                 }
 
-                DankActionButton {
+                DActionButton {
                     iconName: "done_all"
                     buttonSize: Constants.btnSize
                     iconSize: Constants.iconSize
@@ -363,7 +363,7 @@ Rectangle {
                 visible: !root.isVertical
             }
 
-            DankActionButton {
+            DActionButton {
                 visible: !root.isVertical
                 iconName: "close"
                 buttonSize: Constants.btnSize
@@ -379,7 +379,7 @@ Rectangle {
         id: backgroundLayout
 
         ToolbarGrid {
-            DankActionButton {
+            DActionButton {
                 iconName: "arrow_back"
                 buttonSize: Constants.btnSize
                 iconSize: Constants.iconSize

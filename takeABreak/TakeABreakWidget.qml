@@ -3,7 +3,7 @@ import QtMultimedia
 import Quickshell
 import Quickshell.Io
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Services
 
@@ -222,7 +222,7 @@ PluginComponent {
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Theme.spacingXS
 
-                                DankIcon {
+                                DIcon {
                                     name: {
                                         if (detailRoot.isPaused) return "pause_circle";
                                         if (detailRoot.isBreak) return "self_improvement";
@@ -367,7 +367,7 @@ PluginComponent {
                     width: parent.width
                     spacing: Theme.spacingM
 
-                    DankButton {
+                    DButton {
                         width: (parent.width - parent.spacing) / 2
                         buttonHeight: 38
                         iconName: detailRoot.isBreak ? "snooze" : (detailRoot.isPaused ? "play_arrow" : "pause")
@@ -383,7 +383,7 @@ PluginComponent {
                         }
                     }
 
-                    DankButton {
+                    DButton {
                         width: (parent.width - parent.spacing) / 2
                         buttonHeight: 38
                         iconName: detailRoot.isBreak ? "skip_next" : "self_improvement"
@@ -537,7 +537,7 @@ PluginComponent {
                     width: parent.width
                     spacing: Theme.spacingM
 
-                    DankButton {
+                    DButton {
                         width: (parent.width - parent.spacing * 2) / 3
                         buttonHeight: 32
                         iconName: "more_time"
@@ -551,7 +551,7 @@ PluginComponent {
                         }
                     }
 
-                    DankButton {
+                    DButton {
                         width: (parent.width - parent.spacing * 2) / 3
                         buttonHeight: 32
                         iconName: "refresh"
@@ -564,7 +564,7 @@ PluginComponent {
                         }
                     }
 
-                    DankButton {
+                    DButton {
                         width: (parent.width - parent.spacing * 2) / 3
                         buttonHeight: 32
                         iconName: "settings"
@@ -896,7 +896,7 @@ PluginComponent {
                 width: parent.width
                 spacing: Theme.spacingM
 
-                DankIcon {
+                DIcon {
                     name: "self_improvement"
                     size: 32
                     color: Theme.primary
@@ -938,7 +938,7 @@ PluginComponent {
                 width: parent.width
                 spacing: Theme.spacingS
 
-                DankButton {
+                DButton {
                     text: pluginRoot.isPaused ? I18n.tr("Resume") : I18n.tr("Pause")
                     iconName: pluginRoot.isPaused ? "play_arrow" : "pause"
                     backgroundColor: Theme.surfaceContainerHigh
@@ -948,7 +948,7 @@ PluginComponent {
                     onClicked: pluginRoot.togglePaused()
                 }
 
-                DankButton {
+                DButton {
                     text: I18n.tr("Reset")
                     iconName: "refresh"
                     backgroundColor: Theme.surfaceContainerHigh

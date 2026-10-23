@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Modals.FileBrowser
 import "./shared"
@@ -196,7 +196,7 @@ PluginSettings {
                     Row {
                         anchors.centerIn: parent
                         spacing: 6
-                        DankIcon {
+                        DIcon {
                             name: modelData.icon || "music_note"
                             size: 16
                             color: isChecked ? Theme.onPrimary : Theme.surfaceVariantText
@@ -259,7 +259,7 @@ PluginSettings {
             icon: "music_note"
         }
 
-        DankButton {
+        DButton {
             text: I18n.tr("Add Custom Sound")
             iconName: "add"
             backgroundColor: Theme.primary
@@ -290,7 +290,7 @@ PluginSettings {
                         anchors.rightMargin: Theme.spacingM
                         spacing: Theme.spacingM
 
-                        DankIcon {
+                        DIcon {
                             name: "audiotrack"
                             size: 16
                             color: Theme.primary
@@ -306,7 +306,7 @@ PluginSettings {
                             elide: Text.ElideRight
                         }
 
-                        DankIcon {
+                        DIcon {
                             name: "delete"
                             size: 16
                             color: Theme.error
@@ -374,7 +374,7 @@ PluginSettings {
                     Row {
                         anchors.centerIn: parent
                         spacing: 6
-                        DankIcon {
+                        DIcon {
                             name: modelData.icon || "music_note"
                             size: 16
                             color: isVisible ? Theme.onPrimary : Theme.surfaceVariantText

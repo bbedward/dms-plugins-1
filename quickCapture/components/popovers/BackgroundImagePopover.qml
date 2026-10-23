@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 PopoverSurface {
     id: popoverRoot
@@ -56,7 +56,7 @@ PopoverSurface {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: Theme.spacingXS
 
-                DankActionButton {
+                DActionButton {
                     iconName: "refresh"
                     buttonSize: 28
                     iconSize: 16
@@ -64,7 +64,7 @@ PopoverSurface {
                     onClicked: popoverRoot.refreshRequested()
                 }
 
-                DankActionButton {
+                DActionButton {
                     iconName: "close"
                     buttonSize: 28
                     iconSize: 16
@@ -89,7 +89,7 @@ PopoverSurface {
                 spacing: Theme.spacingXS
                 visible: !popoverRoot.loading && popoverRoot.images.length === 0
 
-                DankIcon {
+                DIcon {
                     name: "image_not_supported"
                     size: 30
                     color: Theme.surfaceVariantText

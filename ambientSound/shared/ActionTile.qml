@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Rectangle {
     id: root
@@ -93,7 +93,7 @@ Rectangle {
                 onHeightChanged: requestPaint()
             }
 
-            DankIcon {
+            DIcon {
                 name: root.iconName
                 size: 22
                 anchors.centerIn: parent

@@ -5,7 +5,7 @@ import Quickshell
 import qs.Common
 import qs.Modules.Plugins
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 
 PluginComponent {
     id: root
@@ -520,7 +520,7 @@ PluginComponent {
                     cache: true
                 }
 
-                DankIcon {
+                DIcon {
                     name: privacyMode ? "visibility_off" : (pillShowLocal ? "lan" : (vpnActive ? "vpn_key" : "public"))
                     size: Theme.iconSizeSmall
                     color: root.pillColor
@@ -574,7 +574,7 @@ PluginComponent {
                     cache: true
                 }
 
-                DankIcon {
+                DIcon {
                     name: privacyMode ? "visibility_off" : (pillShowLocal ? "lan" : (vpnActive ? "vpn_key" : "public"))
                     size: Theme.iconSizeSmall
                     color: root.pillColor
@@ -695,7 +695,7 @@ PluginComponent {
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
-                                    DankActionButton {
+                                    DActionButton {
                                         iconName: "content_copy"
                                         iconSize: Theme.iconSizeSmall - 2
                                         iconColor: Theme.primary
@@ -750,7 +750,7 @@ PluginComponent {
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
 
-                                    DankActionButton {
+                                    DActionButton {
                                         iconName: "content_copy"
                                         iconSize: Theme.iconSizeSmall - 2
                                         iconColor: Theme.primary
@@ -967,7 +967,7 @@ PluginComponent {
                         anchors.verticalCenter: parent.verticalCenter
 
                         // Privacy Button
-                        DankActionButton {
+                        DActionButton {
                             iconName: privacyMode ? "visibility_off" : "visibility"
                             iconSize: Theme.iconSizeSmall
                             iconColor: Theme.surfaceText
@@ -978,7 +978,7 @@ PluginComponent {
                         }
 
                         // Bar Display Source Button
-                        DankActionButton {
+                        DActionButton {
                             iconName: pillShowLocal ? "lan" : "public"
                             iconSize: Theme.iconSizeSmall
                             iconColor: Theme.surfaceText
@@ -989,7 +989,7 @@ PluginComponent {
                         }
 
                         // Refresh Button
-                        DankActionButton {
+                        DActionButton {
                             iconName: "refresh"
                             iconSize: Theme.iconSizeSmall
                             iconColor: Theme.surfaceText

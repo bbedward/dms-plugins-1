@@ -1,19 +1,21 @@
 # DMS Components Reference
 
-Always prefer built-in DMS primitives (`qs.Widgets`) and repository shared components (`import "./shared"`) over custom ad-hoc shapes.
+Always prefer built-in DMS primitives (`qs.DCommon.Widgets`) and repository shared components (`import "./shared"`) over custom ad-hoc shapes.
+
+Shell-specific widgets such as `DPopout`, `DBackdrop`, `DFloatingWindow`, `DOSD`, and `PluginGlobalVar` still live in `qs.Widgets`; import that module only when you need them.
 
 ---
 
-## 1. Official DMS Widgets (`qs.Widgets`)
+## 1. Official DMS Widgets (`qs.DCommon.Widgets`)
 
-### `DankActionButton`
+### `DActionButton`
 Compact circular or square icon buttons for toolbars, headers, and DankBar widgets.
 
 ```qml
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
-DankActionButton {
+DActionButton {
     buttonSize: Theme.buttonHeightS // 40px standard
     circular: true
     iconName: "volume_up"
@@ -25,11 +27,11 @@ DankActionButton {
 }
 ```
 
-### `DankButton`
+### `DButton`
 Standard text button with optional leading or trailing icons.
 
 ```qml
-DankButton {
+DButton {
     text: I18n.tr("Save")
     iconName: "check"
     buttonHeight: Theme.buttonHeightS
@@ -37,11 +39,11 @@ DankButton {
 }
 ```
 
-### `DankDropdown`
+### `DDropdown`
 Dropdown selector supporting outside-click dismissal, anchoring, and keyboard focus.
 
 ```qml
-DankDropdown {
+DDropdown {
     width: parent.width
     height: Theme.buttonHeightS
     compactMode: true
@@ -53,16 +55,16 @@ DankDropdown {
 }
 ```
 
-### `DankSlider`
+### `DSlider`
 Compact slider for continuous numeric ranges (opacity, volume, speed).
 
 ```qml
-DankSlider {
+DSlider {
     width: parent.width
-    from: 0
-    to: 100
+    minimum: 0
+    maximum: 100
     value: root.currentVolume
-    onMoved: (val) => root.setVolume(val)
+    onSliderValueChanged: val => root.setVolume(val)
 }
 ```
 

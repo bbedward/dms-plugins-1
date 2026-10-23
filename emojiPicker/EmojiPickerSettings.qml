@@ -1,7 +1,7 @@
 import QtQuick
 import qs.Common
 import qs.Modules.Plugins
-import qs.Widgets
+import qs.DCommon.Widgets
 import "./shared"
 
 PluginSettings {
@@ -81,7 +81,7 @@ PluginSettings {
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            DankButton {
+            DButton {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 text: I18n.trFor("emojiPicker", "Clear History")

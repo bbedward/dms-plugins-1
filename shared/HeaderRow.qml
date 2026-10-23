@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Item {
     id: root
@@ -23,7 +23,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
     }
 
-    DankActionButton {
+    DActionButton {
         id: closeButton
         visible: root.showCloseButton
         iconName: "close"

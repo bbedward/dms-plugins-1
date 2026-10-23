@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.X11
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Services
 import qs.Modules.Plugins
 import "./shared"
@@ -268,7 +268,7 @@ PluginComponent {
         return Theme.surfaceText;
     }
 
-    // Label/value mapping for the popout dropdown (DankDropdown is label-based).
+    // Label/value mapping for the popout dropdown (DDropdown is label-based).
     // Both directions go through I18n.tr() so they stay consistent per locale.
     readonly property var colorModeOptions: [I18n.tr("Classic B/W"), I18n.tr("Theme Primary"), I18n.tr("Custom")]
     function colorModeToLabel(m) {
@@ -713,7 +713,7 @@ PluginComponent {
                 }
             }
 
-            DankIcon {
+            DIcon {
                 visible: root.inputBroken
                 name: "warning"
                 size: Theme.iconSizeSmall
@@ -892,8 +892,8 @@ PluginComponent {
                         width: parent.width
                         height: 36
                         spacing: Theme.spacingM
-                        DankIcon { name: "keyboard"; size: Theme.iconSizeMedium; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                        DankDropdown {
+                        DIcon { name: "keyboard"; size: Theme.iconSizeMedium; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                        DDropdown {
                             id: keyboardDropdown
                             width: parent.width - 40
                             options: root.deviceOptions
@@ -920,8 +920,8 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "aspect_ratio"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DankSlider {
+                            DIcon { name: "aspect_ratio"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DSlider {
                                 id: sizeSlider
                                 width: parent.width - 80
                                 value: root.catSize * 100
@@ -930,7 +930,7 @@ PluginComponent {
                                 onSliderValueChanged: v => root.saveSetting("catSizePercent", v)
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-                            DankIcon {
+                            DIcon {
                                 name: "restore"
                                 size: Theme.iconSizeSmall
                                 color: Theme.primary
@@ -965,8 +965,8 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "bedtime"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DankSlider {
+                            DIcon { name: "bedtime"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DSlider {
                                 id: sleepSlider
                                 width: parent.width - 80
                                 value: root.waitingTimeout / 1000
@@ -975,7 +975,7 @@ PluginComponent {
                                 onSliderValueChanged: v => root.saveSetting("waitingTimeout", v)
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-                            DankIcon {
+                            DIcon {
                                 name: "restore"
                                 size: Theme.iconSizeSmall
                                 color: Theme.primary
@@ -1010,8 +1010,8 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "swap_vert"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DankSlider {
+                            DIcon { name: "swap_vert"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DSlider {
                                 id: offsetSlider
                                 width: parent.width - 80
                                 value: root.catYOffset
@@ -1020,7 +1020,7 @@ PluginComponent {
                                 onSliderValueChanged: v => root.saveSetting("catYOffset", v)
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-                            DankIcon {
+                            DIcon {
                                 name: "restore"
                                 size: Theme.iconSizeSmall
                                 color: Theme.primary
@@ -1055,8 +1055,8 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "timer"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DankSlider {
+                            DIcon { name: "timer"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DSlider {
                                 id: pawHoldSlider
                                 width: parent.width - 80
                                 value: root.pawHoldTime
@@ -1065,7 +1065,7 @@ PluginComponent {
                                 onSliderValueChanged: v => root.saveSetting("pawHoldTime", v)
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-                            DankIcon {
+                            DIcon {
                                 name: "restore"
                                 size: Theme.iconSizeSmall
                                 color: Theme.primary
@@ -1100,8 +1100,8 @@ PluginComponent {
                             width: parent.width
                             height: 32
                             spacing: Theme.spacingM
-                            DankIcon { name: "palette"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DankDropdown {
+                            DIcon { name: "palette"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
+                            DDropdown {
                                 id: colorModeDropdown
                                 width: parent.width - 40 - (customSwatch.visible ? 40 + Theme.spacingM : 0)
                                 options: root.colorModeOptions
@@ -1149,7 +1149,7 @@ PluginComponent {
                         // Blink Toggle
                         Row {
                             spacing: Theme.spacingS
-                            DankIcon {
+                            DIcon {
                                 name: root.enableBlinking ? "visibility" : "visibility_off"
                                 size: Theme.iconSize
                                 color: root.enableBlinking ? Theme.primary : Theme.surfaceText
@@ -1171,7 +1171,7 @@ PluginComponent {
                         // Sound Toggle
                         Row {
                             spacing: Theme.spacingS
-                            DankIcon {
+                            DIcon {
                                 name: root.soundEnabled ? "volume_up" : "volume_off"
                                 size: Theme.iconSize
                                 color: root.soundEnabled ? Theme.primary : Theme.surfaceText
@@ -1193,7 +1193,7 @@ PluginComponent {
                         // Metrics Toggle
                         Row {
                             spacing: Theme.spacingS
-                            DankIcon {
+                            DIcon {
                                 name: "speed"
                                 size: Theme.iconSize
                                 color: root.showMetrics ? Theme.primary : Theme.surfaceText

@@ -3,7 +3,7 @@ import QtQuick.Controls
 import Quickshell.Io
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Modals.FileBrowser
 import "./shared"
@@ -244,7 +244,7 @@ PluginComponent {
                 scale: draggingOver ? 1.2 : 1.0
                 Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
 
-                DankIcon {
+                DIcon {
                     name: "document_scanner"
                     size: Theme.iconSizeSmall
                     color: draggingOver ? Theme.primary : (pluginRoot.isScanning ? Theme.primary : Theme.surfaceVariantText)
@@ -356,7 +356,7 @@ PluginComponent {
                 }
             }
 
-            DankFlickable {
+            DFlickable {
                 width: parent.width
                 height: Math.min(contentHeight, pluginRoot.popoutHeight - popout.headerHeight - popout.detailsHeight - Theme.spacingM)
                 contentHeight: contentColumn.implicitHeight
@@ -416,7 +416,7 @@ PluginComponent {
                                     }
                                 }
 
-                                DankButton {
+                                DButton {
                                     anchors.top: parent.top
                                     anchors.right: parent.right
                                     anchors.margins: Theme.spacingS
@@ -437,7 +437,7 @@ PluginComponent {
                                 width: parent.width
                                 spacing: Theme.spacingS
 
-                                DankButton {
+                                DButton {
                                     text: I18n.trFor("ocrScanner", "Scan Clipboard")
                                     width: (parent.width - Theme.spacingS) / 2
                                     iconName: "content_paste"
@@ -447,7 +447,7 @@ PluginComponent {
                                     textColor: Theme.primary
                                 }
 
-                                DankButton {
+                                DButton {
                                     text: I18n.trFor("ocrScanner", "Select File")
                                     width: (parent.width - Theme.spacingS) / 2
                                     iconName: "image"
@@ -471,7 +471,7 @@ PluginComponent {
                                 border.color: pluginRoot.isScanning ? Theme.primary : Theme.outlineVariant
                                 border.width: 1
 
-                                DankFlickable {
+                                DFlickable {
                                     anchors.fill: parent
                                     anchors.margins: Theme.spacingM
                                     contentWidth: width - (Theme.spacingM * 2)
@@ -502,7 +502,7 @@ PluginComponent {
                                 width: parent.width
                                 spacing: Theme.spacingS
 
-                                DankButton {
+                                DButton {
                                     text: I18n.trFor("ocrScanner", "Copy Text")
                                     width: (parent.width - Theme.spacingS) / 2
                                     iconName: "content_copy"
@@ -512,7 +512,7 @@ PluginComponent {
                                     textColor: Theme.primary
                                 }
 
-                                DankButton {
+                                DButton {
                                     text: I18n.trFor("ocrScanner", "Save Text")
                                     width: (parent.width - Theme.spacingS) / 2
                                     iconName: "save"

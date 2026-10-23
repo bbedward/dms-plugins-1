@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Item {
     id: root
@@ -62,7 +62,7 @@ Item {
         spacing: Theme.spacingS
         width: Math.min(implicitWidth, parent.width - 100)
 
-        DankIcon {
+        DIcon {
             name: root.icon
             size: 18
             color: root.titleColor
@@ -80,7 +80,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
         }
 
-        DankIcon {
+        DIcon {
             name: root.isExpanded ? "expand_less" : "expand_more"
             size: 16
             color: Theme.surfaceVariantText
@@ -116,7 +116,7 @@ Item {
             color: resetArea.containsMouse ? Theme.primaryHoverLight : "transparent"
         }
 
-        DankIcon {
+        DIcon {
             name: "restart_alt"
             size: 18
             color: Theme.primary

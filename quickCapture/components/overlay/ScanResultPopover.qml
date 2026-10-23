@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Services
 import "../popovers"
 
@@ -57,7 +57,7 @@ PopoverSurface {
             height: 28
             spacing: Theme.spacingS
 
-            DankIcon {
+            DIcon {
                 name: root.resultType === "qr" ? "qr_code" : "document_scanner"
                 size: Theme.iconSize
                 color: Theme.primary
@@ -74,7 +74,7 @@ PopoverSurface {
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            DankActionButton {
+            DActionButton {
                 id: closeButton
                 iconName: "close"
                 buttonSize: 28
@@ -125,7 +125,7 @@ PopoverSurface {
             anchors.right: parent.right
             spacing: Theme.spacingS
 
-            DankButton {
+            DButton {
                 text: I18n.trFor("quickCapture", "Open")
                 iconName: "open_in_new"
                 visible: root.isUrl
@@ -133,7 +133,7 @@ PopoverSurface {
                 onClicked: Quickshell.execDetached(["xdg-open", root.resultText.trim()])
             }
 
-            DankButton {
+            DButton {
                 text: I18n.trFor("quickCapture", "Copy")
                 iconName: "content_copy"
                 buttonHeight: 32

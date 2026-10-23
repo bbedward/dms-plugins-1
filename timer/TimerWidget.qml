@@ -4,6 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import qs.Common
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Services
 import qs.Widgets
@@ -348,7 +349,7 @@ PluginComponent {
                 spacing: (root._pillHasIcon && !root._pillIsIconOnly && !root._pillIsPulse) ? Theme.spacingS : 0
                 visible: !root._pillIsPulse
 
-                DankIcon {
+                DIcon {
                     name: globalIsRunning.value ? "pause" : (root.isReady ? "timer" : "play_arrow")
                     size: Theme.iconSizeSmall
                     color: root.pillColor
@@ -453,7 +454,7 @@ PluginComponent {
 
                     Repeater {
                         model: root.presets
-                        delegate: DankButton {
+                        delegate: DButton {
                             text: modelData + "m"
                             width: (parent.width - (Theme.spacingS * 3)) / 4
                             backgroundColor: Theme.primary
@@ -472,7 +473,7 @@ PluginComponent {
                     width: parent.width
                     spacing: Theme.spacingS
 
-                    DankTextField {
+                    DTextField {
                         id: customInput
                         placeholderText: "Minutes..."
                         width: parent.width - setBtn.width - parent.spacing
@@ -484,7 +485,7 @@ PluginComponent {
                         onAccepted: setBtn.clicked()
                     }
 
-                    DankButton {
+                    DButton {
                         id: setBtn
                         text: I18n.tr("Set")
                         iconName: "play_arrow"
@@ -555,7 +556,7 @@ PluginComponent {
                                     anchors.centerIn: parent
                                     spacing: Theme.spacingXXS
 
-                                    DankIcon {
+                                    DIcon {
                                         name: modelData.icon
                                         size: Theme.iconSizeSmall
                                         color: root.systemActionOnTimeout === modelData.value ? Theme.onPrimary : Theme.surfaceText
@@ -587,7 +588,7 @@ PluginComponent {
 
                     }
 
-                    DankTextField {
+                    DTextField {
                         id: cmdInput
 
                         width: parent.width - 24

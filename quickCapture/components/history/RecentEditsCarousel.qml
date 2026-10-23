@@ -1,7 +1,7 @@
 import QtQuick
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Defaults.js" as Defaults
 
 Item {
@@ -127,7 +127,7 @@ Item {
             width: parent.width
             height: 44
 
-            DankActionButton {
+            DActionButton {
                 anchors.left: parent.left
                 anchors.leftMargin: 4
                 anchors.verticalCenter: parent.verticalCenter
@@ -275,7 +275,7 @@ Item {
                                     onTriggered: parent._copied = false
                                 }
 
-                                DankActionButton {
+                                DActionButton {
                                     anchors.top: cardBackground.top
                                     anchors.right: cardBackground.right
                                     anchors.margins: 6
@@ -312,7 +312,7 @@ Item {
                                     }
                                 }
 
-                                DankActionButton {
+                                DActionButton {
                                     anchors.bottom: cardBackground.bottom
                                     anchors.right: cardBackground.right
                                     anchors.margins: 6
@@ -355,7 +355,7 @@ Item {
                                     }
                                 }
 
-                                DankActionButton {
+                                DActionButton {
                                     anchors.top: cardBackground.top
                                     anchors.left: cardBackground.left
                                     anchors.margins: 6
@@ -394,7 +394,7 @@ Item {
                     width: parent.width
                     height: 36
 
-                    DankButtonGroup {
+                    DButtonGroup {
                         anchors.centerIn: parent
                         visible: root.totalPages > 1
                         model: {
@@ -437,7 +437,7 @@ Item {
                 sourceSize.width: 1920
             }
 
-            DankActionButton {
+            DActionButton {
                 anchors.left: parent.left
                 anchors.leftMargin: 4
                 anchors.verticalCenter: parent.verticalCenter
@@ -450,7 +450,7 @@ Item {
                 onClicked: root.previewIndex--
             }
 
-            DankActionButton {
+            DActionButton {
                 anchors.right: parent.right
                 anchors.rightMargin: 4
                 anchors.verticalCenter: parent.verticalCenter
@@ -478,7 +478,7 @@ Item {
                 anchors.bottomMargin: 12
                 spacing: 8
 
-                DankButton {
+                DButton {
                     iconName: "open_in_new"
                     text: I18n.trFor("quickCapture", "Open")
                     buttonHeight: 36
@@ -491,7 +491,7 @@ Item {
                     }
                 }
 
-                DankButton {
+                DButton {
                     iconName: previewArea._previewCopied ? "check" : "content_copy"
                     text: previewArea._previewCopied ? I18n.trFor("quickCapture", "Copied!") : I18n.trFor("quickCapture", "Copy")
                     buttonHeight: 36
@@ -510,7 +510,7 @@ Item {
                 }
             }
 
-            DankActionButton {
+            DActionButton {
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.margins: 8

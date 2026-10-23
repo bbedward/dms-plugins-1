@@ -44,10 +44,10 @@ Always use `Theme` tokens (`import qs.Common`). Never hardcode hex strings, pixe
 
 | Token | Pixels | Role & Usage | Recommended Components | Icon Size |
 | :--- | :--- | :--- | :--- | :--- |
-| `Theme.buttonHeightXXS` | `28px` | Micro actions, inline list chips | `DankActionButton`, `TagChip` | `Theme.iconSizeSmall` (16px) |
-| `Theme.buttonHeightXS` | `32px` | Compact chip buttons, filter chips | `DankFilterChips`, `DankButton` (size: "s") | `Theme.iconSizeSmall` (16px) |
-| `Theme.buttonHeightS` | `40px` | **Default standard** for toolbars, headers, compact inputs | `DankActionButton`, `DankDropdown` (compactMode) | `Theme.iconSizeMedium` (20px) |
-| `Theme.buttonHeightM` | `56px` | Prominent control bars, primary modal actions | `DankButton` (size: "m"), bottom bar container | `Theme.iconSize` (24px) / `Theme.iconSizeLarge` (32px) |
+| `Theme.buttonHeightXXS` | `28px` | Micro actions, inline list chips | `DActionButton`, `TagChip` | `Theme.iconSizeSmall` (16px) |
+| `Theme.buttonHeightXS` | `32px` | Compact chip buttons, filter chips | `DFilterChips`, `DButton` (size: "s") | `Theme.iconSizeSmall` (16px) |
+| `Theme.buttonHeightS` | `40px` | **Default standard** for toolbars, headers, compact inputs | `DActionButton`, `DDropdown` (compactMode) | `Theme.iconSizeMedium` (20px) |
+| `Theme.buttonHeightM` | `56px` | Prominent control bars, primary modal actions | `DButton` (size: "m"), bottom bar container | `Theme.iconSize` (24px) / `Theme.iconSizeLarge` (32px) |
 
 ---
 

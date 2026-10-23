@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 Item {
     id: root
@@ -85,7 +85,7 @@ Item {
                             anchors.centerIn: parent
                             spacing: 5
 
-                            DankIcon {
+                            DIcon {
                                 name: creditRow.chipIcon
                                 size: 13
                                 color: chipBadge.isHovered ? Theme.primary : Theme.onPrimaryContainer
@@ -102,7 +102,7 @@ Item {
                                 Behavior on color { ColorAnimation { duration: 150 } }
                             }
 
-                            DankIcon {
+                            DIcon {
                                 visible: creditRow.authorUrl !== ""
                                 name: "north_east"
                                 size: 11

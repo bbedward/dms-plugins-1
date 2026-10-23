@@ -4,7 +4,6 @@ import Quickshell.Wayland
 import qs.Common
 import qs.Widgets
 import "./shared"
-import "./shared/keycapColors.js" as KeycapColors
 
 PanelWindow {
     id: overlayWindow

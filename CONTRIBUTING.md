@@ -7,7 +7,7 @@ Contributions to plugins in this repository are welcome. Follow these guidelines
 ## 1. Core Principles
 
 - **No Magic Numbers:** Never hardcode pixel sizes, margins, padding, or colors. Always use tokens from `Theme` (`qs.Common`).
-- **Reuse Built-in Primitives:** Always prefer official DMS components (`DankActionButton`, `DankDropdown`, `DankSlider`, `StyledText`) over custom ad-hoc shapes.
+- **Reuse Built-in Primitives:** Always prefer official DMS components (`DActionButton`, `DDropdown`, `DSlider`, `StyledText`) over custom ad-hoc shapes.
 - **Minimal Dependencies:** Never declare external package dependencies for tools DMS provides natively.
 - **One Plugin per PR:** Scope each PR strictly to a single plugin directory (`<pluginName>/`).
 
@@ -40,6 +40,7 @@ Consult these focused guides before implementing or updating plugin UI:
    qmllint <pluginName>/*.qml
    python3 scripts/check_unused_imports.py <pluginName>
    python3 scripts/check_compatibility.py <pluginName>
+   python3 scripts/refactor_dcommon.py --check --requires-dms ">=2.0.0"
    ```
 4. **Pull Requests:**
    - Target `main`.

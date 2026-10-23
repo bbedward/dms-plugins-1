@@ -3,7 +3,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Services
 import "./shared"
@@ -484,7 +484,7 @@ PluginComponent {
                 scale: draggingOver ? 1.2 : 1.0
                 Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
 
-                DankIcon {
+                DIcon {
                     name: "download"
                     size: Theme.iconSizeSmall
                     color: draggingOver ? Theme.primary : (root.activeDownloadsCount > 0 ? Theme.primary : Theme.surfaceText)
@@ -539,7 +539,7 @@ PluginComponent {
                 scale: draggingOver ? 1.2 : 1.0
                 Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
 
-                DankIcon {
+                DIcon {
                     name: "download"
                     size: Theme.iconSizeSmall
                     color: draggingOver ? Theme.primary : (root.activeDownloadsCount > 0 ? Theme.primary : Theme.surfaceText)
@@ -660,7 +660,7 @@ PluginComponent {
                     anchors.centerIn: parent
                     spacing: 6
 
-                    DankIcon {
+                    DIcon {
                         name: fBtn.iconName
                         size: Theme.iconSizeSmall
                         color: fBtn.hasAccent ? fBtn.accentColor : (btnMouse.containsMouse ? Theme.onSecondaryContainer : Theme.surfaceVariantText)
@@ -764,7 +764,7 @@ PluginComponent {
                             }
                         }
 
-                        DankIcon {
+                        DIcon {
                             anchors.centerIn: parent
                             name: tile.iconName
                             size: Theme.iconSizeMedium
@@ -810,7 +810,7 @@ PluginComponent {
                 spacing: Theme.spacingM
 
                 // URL Input Field
-                DankTextField {
+                DTextField {
                     id: urlInput
                     width: parent.width
                     height: Theme.buttonHeightS
@@ -858,7 +858,7 @@ PluginComponent {
                                 visible: root.previewThumbnail !== ""
                             }
 
-                            DankIcon {
+                            DIcon {
                                 anchors.centerIn: parent
                                 visible: root.previewThumbnail === ""
                                 name: root.fetchingPreview ? "sync" : "smart_display"
@@ -1005,7 +1005,7 @@ PluginComponent {
                                     color: Theme.surfaceVariantText
                                 }
 
-                                DankDropdown {
+                                DDropdown {
                                     width: parent.width
                                     compactMode: true
                                     options: root.customMode === "video" ? ["mp4", "webm"] : ["mp3", "opus", "flac", "wav"]
@@ -1027,7 +1027,7 @@ PluginComponent {
                                     color: Theme.surfaceVariantText
                                 }
 
-                                DankDropdown {
+                                DDropdown {
                                     width: parent.width
                                     compactMode: true
                                     options: root.customMode === "video" ? ["best", "1080p", "720p", "480p"] : ["best", "320k", "192k", "128k"]
@@ -1038,7 +1038,7 @@ PluginComponent {
                             }
                         }
 
-                        DankButton {
+                        DButton {
                             width: parent.width
                             buttonHeight: Theme.buttonHeightS
                             iconName: "download"
@@ -1065,7 +1065,7 @@ PluginComponent {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: Theme.spacingS
 
-                        DankIcon {
+                        DIcon {
                             name: "downloading"
                             size: Theme.iconSizeSmall
                             color: Theme.primary
@@ -1099,7 +1099,7 @@ PluginComponent {
                         }
                     }
 
-                    DankButton {
+                    DButton {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         buttonHeight: Theme.buttonHeightXXS
@@ -1123,7 +1123,7 @@ PluginComponent {
                 }
 
                 // Downloads Flickable Queue List
-                DankFlickable {
+                DFlickable {
                     id: queueFlickable
                     width: parent.width
                     contentWidth: width
@@ -1167,7 +1167,7 @@ PluginComponent {
                                     color: Theme.surfaceContainerHighest
                                     anchors.horizontalCenter: parent.horizontalCenter
 
-                                    DankIcon {
+                                    DIcon {
                                         anchors.centerIn: parent
                                         name: "download"
                                         size: Theme.iconSizeMedium
@@ -1264,7 +1264,7 @@ PluginComponent {
                                             visible: isCompleted && hasThumb
                                         }
 
-                                        DankIcon {
+                                        DIcon {
                                             anchors.centerIn: parent
                                             visible: !(isCompleted && hasThumb)
                                             name: {
@@ -1344,7 +1344,7 @@ PluginComponent {
                                         }
 
                                         // Cancel Button
-                                        DankActionButton {
+                                        DActionButton {
                                             visible: isDownloading || isFetching
                                             iconName: "close"
                                             iconColor: Theme.error
@@ -1357,7 +1357,7 @@ PluginComponent {
                                         }
 
                                         // Retry Button
-                                        DankActionButton {
+                                        DActionButton {
                                             visible: isError || isCancelled
                                             iconName: "refresh"
                                             iconColor: Theme.primary
@@ -1376,7 +1376,7 @@ PluginComponent {
                                         }
 
                                         // Dismiss Failed/Cancelled Button
-                                        DankActionButton {
+                                        DActionButton {
                                             visible: isError || isCancelled
                                             iconName: "delete"
                                             iconColor: Theme.surfaceVariantText
@@ -1390,7 +1390,7 @@ PluginComponent {
                                         }
 
                                         // Play Completed Button
-                                        DankActionButton {
+                                        DActionButton {
                                             visible: isCompleted
                                             iconName: "play_arrow"
                                             iconColor: Theme.primary
@@ -1404,7 +1404,7 @@ PluginComponent {
                                         }
 
                                         // Open Folder Button
-                                        DankActionButton {
+                                        DActionButton {
                                             visible: isCompleted
                                             iconName: "folder"
                                             iconColor: Theme.surfaceVariantText
@@ -1419,7 +1419,7 @@ PluginComponent {
                                         }
 
                                         // Remove from History Button
-                                        DankActionButton {
+                                        DActionButton {
                                             visible: isCompleted
                                             iconName: "delete"
                                             iconColor: Theme.surfaceVariantText

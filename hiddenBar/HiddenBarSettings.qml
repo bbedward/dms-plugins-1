@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import "./shared"
 
@@ -528,7 +528,7 @@ PluginSettings {
                         onClicked: widgetList.setSelected(modelData.id, !widgetList.isSelected(modelData.id))
                     }
 
-                    DankIcon {
+                    DIcon {
                         id: rowIcon
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
@@ -537,7 +537,7 @@ PluginSettings {
                         color: Theme.surfaceText
                     }
 
-                    DankToggle {
+                    DToggle {
                         id: rowToggle
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter

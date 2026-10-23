@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Services
 import qs.Modules.Plugins
 import "./shared"
@@ -186,7 +186,7 @@ print(json.dumps(devs))
                         anchors.margins: Theme.spacingM
                         spacing: Theme.spacingM
 
-                        DankIcon {
+                        DIcon {
                             name: "warning"
                             size: Theme.iconSizeSmall
                             color: Theme.warning
@@ -233,7 +233,7 @@ print(json.dumps(devs))
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Theme.spacingS
 
-                                DankIcon {
+                                DIcon {
                                     name: root.volumeIcon
                                     size: Theme.iconSizeSmall
                                     color: (root.daemon?.soundEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
@@ -309,7 +309,7 @@ print(json.dumps(devs))
                                     anchors.verticalCenter: parent.verticalCenter
                                     spacing: Theme.spacingS
 
-                                    DankIcon {
+                                    DIcon {
                                         name: "library_music"
                                         size: Theme.iconSizeSmall
                                         color: Theme.surfaceVariantText
@@ -334,7 +334,7 @@ print(json.dumps(devs))
                                 }
                             }
 
-                            DankDropdown {
+                            DDropdown {
                                 width: parent.width
                                 height: 38
                                 compactMode: true
@@ -368,7 +368,7 @@ print(json.dumps(devs))
                                 width: parent.width
                                 spacing: Theme.spacingS
 
-                                DankIcon {
+                                DIcon {
                                     name: "keyboard_alt"
                                     size: Theme.iconSizeSmall
                                     color: Theme.surfaceVariantText
@@ -384,7 +384,7 @@ print(json.dumps(devs))
                                 }
                             }
 
-                            DankDropdown {
+                            DDropdown {
                                 width: parent.width
                                 height: 38
                                 compactMode: true
@@ -419,7 +419,7 @@ print(json.dumps(devs))
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: Theme.spacingM
 
-                        DankIcon {
+                        DIcon {
                             name: "mouse"
                             size: Theme.iconSizeSmall
                             color: (root.daemon?.mouseEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
@@ -436,7 +436,7 @@ print(json.dumps(devs))
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        DankToggle {
+                        DToggle {
                             id: mouseToggle
                             hideText: true
                             anchors.verticalCenter: parent.verticalCenter
@@ -448,7 +448,7 @@ print(json.dumps(devs))
                         }
                     }
 
-                    DankActionButton {
+                    DActionButton {
                         anchors.right: parent.right
                         anchors.rightMargin: Theme.spacingM
                         anchors.verticalCenter: parent.verticalCenter

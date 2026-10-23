@@ -1,6 +1,6 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../popovers"
 import "../core/Constants.js" as Constants
 
@@ -110,7 +110,7 @@ PopoverSurface {
                         anchors.centerIn: parent
                         spacing: 2
 
-                        DankIcon {
+                        DIcon {
                             name: quickAction.modelData.icon
                             size: Theme.iconSizeSmall
                             color: Theme.surfaceText

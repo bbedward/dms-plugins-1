@@ -3,7 +3,7 @@
 check_compatibility.py - Verify backward compatibility for DMS plugins against stable DMS releases.
 
 Detects:
-1. Use of unreleased DMS components that do not exist in stable DMS (e.g. DMS 1.6.2)
+1. Use of unreleased DMS components that do not exist in stable DMS (e.g. DMS 2.0.0)
    and are not bundled into `shared/`.
 2. Missing `./shared` imports: using a shared component (like DankSearchField) without
    importing `./shared` in the file (which causes runtime crashes on stable DMS).
@@ -22,11 +22,17 @@ import argparse
 from pathlib import Path
 from typing import Dict, List, Set, Tuple, Optional
 
+try:
+    from refactor_dcommon import DCOMMON_ONLY, SHARED_TYPES
+except ImportError:
+    DCOMMON_ONLY = set()
+    SHARED_TYPES = set()
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CANONICAL_SHARED = REPO_ROOT / "shared"
 
-# Stable baseline DMS version (DMS 1.6.2)
-BASELINE_DMS_VERSION = "1.6.2"
+# Stable baseline DMS version (DMS 2.0.0)
+BASELINE_DMS_VERSION = "2.0.0"
 
 # Symbols available in Qt / Quickshell built-in modules
 QT_QUICKSHELL_BUILTINS: Set[str] = {
@@ -82,7 +88,7 @@ QT_QUICKSHELL_BUILTINS: Set[str] = {
     "Pipewire", "PipewireNode", "PowerProfiles", "Upower", "Pam", "PamSession"
 }
 
-# Symbols strictly available in DMS 1.6.2 (Stable baseline)
+# Symbols strictly available in DMS 2.0.0 (Stable baseline)
 DMS_STABLE_SYMBOLS: Dict[str, Set[str]] = {
     "qs.Widgets": {
         "AppIconRenderer", "AppLauncherGridDelegate", "AppLauncherListDelegate",
@@ -104,6 +110,7 @@ DMS_STABLE_SYMBOLS: Dict[str, Set[str]] = {
         "StyledRect", "StyledText", "StyledTextMetrics", "SystemLogo",
         "TransientSurfaceTracker", "WindowBlur"
     },
+    "qs.DCommon.Widgets": DCOMMON_ONLY | SHARED_TYPES,
     "qs.Common": {
         "Theme", "Style", "I18n", "Paths", "Proc", "ColorUtils", "Accents",
         "SoundEffectWrapper", "Singleton"
@@ -121,7 +128,7 @@ DMS_STABLE_SYMBOLS: Dict[str, Set[str]] = {
         "PopoutComponent"
     },
     "qs.Modals.Common": {
-        "DankModal", "DankModalHost", "ModalBackground"
+        "DankModal", "DankModalHost", "ModalBackground", "DModal"
     },
     "qs.Modals.FileBrowser": {
         "DankFileBrowser", "FileBrowserModal", "FileBrowserSurfaceModal"
@@ -314,7 +321,7 @@ class CompatibilityChecker:
                         ))
                     continue
 
-                # 4. Symbol known in DMS 1.6.2 (Stable baseline)
+                # 4. Symbol known in DMS 2.0.0 (Stable baseline)
                 if type_name in self.all_stable_dms_symbols:
                     continue
 

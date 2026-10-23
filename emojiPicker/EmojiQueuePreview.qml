@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
 StyledRect {
     id: root
@@ -46,7 +46,7 @@ StyledRect {
             }
         }
 
-        DankActionButton {
+        DActionButton {
             iconName: "content_copy"
             iconSize: Theme.iconSize - 6
             iconColor: Theme.surfaceText
@@ -54,7 +54,7 @@ StyledRect {
             onClicked: root.copyRequested()
         }
 
-        DankActionButton {
+        DActionButton {
             iconName: "content_paste"
             iconSize: Theme.iconSize - 6
             iconColor: Theme.surfaceText

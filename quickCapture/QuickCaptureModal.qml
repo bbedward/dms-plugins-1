@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import qs.Common
+import qs.DCommon.Widgets
 import qs.Widgets
 import qs.Modals.Common
 import qs.Modals.FileBrowser
@@ -84,7 +85,7 @@ Item {
         }
     }
 
-    DankModal {
+    DModal {
         id: modalSurface
         shouldBeVisible: window.shouldBeVisible && !window.floatingMode
         shouldHaveFocus: window.shouldHaveFocus && !window.floatingMode
@@ -104,7 +105,7 @@ Item {
         onBackgroundClicked: window.backgroundClicked()
     }
 
-    DankFloatingWindow {
+    DFloatingWindow {
         id: floatingSurface
         title: I18n.trFor("quickCapture", "Quick Capture")
         objectName: "quickCaptureEditor"

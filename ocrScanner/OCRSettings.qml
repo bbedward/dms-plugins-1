@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import "./shared"
 
@@ -92,7 +92,7 @@ PluginSettings {
                     Row {
                         anchors.centerIn: parent
                         spacing: Theme.spacingXS
-                        DankIcon {
+                        DIcon {
                             name: root.selectedLangs.indexOf(modelData) >= 0 ? "check_circle" : "radio_button_unchecked"
                             size: 14
                             color: root.selectedLangs.indexOf(modelData) >= 0 ? Theme.onPrimary : Theme.surfaceVariantText

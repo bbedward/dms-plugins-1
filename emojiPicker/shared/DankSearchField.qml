@@ -1,8 +1,8 @@
 import QtQuick
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 
-DankTextField {
+DTextField {
     cornerRadius: typeof Theme.fullRadius === "function" ? Theme.fullRadius(width, height) : (height / 2)
     normalBorderColor: Theme.outlineVariant ?? Theme.outlineMedium ?? Theme.outline
     focusedBorderColor: (Theme.focusRingWidth ?? 0) > 0 ? (Theme.focusRingColor ?? Theme.primary) : normalBorderColor

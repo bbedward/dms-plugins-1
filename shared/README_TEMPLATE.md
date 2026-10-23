@@ -22,7 +22,7 @@ git clone https://github.com/[username]/dms-[plugin-id] ~/.config/DankMaterialSh
 
 ## Plugin Specifications
 * **Type:** `composite` | `daemon` | `widget` | `launcher` | `desktop`
-* **Requires DMS:** `>=1.5.0`
+* **Requires DMS:** `>=2.0.0`
 * **Capabilities:** `["daemon", "dankbar-widget", "ipc", "desktop-widget", "launcher-action"]`
 
 ## Features

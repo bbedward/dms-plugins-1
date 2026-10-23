@@ -6,7 +6,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import qs.Common
-import qs.Widgets
+import qs.DCommon.Widgets
 import qs.Modules.Plugins
 import qs.Services
 import "./shared"
@@ -233,7 +233,7 @@ PluginComponent {
             implicitHeight: Theme.iconSize
             anchors.verticalCenter: parent.verticalCenter
 
-            DankIcon {
+            DIcon {
                 anchors.centerIn: parent
                 name: "photo_camera"
                 size: Theme.iconSizeSmall
@@ -262,7 +262,7 @@ PluginComponent {
             implicitHeight: Theme.iconSizeSmall
             anchors.horizontalCenter: parent.horizontalCenter
 
-            DankIcon {
+            DIcon {
                 anchors.centerIn: parent
                 name: "photo_camera"
                 size: Theme.iconSizeSmall
@@ -461,7 +461,7 @@ PluginComponent {
                         NumberAnimation { duration: 200 }
                     }
 
-                    DankIcon {
+                    DIcon {
                         anchors.centerIn: parent
                         name: "push_pin"
                         size: Theme.iconSizeSmall
@@ -497,7 +497,7 @@ PluginComponent {
                         NumberAnimation { duration: 200 }
                     }
 
-                    DankIcon {
+                    DIcon {
                         anchors.centerIn: parent
                         name: root.cfg_screenFlash ? "flash_on" : "offline_bolt"
                         size: Theme.iconSizeSmall
@@ -532,7 +532,7 @@ PluginComponent {
                         NumberAnimation { duration: 200 }
                     }
 
-                    DankIcon {
+                    DIcon {
                         anchors.centerIn: parent
                         name: "photo_camera"
                         size: Theme.iconSizeSmall
@@ -782,21 +782,21 @@ PluginComponent {
                                 anchors.centerIn: parent
                                 spacing: Theme.spacingM
 
-                                DankActionButton {
+                                DActionButton {
                                     iconName: "close"
                                     iconColor: Theme.error
                                     tooltipText: I18n.tr("Discard")
                                     onClicked: root.discardPreview()
                                 }
 
-                                DankActionButton {
+                                DActionButton {
                                     iconName: "content_copy"
                                     iconColor: root.overlayBtnBorder
                                     tooltipText: I18n.tr("Copy to Clipboard")
                                     onClicked: root.copyPreview()
                                 }
 
-                                DankActionButton {
+                                DActionButton {
                                     iconName: "save"
                                     iconColor: Theme.primary
                                     tooltipText: I18n.tr("Save Image")
@@ -888,7 +888,7 @@ PluginComponent {
                     NumberAnimation { duration: 200 }
                 }
 
-                DankIcon {
+                DIcon {
                     anchors.centerIn: parent
                     name: "close"
                     size: Theme.iconSizeSmall
@@ -923,7 +923,7 @@ PluginComponent {
                     NumberAnimation { duration: 200 }
                 }
 
-                DankIcon {
+                DIcon {
                     anchors.centerIn: parent
                     name: "push_pin"
                     size: Theme.iconSizeSmall
@@ -959,7 +959,7 @@ PluginComponent {
                     NumberAnimation { duration: 200 }
                 }
 
-                DankIcon {
+                DIcon {
                     anchors.centerIn: parent
                     name: root.cfg_screenFlash ? "flash_on" : "offline_bolt"
                     size: Theme.iconSizeSmall
@@ -994,7 +994,7 @@ PluginComponent {
                     NumberAnimation { duration: 200 }
                 }
 
-                DankIcon {
+                DIcon {
                     anchors.centerIn: parent
                     name: "photo_camera"
                     size: Theme.iconSizeSmall

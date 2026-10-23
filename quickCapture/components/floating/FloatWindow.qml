@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Wayland
 import qs.Common
 import qs.Services
-import qs.Widgets
+import qs.DCommon.Widgets
 import "../core/Helpers.js" as Helpers
 import "../core/Defaults.js" as Defaults
 
@@ -460,7 +460,7 @@ PanelWindow {
             layer.enabled: true
         }
 
-        DankIcon {
+        DIcon {
             id: cloudIcon
             name: "cloud"
             anchors.centerIn: parent
