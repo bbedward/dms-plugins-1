@@ -220,12 +220,24 @@ Item {
                 return;
             }
 
+            // User cancelled portal/window selection dialog (GSR exit code 60)
+            const isPortalMode = prevMode === "portal" || prevMode === "window";
+            if (isPortalMode && exitCode === 60) {
+                if (finishedPath)
+                    Proc.runCommand("quickCapture.cleanupRecording", ["rm", "-f", "--", finishedPath]);
+                if (gifTarget)
+                    Proc.runCommand("quickCapture.cleanupGif", ["rm", "-f", "--", gifTarget]);
+                root.targetGifPath = "";
+                return;
+            }
+
             if (finishedOk) {
                 root.finalizeRecording(finishedPath, gifTarget);
                 return;
             }
 
-            if (wasStarting && prevBin === "gpu-screen-recorder" && root.recordingBackend === "auto" && root.hasWfRecorder) {
+            // Fallback to wf-recorder is only possible for region and fullscreen, not portal/window
+            if (wasStarting && prevBin === "gpu-screen-recorder" && root.recordingBackend === "auto" && root.hasWfRecorder && !isPortalMode) {
                 root.sendNotification(I18n.trFor("quickCapture", "GPU encoder failed. Retrying with %1...").arg("wf-recorder (CPU)"), false);
                 root.activeRecorderBin = "wf-recorder";
                 root.isFlatpakActive = false;
