@@ -523,8 +523,9 @@ PopoutComponent {
                     isLast: index === (root.daemon?.outputs ?? []).length - 1
                     rightClickAction: root.menuRightClickAction
                     onTriggered: action => {
+                        const targetOutput = modelData.name;
+                        root.run("output", action, targetOutput);
                         root.outputExpanded = false;
-                        root.run("output", action, modelData.name);
                     }
                 }
             }
