@@ -1,4 +1,5 @@
 module dms.common
+singleton M3E 1.0 M3E.qml
 ColorSettingPlus 1.0 ColorSettingPlus.qml
 CopyBox 1.0 CopyBox.qml
 CreditsList 1.0 CreditsList.qml

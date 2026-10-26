@@ -99,10 +99,6 @@ PanelWindow {
         anchors.right: (daemon && daemon.position.includes("right")) ? parent.right : undefined
         anchors.horizontalCenter: isCentered ? parent.horizontalCenter : undefined
 
-        // Smooth scaling when content changes
-        Behavior on width { NumberAnimation { duration: 100 } }
-        Behavior on height { NumberAnimation { duration: 100 } }
-
         radius: Theme.cornerRadius
         color: overlayWindow.resolvedBgColor
         border.color: Theme.withAlpha(Theme.outline, 0.15)
@@ -312,7 +308,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         font.pixelSize: daemon ? daemon.fontSize - 4 : 20
                         font.bold: true
-                        color: Theme.onPrimary
+                        color: Theme.onPrimaryContainer
                         text: overlayWindow.getOverlayKeyText("Ctrl")
                     }
                 }
@@ -332,7 +328,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         font.pixelSize: daemon ? daemon.fontSize - 4 : 20
                         font.bold: true
-                        color: Theme.onPrimary
+                        color: Theme.onPrimaryContainer
                         text: overlayWindow.getOverlayKeyText("Alt")
                     }
                 }
@@ -352,7 +348,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         font.pixelSize: daemon ? daemon.fontSize - 4 : 20
                         font.bold: true
-                        color: Theme.onPrimary
+                        color: Theme.onPrimaryContainer
                         text: overlayWindow.getOverlayKeyText("Shift")
                     }
                 }
@@ -372,7 +368,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         font.pixelSize: daemon ? daemon.fontSize - 4 : 20
                         font.bold: true
-                        color: Theme.onPrimary
+                        color: Theme.onPrimaryContainer
                         text: overlayWindow.getOverlayKeyText("Super")
                     }
                 }
