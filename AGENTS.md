@@ -35,7 +35,6 @@ qmllint <pluginName>/*.qml <pluginName>/shared/*.qml
 
 # Widget migration and DMS version audit
 python3 scripts/refactor_dcommon.py --check --requires-dms ">=2.0.0"
-python3 scripts/check_compatibility.py
 ```
 
 ---

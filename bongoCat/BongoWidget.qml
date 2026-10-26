@@ -726,414 +726,527 @@ PluginComponent {
 
     verticalBarPill: horizontalBarPill
 
-    popoutWidth: 280
-    popoutHeight: 450
+    popoutWidth: 320
+    popoutHeight: 0 // auto from content
 
     popoutContent: Component {
         PopoutComponent {
             id: popout
             width: root.popoutWidth
-            headerText: "Bongo Cat"
-            showCloseButton: true
+            headerText: ""
+            showCloseButton: false
 
             readonly property bool isActive: !root.isWaiting && !root.forceSleep
 
             Column {
+                id: contentCol
                 width: parent.width
-                spacing: Theme.spacingL
+                spacing: Theme.spacingM
 
+                // Warning card (if input/tool broken)
                 Rectangle {
                     width: parent.width
                     visible: root.inputBroken || root.mouseBroken
-                    radius: Theme.cornerRadius
-                    color: Theme.errorHover
+                    radius: M3E.outerR
+                    color: Theme.errorContainer ?? Theme.errorHover
                     implicitHeight: warnCol.implicitHeight + Theme.spacingM * 2
 
-                    Column {
-                        id: warnCol
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.margins: Theme.spacingM
-                        spacing: Theme.spacingXS
-
-                        StyledText {
-                            width: parent.width
-                            visible: root.inputToolMissing
-                            text: root.selectedDevicePath === "all"
-                                ? I18n.tr("The 'libinput' CLI was not found, so Auto mode can't see your keyboard. Install it (Arch: libinput-tools, Debian/Ubuntu: libinput-tools, Fedora: libinput-utils) or pick a specific keyboard below.")
-                                : I18n.tr("'evtest' was not found — install it to monitor a specific keyboard, or switch to Auto mode.")
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.error
-                            wrapMode: Text.Wrap
-                        }
-
-                        StyledText {
-                            width: parent.width
-                            visible: root.notInInputGroup
-                            text: I18n.tr("Your user is not in the 'input' group, so keyboard events can't be read. Run: sudo usermod -aG input $USER — then log out and back in.")
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.error
-                            wrapMode: Text.Wrap
-                        }
-
-                        StyledText {
-                            width: parent.width
-                            visible: root.mouseBroken
-                            text: I18n.tr("Mouse interaction needs the 'libinput' CLI — install it (Arch: libinput-tools, Debian/Ubuntu: libinput-tools, Fedora: libinput-utils) or switch the keyboard to Auto mode.")
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.error
-                            wrapMode: Text.Wrap
-                        }
-                    }
-                }
-
-                StyledRect {
-                    width: parent.width
-                    height: 140
-                    radius: Theme.cornerRadius
-                    color: (popout.isActive && root.catColorMode === "classic") ? Theme.primaryContainer : Theme.surface
-                    clip: true
-                    
-                    // Gradient overlay
-                    Rectangle {
-                        anchors.fill: parent
-                        gradient: Gradient {
-                            GradientStop { position: 0.0; color: "transparent" }
-                            GradientStop { position: 1.0; color: Theme.shadowMedium }
-                        }
-                    }
-
-                    // The Big Cat
-                    Text {
-                        anchors.centerIn: parent
-                        font.family: bongoFont.name
-                        font.pixelSize: Theme.fontSizeXLarge * 4
-                        font.letterSpacing: -2
-                        color: root.catColorMode === "classic"
-                            ? (popout.isActive ? Theme.onPrimaryContainer : Theme.surfaceText)
-                            : root.resolvedCatColor
-                        text: root.forceSleep ? root.sleepGlyph : (!popout.isActive ? root.sleepGlyph : (root.isBlinking && root.catState === 0 ? root.blinkGlyph : root.glyphMap[root.catState]))
-                    }
-                }
-
-                // Typing metrics overlay (optional)
-                Row {
-                    width: parent.width
-                    visible: root.showMetrics
-                    spacing: Theme.spacingM
-
-                    StyledRect {
-                        width: (parent.width - Theme.spacingM) / 2
-                        height: 64
-                        radius: Theme.cornerRadius
-                        color: Theme.surfaceContainerHigh
-
                         Column {
-                            anchors.centerIn: parent
-                            spacing: 0
+                            id: warnCol
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.margins: Theme.spacingM
+                            spacing: Theme.spacingXS
+
                             StyledText {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: root.liveWpm
-                                font.pixelSize: Theme.fontSizeLarge
-                                font.weight: Font.Bold
-                                color: Theme.primary
+                                width: parent.width
+                                visible: root.inputToolMissing
+                                text: root.selectedDevicePath === "all"
+                                    ? I18n.tr("The 'libinput' CLI was not found, so Auto mode can't see your keyboard. Install it (Arch: libinput-tools, Debian/Ubuntu: libinput-tools, Fedora: libinput-utils) or pick a specific keyboard below.")
+                                    : I18n.tr("'evtest' was not found — install it to monitor a specific keyboard, or switch to Auto mode.")
+                                font.pixelSize: Theme.fontSizeSmall
+                                color: Theme.onErrorContainer ?? Theme.error
+                                wrapMode: Text.Wrap
                             }
+
                             StyledText {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: "WPM"
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.surfaceVariantText
+                                width: parent.width
+                                visible: root.notInInputGroup
+                                text: I18n.tr("Your user is not in the 'input' group, so keyboard events can't be read. Run: sudo usermod -aG input $USER — then log out and back in.")
+                                font.pixelSize: Theme.fontSizeSmall
+                                color: Theme.onErrorContainer ?? Theme.error
+                                wrapMode: Text.Wrap
+                            }
+
+                            StyledText {
+                                width: parent.width
+                                visible: root.mouseBroken
+                                text: I18n.tr("Mouse interaction needs the 'libinput' CLI — install it (Arch: libinput-tools, Debian/Ubuntu: libinput-tools, Fedora: libinput-utils) or switch the keyboard to Auto mode.")
+                                font.pixelSize: Theme.fontSizeSmall
+                                color: Theme.onErrorContainer ?? Theme.error
+                                wrapMode: Text.Wrap
+                            }
+                        }
+                    }
+
+                    // M3E Hero Card: Cat Display Stage
+                    DCard {
+                        id: catHeroStage
+                        width: parent.width
+                        height: 140
+                        restRadius: Theme.cornerRadiusL
+                        pad: 0
+                        clipContent: true
+                        color: (popout.isActive && root.catColorMode === "classic")
+                            ? Theme.primaryContainer
+                            : Theme.surfaceContainerHigh
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: M3E.effectsMs
+                                easing.type: Easing.BezierSpline
+                                easing.bezierCurve: M3E.curveEffects
+                            }
+                        }
+
+                        // Gradient ambient depth
+                        Rectangle {
+                            anchors.fill: parent
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "transparent" }
+                                GradientStop { position: 1.0; color: Theme.withAlpha(Theme.shadowColor ?? "#000000", 0.12) }
+                            }
+                        }
+
+                        // The Big Cat
+                        Text {
+                            anchors.centerIn: parent
+                            font.family: bongoFont.name
+                            font.pixelSize: Theme.fontSizeXLarge * 4
+                            font.letterSpacing: -2
+                            color: root.catColorMode === "classic"
+                                ? (popout.isActive ? Theme.onPrimaryContainer : Theme.surfaceText)
+                                : root.resolvedCatColor
+                            text: root.forceSleep
+                                ? root.sleepGlyph
+                                : (!popout.isActive ? root.sleepGlyph : (root.isBlinking && root.catState === 0 ? root.blinkGlyph : root.glyphMap[root.catState]))
+                            scale: popout.isActive ? 1.0 : 0.94
+
+                            Behavior on scale {
+                                NumberAnimation {
+                                    duration: M3E.spatialFastMs
+                                    easing.type: Easing.BezierSpline
+                                    easing.bezierCurve: M3E.curveFastSpatial
+                                }
+                            }
+                        }
+
+                        // Interactive sleep toggle chip on hero top-right
+                        Rectangle {
+                            anchors.top: parent.top
+                            anchors.right: parent.right
+                            anchors.margins: Theme.spacingS
+                            width: sleepChipRow.implicitWidth + Theme.spacingS * 2
+                            height: 28
+                            radius: height / 2
+                            color: root.forceSleep ? Theme.primary : Theme.withAlpha(Theme.surface, 0.45)
+
+                            Row {
+                                id: sleepChipRow
+                                anchors.centerIn: parent
+                                spacing: 4
+                                DIcon {
+                                    name: root.forceSleep ? "bedtime" : "wb_sunny"
+                                    size: 14
+                                    color: root.forceSleep ? Theme.onPrimary : Theme.surfaceText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                StyledText {
+                                    text: root.forceSleep ? I18n.tr("Asleep") : I18n.tr("Awake")
+                                    font.pixelSize: Theme.fontSizeExtraSmall
+                                    font.weight: Font.Medium
+                                    color: root.forceSleep ? Theme.onPrimary : Theme.surfaceText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.forceSleep = !root.forceSleep
                             }
                         }
                     }
 
-                    StyledRect {
-                        width: (parent.width - Theme.spacingM) / 2
-                        height: 64
-                        radius: Theme.cornerRadius
-                        color: Theme.surfaceContainerHigh
-
-                        Column {
-                            anchors.centerIn: parent
-                            spacing: 0
-                            StyledText {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: root.cleanPercent + "%"
-                                font.pixelSize: Theme.fontSizeLarge
-                                font.weight: Font.Bold
-                                color: Theme.primary
-                            }
-                            StyledText {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: "Clean"
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.surfaceVariantText
-                            }
-                        }
-                    }
-                }
-
-                Column {
-                    width: parent.width
-                    spacing: Theme.spacingS
-
-                    // Header for settings
-                    StyledText {
-                        text: "Appearance & Behavior"
-                        font.pixelSize: Theme.fontSizeSmall
-                        font.bold: true
-                        color: Theme.primary
-                        opacity: 0.8
-                    }
-
-                    // Keyboard Selection
+                    // M3E Metric Tiles (WPM & Cleanliness)
                     Row {
                         width: parent.width
-                        height: 36
-                        spacing: Theme.spacingM
-                        DIcon { name: "keyboard"; size: Theme.iconSizeMedium; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                        DDropdown {
-                            id: keyboardDropdown
-                            width: parent.width - 40
-                            options: root.deviceOptions
-                            currentValue: root.selectedDeviceName
-                            maxPopupHeight: 200
-                            compactMode: true
-                            onValueChanged: v => root.saveSetting("selectedDevicePath", root.deviceMap[v])
-                        }
-                    }
+                        visible: root.showMetrics
+                        spacing: Theme.groupedListGap
 
-                    // Size Setting
-                    Column {
-                        width: parent.width
-                        spacing: 2
+                        DCard {
+                            id: wpmTile
+                            width: (parent.width - Theme.groupedListGap) / 2
+                            height: 60
+                            pad: 0
+                            topLeftRadius: Theme.groupedListOuterRadius
+                            bottomLeftRadius: Theme.groupedListOuterRadius
+                            topRightRadius: Theme.groupedListInnerRadius
+                            bottomRightRadius: Theme.groupedListInnerRadius
+                            color: Theme.surfaceContainerHigh
 
-                        StyledText {
-                            text: "Cat Size"
-                            font.pixelSize: Theme.fontSizeExtraSmall
-                            font.weight: Font.Medium
-                            color: Theme.surfaceVariantText
-                        }
-
-                        Row {
-                            width: parent.width
-                            height: 32
-                            spacing: Theme.spacingM
-                            DIcon { name: "aspect_ratio"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DSlider {
-                                id: sizeSlider
-                                width: parent.width - 80
-                                value: root.catSize * 100
-                                minimum: 50; maximum: 200
-                                centerMinimum: false; unit: "%"; showValue: true
-                                onSliderValueChanged: v => root.saveSetting("catSizePercent", v)
-                                anchors.verticalCenter: parent.verticalCenter
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 1
+                                NumericText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: String(root.liveWpm)
+                                    font.features: ({ "tnum": 1 })
+                                    font.pixelSize: Theme.fontSizeLarge
+                                    font.weight: Font.Bold
+                                    color: Theme.primary
+                                }
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: "WPM"
+                                    font.pixelSize: Theme.fontSizeExtraSmall
+                                    font.weight: Font.Medium
+                                    color: Theme.surfaceVariantText
+                                }
                             }
-                            DIcon {
-                                name: "restore"
-                                size: Theme.iconSizeSmall
-                                color: Theme.primary
-                                opacity: (root.catSize * 100) !== 100 ? 1.0 : 0.3
-                                anchors.verticalCenter: parent.verticalCenter
-                                MouseArea {
-                                    anchors.fill: parent
-                                    enabled: (root.catSize * 100) !== 100
-                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                    onClicked: {
-                                        root.saveSetting("catSizePercent", 100);
-                                        sizeSlider.value = 100;
-                                    }
+                        }
+
+                        DCard {
+                            id: cleanTile
+                            width: (parent.width - Theme.groupedListGap) / 2
+                            height: 60
+                            pad: 0
+                            topLeftRadius: Theme.groupedListInnerRadius
+                            bottomLeftRadius: Theme.groupedListInnerRadius
+                            topRightRadius: Theme.groupedListOuterRadius
+                            bottomRightRadius: Theme.groupedListOuterRadius
+                            color: Theme.surfaceContainerHigh
+
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 1
+                                NumericText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: root.cleanPercent + "%"
+                                    font.features: ({ "tnum": 1 })
+                                    font.pixelSize: Theme.fontSizeLarge
+                                    font.weight: Font.Bold
+                                    color: Theme.primary
+                                }
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: "Clean"
+                                    font.pixelSize: Theme.fontSizeExtraSmall
+                                    font.weight: Font.Medium
+                                    color: Theme.surfaceVariantText
                                 }
                             }
                         }
                     }
 
-                    // Sleep Timeout
+                    // M3E Connected Settings Card Stack
                     Column {
                         width: parent.width
-                        spacing: 2
+                        spacing: Theme.groupedListGap
 
-                        StyledText {
-                            text: "Sleep Timeout"
-                            font.pixelSize: Theme.fontSizeExtraSmall
-                            font.weight: Font.Medium
-                            color: Theme.surfaceVariantText
+                        // Row 1: Device Selector Card
+                        DCard {
+                            width: parent.width
+                            height: 48
+                            pad: 0
+                            topLeftRadius: Theme.groupedListOuterRadius
+                            topRightRadius: Theme.groupedListOuterRadius
+                            bottomLeftRadius: Theme.groupedListInnerRadius
+                            bottomRightRadius: Theme.groupedListInnerRadius
+                            color: Theme.surfaceContainerHigh
+
+                            Row {
+                                anchors.fill: parent
+                                anchors.leftMargin: Theme.spacingM
+                                anchors.rightMargin: Theme.spacingM
+                                spacing: Theme.spacingS
+
+                                DIcon {
+                                    name: "keyboard"
+                                    size: Theme.iconSizeSmall
+                                    color: Theme.primary
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                DDropdown {
+                                    id: keyboardDropdown
+                                    width: parent.width - Theme.iconSizeSmall - Theme.spacingS
+                                    options: root.deviceOptions
+                                    currentValue: root.selectedDeviceName
+                                    maxPopupHeight: 200
+                                    compactMode: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onValueChanged: v => root.saveSetting("selectedDevicePath", root.deviceMap[v])
+                                }
+                            }
                         }
 
-                        Row {
+                        // Row 2: Cat Color Mode & Swatch
+                        DCard {
                             width: parent.width
-                            height: 32
-                            spacing: Theme.spacingM
-                            DIcon { name: "bedtime"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DSlider {
-                                id: sleepSlider
-                                width: parent.width - 80
-                                value: root.waitingTimeout / 1000
-                                minimum: 1; maximum: 10
-                                centerMinimum: false; unit: "s"; showValue: true
-                                onSliderValueChanged: v => root.saveSetting("waitingTimeout", v)
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            DIcon {
-                                name: "restore"
-                                size: Theme.iconSizeSmall
-                                color: Theme.primary
-                                opacity: (root.waitingTimeout / 1000) !== 5 ? 1.0 : 0.3
-                                anchors.verticalCenter: parent.verticalCenter
-                                MouseArea {
-                                    anchors.fill: parent
-                                    enabled: (root.waitingTimeout / 1000) !== 5
-                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                    onClicked: {
-                                        root.saveSetting("waitingTimeout", 5);
-                                        sleepSlider.value = 5;
+                            height: 48
+                            pad: 0
+                            topLeftRadius: Theme.groupedListInnerRadius
+                            topRightRadius: Theme.groupedListInnerRadius
+                            bottomLeftRadius: Theme.groupedListInnerRadius
+                            bottomRightRadius: Theme.groupedListInnerRadius
+                            color: Theme.surfaceContainerHigh
+
+                            Row {
+                                anchors.fill: parent
+                                anchors.leftMargin: Theme.spacingM
+                                anchors.rightMargin: Theme.spacingM
+                                spacing: Theme.spacingS
+
+                                DIcon {
+                                    name: "palette"
+                                    size: Theme.iconSizeSmall
+                                    color: Theme.primary
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                DDropdown {
+                                    id: colorModeDropdown
+                                    width: parent.width - Theme.iconSizeSmall - Theme.spacingS - (customSwatch.visible ? 36 + Theme.spacingS : 0)
+                                    options: root.colorModeOptions
+                                    currentValue: root.colorModeToLabel(root.catColorMode)
+                                    maxPopupHeight: 200
+                                    compactMode: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onValueChanged: v => root.saveSetting("catColorMode", root.labelToColorMode(v))
+                                }
+
+                                Rectangle {
+                                    id: customSwatch
+                                    visible: root.catColorMode === "custom"
+                                    width: 36
+                                    height: 28
+                                    radius: Theme.cornerRadiusXS
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    color: root.catCustomColor === "primary" ? Theme.primary : Qt.color(root.catCustomColor)
+                                    border.color: Theme.outline
+                                    border.width: 1
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            if (typeof PopoutService !== "undefined" && PopoutService && PopoutService.colorPickerModal) {
+                                                const widget = root;
+                                                PopoutService.colorPickerModal.selectedColor = root.catCustomColor === "primary" ? Theme.primary : Qt.color(root.catCustomColor);
+                                                PopoutService.colorPickerModal.pickerTitle = I18n.tr("Cat Color");
+                                                PopoutService.colorPickerModal.onColorSelectedCallback = function(selectedColor) {
+                                                    widget.saveSetting("catCustomColor", selectedColor.toString());
+                                                };
+                                                PopoutService.colorPickerModal.show();
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    // Vertical Offset
-                    Column {
-                        width: parent.width
-                        spacing: 2
-
-                        StyledText {
-                            text: "Vertical Offset"
-                            font.pixelSize: Theme.fontSizeExtraSmall
-                            font.weight: Font.Medium
-                            color: Theme.surfaceVariantText
-                        }
-
-                        Row {
+                        // Row 3: Sliders Group Card (Cat Size, Sleep Timeout, Paw Hold)
+                        DCard {
                             width: parent.width
-                            height: 32
-                            spacing: Theme.spacingM
-                            DIcon { name: "swap_vert"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DSlider {
-                                id: offsetSlider
-                                width: parent.width - 80
-                                value: root.catYOffset
-                                minimum: -10; maximum: 10
-                                centerMinimum: false; unit: "px"; showValue: true
-                                onSliderValueChanged: v => root.saveSetting("catYOffset", v)
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            DIcon {
-                                name: "restore"
-                                size: Theme.iconSizeSmall
-                                color: Theme.primary
-                                opacity: root.catYOffset !== 0 ? 1.0 : 0.3
-                                anchors.verticalCenter: parent.verticalCenter
-                                MouseArea {
-                                    anchors.fill: parent
-                                    enabled: root.catYOffset !== 0
-                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                    onClicked: {
-                                        root.saveSetting("catYOffset", 0);
-                                        offsetSlider.value = 0;
+                            implicitHeight: sliderRowsCol.implicitHeight + Theme.spacingM * 2
+                            pad: 0
+                            topLeftRadius: Theme.groupedListInnerRadius
+                            topRightRadius: Theme.groupedListInnerRadius
+                            bottomLeftRadius: Theme.groupedListOuterRadius
+                            bottomRightRadius: Theme.groupedListOuterRadius
+                            color: Theme.surfaceContainerHigh
+
+                            Column {
+                                id: sliderRowsCol
+                                anchors.fill: parent
+                                anchors.margins: Theme.spacingM
+                                spacing: Theme.spacingM
+
+                                // Size Slider
+                                Row {
+                                    width: parent.width
+                                    height: 36
+                                    spacing: Theme.spacingS
+
+                                    DIcon {
+                                        name: "aspect_ratio"
+                                        size: Theme.iconSizeSmall
+                                        color: Theme.primary
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    StyledText {
+                                        text: I18n.tr("Size")
+                                        font.pixelSize: Theme.fontSizeSmall
+                                        color: Theme.surfaceText
+                                        width: 44
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    DSlider {
+                                        id: sizeSlider
+                                        width: parent.width - 44 - Theme.iconSizeSmall - 24 - Theme.spacingS * 3
+                                        value: root.catSize * 100
+                                        minimum: 50
+                                        maximum: 200
+                                        centerMinimum: false
+                                        unit: "%"
+                                        showValue: true
+                                        onSliderValueChanged: v => root.saveSetting("catSizePercent", v)
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    Item {
+                                        width: 24
+                                        height: 24
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        DIcon {
+                                            anchors.centerIn: parent
+                                            name: "restore"
+                                            size: 16
+                                            color: Theme.primary
+                                            opacity: (root.catSize * 100) !== 100 ? 0.9 : 0.25
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            enabled: (root.catSize * 100) !== 100
+                                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                            onClicked: {
+                                                root.saveSetting("catSizePercent", 100);
+                                                sizeSlider.value = 100;
+                                            }
+                                        }
                                     }
                                 }
-                            }
-                        }
-                    }
 
-                    // Paw Hold Time
-                    Column {
-                        width: parent.width
-                        spacing: 2
+                                // Sleep Timeout Slider
+                                Row {
+                                    width: parent.width
+                                    height: 36
+                                    spacing: Theme.spacingS
 
-                        StyledText {
-                            text: "Paw Hold Time"
-                            font.pixelSize: Theme.fontSizeExtraSmall
-                            font.weight: Font.Medium
-                            color: Theme.surfaceVariantText
-                        }
+                                    DIcon {
+                                        name: "bedtime"
+                                        size: Theme.iconSizeSmall
+                                        color: Theme.primary
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
 
-                        Row {
-                            width: parent.width
-                            height: 32
-                            spacing: Theme.spacingM
-                            DIcon { name: "timer"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DSlider {
-                                id: pawHoldSlider
-                                width: parent.width - 80
-                                value: root.pawHoldTime
-                                minimum: 0; maximum: 100
-                                centerMinimum: false; unit: "ms"; showValue: true
-                                onSliderValueChanged: v => root.saveSetting("pawHoldTime", v)
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            DIcon {
-                                name: "restore"
-                                size: Theme.iconSizeSmall
-                                color: Theme.primary
-                                opacity: root.pawHoldTime !== 0 ? 1.0 : 0.3
-                                anchors.verticalCenter: parent.verticalCenter
-                                MouseArea {
-                                    anchors.fill: parent
-                                    enabled: root.pawHoldTime !== 0
-                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                    onClicked: {
-                                        root.saveSetting("pawHoldTime", 0);
-                                        pawHoldSlider.value = 0;
+                                    StyledText {
+                                        text: I18n.tr("Sleep")
+                                        font.pixelSize: Theme.fontSizeSmall
+                                        color: Theme.surfaceText
+                                        width: 44
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    DSlider {
+                                        id: sleepSlider
+                                        width: parent.width - 44 - Theme.iconSizeSmall - 24 - Theme.spacingS * 3
+                                        value: root.waitingTimeout / 1000
+                                        minimum: 1
+                                        maximum: 10
+                                        centerMinimum: false
+                                        unit: "s"
+                                        showValue: true
+                                        onSliderValueChanged: v => root.saveSetting("waitingTimeout", v)
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    Item {
+                                        width: 24
+                                        height: 24
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        DIcon {
+                                            anchors.centerIn: parent
+                                            name: "restore"
+                                            size: 16
+                                            color: Theme.primary
+                                            opacity: (root.waitingTimeout / 1000) !== 5 ? 0.9 : 0.25
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            enabled: (root.waitingTimeout / 1000) !== 5
+                                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                            onClicked: {
+                                                root.saveSetting("waitingTimeout", 5);
+                                                sleepSlider.value = 5;
+                                            }
+                                        }
                                     }
                                 }
-                            }
-                        }
-                    }
 
-                    // Cat Color
-                    Column {
-                        width: parent.width
-                        spacing: 2
+                                // Paw Hold Slider
+                                Row {
+                                    width: parent.width
+                                    height: 36
+                                    spacing: Theme.spacingS
 
-                        StyledText {
-                            text: I18n.tr("Cat Color")
-                            font.pixelSize: Theme.fontSizeExtraSmall
-                            font.weight: Font.Medium
-                            color: Theme.surfaceVariantText
-                        }
+                                    DIcon {
+                                        name: "timer"
+                                        size: Theme.iconSizeSmall
+                                        color: Theme.primary
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
 
-                        Row {
-                            width: parent.width
-                            height: 32
-                            spacing: Theme.spacingM
-                            DIcon { name: "palette"; size: Theme.iconSizeSmall; color: Theme.primary; anchors.verticalCenter: parent.verticalCenter }
-                            DDropdown {
-                                id: colorModeDropdown
-                                width: parent.width - 40 - (customSwatch.visible ? 40 + Theme.spacingM : 0)
-                                options: root.colorModeOptions
-                                currentValue: root.colorModeToLabel(root.catColorMode)
-                                maxPopupHeight: 200
-                                compactMode: true
-                                anchors.verticalCenter: parent.verticalCenter
-                                onValueChanged: v => root.saveSetting("catColorMode", root.labelToColorMode(v))
-                            }
-                            Rectangle {
-                                id: customSwatch
-                                visible: root.catColorMode === "custom"
-                                width: 40; height: 28; radius: Theme.cornerRadius
-                                anchors.verticalCenter: parent.verticalCenter
-                                color: root.catCustomColor === "primary" ? Theme.primary : Qt.color(root.catCustomColor)
-                                border.color: Theme.outlineStrong
-                                border.width: 2
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        if (typeof PopoutService !== "undefined" && PopoutService && PopoutService.colorPickerModal) {
-                                            // Capture the widget root: the callback runs later in the
-                                            // modal's scope, where the enclosing-file `root` id no longer
-                                            // resolves (ReferenceError), so the save would never fire.
-                                            const widget = root;
-                                            PopoutService.colorPickerModal.selectedColor = root.catCustomColor === "primary" ? Theme.primary : Qt.color(root.catCustomColor);
-                                            PopoutService.colorPickerModal.pickerTitle = I18n.tr("Cat Color");
-                                            PopoutService.colorPickerModal.onColorSelectedCallback = function(selectedColor) {
-                                                widget.saveSetting("catCustomColor", selectedColor.toString());
-                                            };
-                                            PopoutService.colorPickerModal.show();
+                                    StyledText {
+                                        text: I18n.tr("Paw")
+                                        font.pixelSize: Theme.fontSizeSmall
+                                        color: Theme.surfaceText
+                                        width: 44
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    DSlider {
+                                        id: pawHoldSlider
+                                        width: parent.width - 44 - Theme.iconSizeSmall - 24 - Theme.spacingS * 3
+                                        value: root.pawHoldTime
+                                        minimum: 0
+                                        maximum: 100
+                                        centerMinimum: false
+                                        unit: "ms"
+                                        showValue: true
+                                        onSliderValueChanged: v => root.saveSetting("pawHoldTime", v)
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    Item {
+                                        width: 24
+                                        height: 24
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        DIcon {
+                                            anchors.centerIn: parent
+                                            name: "restore"
+                                            size: 16
+                                            color: Theme.primary
+                                            opacity: root.pawHoldTime !== 0 ? 0.9 : 0.25
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            enabled: root.pawHoldTime !== 0
+                                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                            onClicked: {
+                                                root.saveSetting("pawHoldTime", 0);
+                                                pawHoldSlider.value = 0;
+                                            }
                                         }
                                     }
                                 }
@@ -1141,89 +1254,142 @@ PluginComponent {
                         }
                     }
 
-                    // Quick Toggles
-                    Flow {
+                    // M3E Segmented Pill Action Strip for Quick Toggles
+                    DCard {
                         width: parent.width
-                        spacing: Theme.spacingL
+                        height: 38
+                        pad: 0
+                        color: "transparent"
+                        border.width: 0
 
-                        // Blink Toggle
                         Row {
-                            spacing: Theme.spacingS
-                            DIcon {
-                                name: root.enableBlinking ? "visibility" : "visibility_off"
-                                size: Theme.iconSize
-                                color: root.enableBlinking ? Theme.primary : Theme.surfaceText
-                                opacity: root.enableBlinking ? 1.0 : 0.4
+                            width: parent.width
+                            spacing: Theme.groupedListGap
+
+                            // Blink Toggle Pill
+                            DCard {
+                                id: blinkBtn
+                                width: (parent.width - Theme.groupedListGap * 2) / 3
+                                height: 38
+                                pad: 0
+                                topLeftRadius: Theme.groupedListOuterRadius
+                                bottomLeftRadius: Theme.groupedListOuterRadius
+                                topRightRadius: Theme.groupedListInnerRadius
+                                bottomRightRadius: Theme.groupedListInnerRadius
+                                color: root.enableBlinking ? Theme.primaryContainer : (blinkArea.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh)
+
+                                Row {
+                                    anchors.centerIn: parent
+                                    spacing: 4
+                                    DIcon {
+                                        name: root.enableBlinking ? "visibility" : "visibility_off"
+                                        size: 16
+                                        color: root.enableBlinking ? Theme.onPrimaryContainer : Theme.surfaceVariantText
+                                    }
+                                    StyledText {
+                                        text: I18n.tr("Blink")
+                                        font.pixelSize: Theme.fontSizeSmall
+                                        font.weight: root.enableBlinking ? Font.Bold : Font.Normal
+                                        color: root.enableBlinking ? Theme.onPrimaryContainer : Theme.surfaceText
+                                    }
+                                }
+
                                 MouseArea {
+                                    id: blinkArea
                                     anchors.fill: parent
+                                    hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: root.saveSetting("enableBlinking", !root.enableBlinking)
                                 }
                             }
-                            StyledText {
-                                text: "Blink"
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.surfaceText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
 
-                        // Sound Toggle
-                        Row {
-                            spacing: Theme.spacingS
-                            DIcon {
-                                name: root.soundEnabled ? "volume_up" : "volume_off"
-                                size: Theme.iconSize
-                                color: root.soundEnabled ? Theme.primary : Theme.surfaceText
-                                opacity: root.soundEnabled ? 1.0 : 0.4
+                            // Sound Toggle Pill
+                            DCard {
+                                id: soundBtn
+                                width: (parent.width - Theme.groupedListGap * 2) / 3
+                                height: 38
+                                pad: 0
+                                topLeftRadius: Theme.groupedListInnerRadius
+                                bottomLeftRadius: Theme.groupedListInnerRadius
+                                topRightRadius: Theme.groupedListInnerRadius
+                                bottomRightRadius: Theme.groupedListInnerRadius
+                                color: root.soundEnabled ? Theme.primaryContainer : (soundArea.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh)
+
+                                Row {
+                                    anchors.centerIn: parent
+                                    spacing: 4
+                                    DIcon {
+                                        name: root.soundEnabled ? "volume_up" : "volume_off"
+                                        size: 16
+                                        color: root.soundEnabled ? Theme.onPrimaryContainer : Theme.surfaceVariantText
+                                    }
+                                    StyledText {
+                                        text: I18n.tr("Sound")
+                                        font.pixelSize: Theme.fontSizeSmall
+                                        font.weight: root.soundEnabled ? Font.Bold : Font.Normal
+                                        color: root.soundEnabled ? Theme.onPrimaryContainer : Theme.surfaceText
+                                    }
+                                }
+
                                 MouseArea {
+                                    id: soundArea
                                     anchors.fill: parent
+                                    hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: root.saveSetting("soundEnabled", !root.soundEnabled)
                                 }
                             }
-                            StyledText {
-                                text: "Sound"
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.surfaceText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
 
-                        // Metrics Toggle
-                        Row {
-                            spacing: Theme.spacingS
-                            DIcon {
-                                name: "speed"
-                                size: Theme.iconSize
-                                color: root.showMetrics ? Theme.primary : Theme.surfaceText
-                                opacity: root.showMetrics ? 1.0 : 0.4
+                            // Metrics Toggle Pill
+                            DCard {
+                                id: metricsBtn
+                                width: (parent.width - Theme.groupedListGap * 2) / 3
+                                height: 38
+                                pad: 0
+                                topRightRadius: Theme.groupedListOuterRadius
+                                bottomRightRadius: Theme.groupedListOuterRadius
+                                topLeftRadius: Theme.groupedListInnerRadius
+                                bottomLeftRadius: Theme.groupedListInnerRadius
+                                color: root.showMetrics ? Theme.primaryContainer : (metricsArea.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh)
+
+                                Row {
+                                    anchors.centerIn: parent
+                                    spacing: 4
+                                    DIcon {
+                                        name: "speed"
+                                        size: 16
+                                        color: root.showMetrics ? Theme.onPrimaryContainer : Theme.surfaceVariantText
+                                    }
+                                    StyledText {
+                                        text: I18n.tr("Stats")
+                                        font.pixelSize: Theme.fontSizeSmall
+                                        font.weight: root.showMetrics ? Font.Bold : Font.Normal
+                                        color: root.showMetrics ? Theme.onPrimaryContainer : Theme.surfaceText
+                                    }
+                                }
+
                                 MouseArea {
+                                    id: metricsArea
                                     anchors.fill: parent
+                                    hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: root.saveSetting("showMetrics", !root.showMetrics)
                                 }
                             }
-                            StyledText {
-                                text: "Metrics"
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.surfaceText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
+                        }
+                    }
+
+                    // Hint Item
+                    HintSection {
+                        width: parent.width
+                        showHints: root.showHints
+
+                        HintItem {
+                            icon: "mouse"
+                            text: I18n.tr("Right-click bar icon to toggle sleep mode.")
                         }
                     }
                 }
-
-                HintSection {
-                    width: parent.width
-                    showHints: root.showHints
-
-                    HintItem {
-                        icon: "mouse"
-                        text: "Right-click bar icon to toggle sleep mode."
-                    }
-                }
-            }
         }
     }
 }

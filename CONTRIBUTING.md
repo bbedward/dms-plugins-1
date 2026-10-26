@@ -39,7 +39,6 @@ Consult these focused guides before implementing or updating plugin UI:
    ```bash
    qmllint <pluginName>/*.qml
    python3 scripts/check_unused_imports.py <pluginName>
-   python3 scripts/check_compatibility.py <pluginName>
    python3 scripts/refactor_dcommon.py --check --requires-dms ">=2.0.0"
    ```
 4. **Pull Requests:**

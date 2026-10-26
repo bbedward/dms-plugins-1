@@ -14,3 +14,4 @@ SettingsCard 1.0 SettingsCard.qml
 SliderSettingPlus 1.0 SliderSettingPlus.qml
 ToggleSettingPlus 1.0 ToggleSettingPlus.qml
 UsageGuide 1.0 UsageGuide.qml
+singleton M3E 1.0 M3E.qml
