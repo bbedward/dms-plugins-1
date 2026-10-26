@@ -368,7 +368,6 @@ PopoutComponent {
                     required property int index
                     icon: modelData.icon
                     text: modelData.label
-                    highlighted: modelData.value === "region"
                     isFirst: index === 0
                     isLast: index === 2
                     rightClickAction: root.menuRightClickAction
@@ -719,7 +718,6 @@ PopoutComponent {
                         required property int index
                         icon: modelData.icon
                         text: modelData.label
-                        highlighted: modelData.value === "region"
                         isFirst: index === 0
                         isLast: index === 2
                         showPin: false

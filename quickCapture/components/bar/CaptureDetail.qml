@@ -531,7 +531,6 @@ Item {
                         delegate: ExpressiveTile {
                             columns: 4
                             tileHeight: 72
-                            highlighted: modelData.value === "region"
                             rightClickAction: root.menuRightClickAction
                             onTriggered: action => {
                                 if (root.daemon)
@@ -697,7 +696,6 @@ Item {
                             delegate: ExpressiveTile {
                                 columns: 3
                                 tileHeight: 80
-                                highlighted: modelData.value === "region"
                                 showPin: false
                                 onTriggered: {
                                     if (root.daemon)
