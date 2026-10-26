@@ -1,4 +1,5 @@
 module dms.common
+singleton M3E 1.0 M3E.qml
 CopyBox 1.0 CopyBox.qml
 HintItem 1.0 HintItem.qml
 HintSection 1.0 HintSection.qml

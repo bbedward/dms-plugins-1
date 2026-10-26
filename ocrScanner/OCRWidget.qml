@@ -11,8 +11,8 @@ import "./shared"
 PluginComponent {
     id: pluginRoot
 
-    popoutWidth: 800
-    popoutHeight: (pluginData.showHints ?? true) ? 660 : 600
+    popoutWidth: 780
+    popoutHeight: 0 // auto from content
 
     pillRightClickAction: () => {
         const showPopout = pluginData.showPopoutOnRightClick ?? true;
@@ -27,10 +27,30 @@ PluginComponent {
     property string sourceImage: ""
     property int imageTrigger: 0
     property int lastScanTime: 0
+    property var pendingPopoutAction: null
+
+    property bool isTemporaryAction: false
+
+    Timer {
+        id: popoutCloseTimer
+        interval: Math.max(50, (Theme.popoutAnimationDuration ?? 200) + 50)
+        onTriggered: {
+            const action = pluginRoot.pendingPopoutAction;
+            pluginRoot.pendingPopoutAction = null;
+            if (action) action();
+        }
+    }
+
+    function runAfterPopoutClosed(action) {
+        pluginRoot.isTemporaryAction = true;
+        pluginRoot.pendingPopoutAction = action;
+        pluginRoot.closePopout();
+        popoutCloseTimer.restart();
+    }
 
     readonly property string cacheDir: {
-        const base = StandardPaths.writableLocation(StandardPaths.CacheLocation);
-        return (base ? Paths.strip(base) : Paths.expandTilde("~/.cache")) + "/dms-ocr";
+        const base = Paths.xdgCache ? Paths.strip(Paths.xdgCache) : Paths.expandTilde("~/.cache");
+        return base + "/dms-ocr";
     }
 
     Component.onCompleted: {
@@ -75,28 +95,32 @@ PluginComponent {
     }
 
     function scanFromScreenshot() {
-        isScanning = true;
-        const tempPath = cacheDir + "/dms_ocr_screenshot.png";
+        runAfterPopoutClosed(() => {
+            isScanning = true;
+            const tempPath = cacheDir + "/dms_ocr_screenshot.png";
 
-        Proc.runCommand(
-            "screenshot-ocr",
-            ["dms", "screenshot", "region", "--no-confirm", "--no-notify", "--dir", cacheDir, "--filename", "dms_ocr_screenshot.png"],
-            (stdout, exitCode) => {
-                if (exitCode === 0) {
-                    sourceImage = tempPath;
-                    imageTrigger++;
-                    runTesseract(tempPath);
+            Proc.runCommand(
+                "screenshot-ocr",
+                ["dms", "screenshot", "region", "--no-confirm", "--no-notify", "--dir", cacheDir, "--filename", "dms_ocr_screenshot.png"],
+                (stdout, exitCode) => {
+                    pluginRoot.isTemporaryAction = false;
+                    if (exitCode === 0) {
+                        sourceImage = tempPath;
+                        imageTrigger++;
+                        runTesseract(tempPath);
+                    } else {
+                        isScanning = false;
+                        ToastService.showError("Failed to take screenshot or selection cancelled.");
+                    }
                     pluginRoot.triggerPopout();
-                } else {
-                    isScanning = false;
-                    ToastService.showError("Failed to take screenshot or selection cancelled.");
-                }
-            },
-            0
-        );
+                },
+                0
+            );
+        });
     }
 
     function selectFileAndScan() {
+        isTemporaryAction = true;
         pluginRoot.closePopout();
         fileBrowserModal.open();
     }
@@ -297,6 +321,7 @@ PluginComponent {
             close();
         }
         onDialogClosed: {
+            pluginRoot.isTemporaryAction = false;
             pluginRoot.triggerPopout();
         }
     }
@@ -341,186 +366,194 @@ PluginComponent {
     popoutContent: Component {
         PopoutComponent {
             id: popout
-            width: parent ? parent.width : 0
-            headerText: "OCR Scanner"
-            detailsText: pluginRoot.isScanning ? "Processing..." : "Ready to scan"
-            showCloseButton: true
+            width: root.popoutWidth
+            headerText: ""
+            showCloseButton: false
             focus: true
 
             property var parentPopout: null
 
             Component.onDestruction: {
-                if (!pluginRoot.isSaving && pluginRoot.pluginData && !(pluginRoot.pluginData.keepResults ?? true)) {
+                if (!pluginRoot.isSaving && !pluginRoot.isTemporaryAction && pluginRoot.pluginData && !(pluginRoot.pluginData.keepResults ?? true)) {
                     resultText = "";
                     sourceImage = "";
                 }
             }
 
-            DFlickable {
+            Column {
+                id: contentColumn
                 width: parent.width
-                height: Math.min(contentHeight, pluginRoot.popoutHeight - popout.headerHeight - popout.detailsHeight - Theme.spacingM)
-                contentHeight: contentColumn.implicitHeight
-                contentWidth: width
-                clip: true
+                spacing: Theme.spacingM
 
-                Column {
-                    id: contentColumn
+                // ── Hints Section ───────────────────────────────────────────
+                HintSection {
+                    showHints: (pluginData.showHints ?? true)
+                    width: parent.width
+
+                    HintItem {
+                        icon: "file_download"
+                        text: I18n.trFor("ocrScanner", "Drop an image or URL onto the pill icon to scan it instantly")
+                    }
+                    HintItem {
+                        icon: "mouse"
+                        text: I18n.trFor("ocrScanner", "Right-click pill to scan clipboard, Middle-click to take screenshot")
+                    }
+                }
+
+                // ── Two Columns Workspace (Image & Text) ─────────────────────
+                Row {
                     width: parent.width
                     spacing: Theme.spacingM
 
-                    HintSection {
-                        showHints: (pluginData.showHints ?? true)
-                        width: parent.width
+                    // Left Column: Source Image & Actions
+                    Column {
+                        width: (parent.width - Theme.spacingM) / 2
+                        spacing: Theme.spacingM
 
-                        HintItem {
-                            icon: "file_download"
-                            text: I18n.trFor("ocrScanner", "Drop an image or URL onto the pill icon to scan it instantly")
+                        DCard {
+                            width: parent.width
+                            height: 380
+                            restRadius: Theme.cornerRadiusL
+                            color: Theme.surfaceContainer
+                            pad: 0
+                            clipContent: true
+
+                            Image {
+                                id: sourceImg
+                                anchors.fill: parent
+                                anchors.margins: Theme.spacingM
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                source: pluginRoot.sourceImage ? "file://" + pluginRoot.sourceImage + "?t=" + pluginRoot.imageTrigger : ""
+
+                                Column {
+                                    anchors.centerIn: parent
+                                    spacing: Theme.spacingS
+                                    visible: sourceImg.status !== Image.Ready && !pluginRoot.isScanning
+
+                                    DIcon {
+                                        name: "image"
+                                        size: Theme.iconSizeLarge
+                                        color: Theme.outlineVariant
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+
+                                    StyledText {
+                                        text: I18n.trFor("ocrScanner", "No image scanned yet")
+                                        color: Theme.outlineVariant
+                                        font.pixelSize: Theme.fontSizeMedium
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+                                }
+                            }
+
+                            // Clear Image Button inside Card
+                            DButton {
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.margins: Theme.spacingS
+                                width: 32
+                                height: 32
+                                iconName: "close"
+                                tooltipText: I18n.trFor("ocrScanner", "Clear Image & Text")
+                                onClicked: {
+                                    pluginRoot.sourceImage = "";
+                                    pluginRoot.resultText = "";
+                                }
+                                visible: (pluginRoot.sourceImage !== "" || pluginRoot.resultText !== "") && !pluginRoot.isScanning
+                                backgroundColor: Theme.withAlpha(Theme.surfaceContainerHighest, 0.8)
+                                textColor: Theme.surfaceText
+                            }
                         }
-                        HintItem {
-                            icon: "mouse"
-                            text: I18n.trFor("ocrScanner", "Right-click to scan clipboard, Middle-click to scan screenshot")
+
+                        // Left Action Buttons (Scan Inputs)
+                        Row {
+                            width: parent.width
+                            spacing: Theme.spacingS
+
+                            readonly property real totalGaps: Theme.spacingS * 2
+                            readonly property real availableW: parent.width - totalGaps
+
+                            DButton {
+                                text: I18n.trFor("ocrScanner", "Screenshot")
+                                width: parent.availableW * 0.5
+                                iconName: "crop_free"
+                                onClicked: pluginRoot.scanFromScreenshot()
+                                enabled: !pluginRoot.isScanning
+                                backgroundColor: Theme.primaryContainer
+                                textColor: Theme.primary
+                            }
+
+                            DButton {
+                                width: parent.availableW * 0.25
+                                iconName: "content_paste"
+                                tooltipText: I18n.trFor("ocrScanner", "Scan Clipboard")
+                                onClicked: pluginRoot.scanFromClipboard()
+                                enabled: !pluginRoot.isScanning
+                                backgroundColor: Theme.surfaceContainerHigh
+                                textColor: Theme.surfaceText
+                            }
+
+                            DButton {
+                                width: parent.availableW * 0.25
+                                iconName: "folder"
+                                tooltipText: I18n.trFor("ocrScanner", "Select File")
+                                onClicked: pluginRoot.selectFileAndScan()
+                                enabled: !pluginRoot.isScanning
+                                backgroundColor: Theme.surfaceContainerHigh
+                                textColor: Theme.surfaceText
+                            }
                         }
                     }
 
-                    Row {
-                        width: parent.width
+                    // Right Column: Result Text & Output Actions
+                    Column {
+                        width: (parent.width - Theme.spacingM) / 2
                         spacing: Theme.spacingM
 
-                        Column {
-                            width: (parent.width - Theme.spacingM) / 2
-                            spacing: Theme.spacingM
+                        DTextEdit {
+                            id: resultArea
+                            width: parent.width
+                            height: 380
+                            cornerRadius: Theme.cornerRadiusL
+                            backgroundColor: Theme.surfaceContainer
+                            placeholderText: I18n.trFor("ocrScanner", "Text will appear here...")
+                            text: pluginRoot.resultText
+                            wrapMode: TextEdit.Wrap
+                            onTextEdited: pluginRoot.resultText = text
 
-                            StyledRect {
-                                width: parent.width
-                                height: 380
-                                radius: Theme.cornerRadius
-                                color: Theme.surfaceContainer
-                                border.color: Theme.outlineVariant
-                                border.width: 1
-                                clip: true
-
-                                Image {
-                                    id: sourceImg
-                                    anchors.fill: parent
-                                    anchors.margins: Theme.spacingM
-                                    fillMode: Image.PreserveAspectFit
-                                    asynchronous: true
-                                    source: pluginRoot.sourceImage ? "file://" + pluginRoot.sourceImage + "?t=" + pluginRoot.imageTrigger : ""
-
-                                    StyledText {
-                                        anchors.centerIn: parent
-                                        text: I18n.trFor("ocrScanner", "No image scanned yet")
-                                        color: Theme.outlineVariant
-                                        visible: sourceImg.status !== Image.Ready && !pluginRoot.isScanning
-                                        font.pixelSize: Theme.fontSizeMedium
+                            Component.onCompleted: {
+                                for (let i = 0; i < children.length; i++) {
+                                    if (children[i].text !== undefined && children[i].wrapMode !== undefined) {
+                                        children[i].verticalAlignment = Text.AlignTop;
                                     }
-                                }
-
-                                DButton {
-                                    anchors.top: parent.top
-                                    anchors.right: parent.right
-                                    anchors.margins: Theme.spacingS
-                                    width: 32
-                                    height: 32
-                                    iconName: "delete"
-                                    onClicked: {
-                                        pluginRoot.sourceImage = ""
-                                        pluginRoot.resultText = ""
-                                    }
-                                    enabled: (pluginRoot.sourceImage !== "" || pluginRoot.resultText !== "") && !pluginRoot.isScanning
-                                    backgroundColor: Theme.errorContainer
-                                    textColor: Theme.error
-                                }
-                            }
-
-                            Row {
-                                width: parent.width
-                                spacing: Theme.spacingS
-
-                                DButton {
-                                    text: I18n.trFor("ocrScanner", "Scan Clipboard")
-                                    width: (parent.width - Theme.spacingS) / 2
-                                    iconName: "content_paste"
-                                    onClicked: pluginRoot.scanFromClipboard()
-                                    enabled: !pluginRoot.isScanning
-                                    backgroundColor: Theme.primaryContainer
-                                    textColor: Theme.primary
-                                }
-
-                                DButton {
-                                    text: I18n.trFor("ocrScanner", "Select File")
-                                    width: (parent.width - Theme.spacingS) / 2
-                                    iconName: "image"
-                                    onClicked: pluginRoot.selectFileAndScan()
-                                    enabled: !pluginRoot.isScanning
-                                    backgroundColor: Theme.surfaceContainerHighest
-                                    textColor: Theme.surfaceText
                                 }
                             }
                         }
 
-                        Column {
-                            width: (parent.width - Theme.spacingM) / 2
-                            spacing: Theme.spacingM
+                        // Right Action Buttons (Copy / Save)
+                        Row {
+                            width: parent.width
+                            spacing: Theme.spacingS
 
-                            StyledRect {
-                                width: parent.width
-                                height: 380
-                                radius: Theme.cornerRadius
-                                color: Theme.surfaceContainer
-                                border.color: pluginRoot.isScanning ? Theme.primary : Theme.outlineVariant
-                                border.width: 1
-
-                                DFlickable {
-                                    anchors.fill: parent
-                                    anchors.margins: Theme.spacingM
-                                    contentWidth: width - (Theme.spacingM * 2)
-                                    contentHeight: resultArea.implicitHeight
-                                    clip: true
-
-                                    TextEdit {
-                                        id: resultArea
-                                        width: parent.width
-                                        text: pluginRoot.resultText
-                                        wrapMode: TextEdit.Wrap
-                                        font.pixelSize: Theme.fontSizeMedium
-                                        color: Theme.surfaceText
-                                        selectByMouse: true
-                                        onTextChanged: pluginRoot.resultText = text
-
-                                        Text {
-                                            text: I18n.trFor("ocrScanner", "Text will appear here...")
-                                            color: Theme.outlineVariant
-                                            visible: resultArea.text === ""
-                                            font: resultArea.font
-                                        }
-                                    }
-                                }
+                            DButton {
+                                text: I18n.trFor("ocrScanner", "Copy Text")
+                                width: (parent.width - Theme.spacingS) / 2
+                                iconName: "content_copy"
+                                onClicked: pluginRoot.copyToClipboard(pluginRoot.resultText)
+                                enabled: pluginRoot.resultText !== "" && !pluginRoot.isScanning
+                                backgroundColor: Theme.primaryContainer
+                                textColor: Theme.primary
                             }
 
-                            Row {
-                                width: parent.width
-                                spacing: Theme.spacingS
-
-                                DButton {
-                                    text: I18n.trFor("ocrScanner", "Copy Text")
-                                    width: (parent.width - Theme.spacingS) / 2
-                                    iconName: "content_copy"
-                                    onClicked: pluginRoot.copyToClipboard(pluginRoot.resultText)
-                                    enabled: pluginRoot.resultText !== "" && !pluginRoot.isScanning
-                                    backgroundColor: Theme.primaryContainer
-                                    textColor: Theme.primary
-                                }
-
-                                DButton {
-                                    text: I18n.trFor("ocrScanner", "Save Text")
-                                    width: (parent.width - Theme.spacingS) / 2
-                                    iconName: "save"
-                                    onClicked: pluginRoot.saveResultToFile()
-                                    enabled: pluginRoot.resultText !== "" && !pluginRoot.isScanning
-                                    backgroundColor: Theme.surfaceContainerHighest
-                                    textColor: Theme.surfaceText
-                                }
+                            DButton {
+                                text: I18n.trFor("ocrScanner", "Save Text")
+                                width: (parent.width - Theme.spacingS) / 2
+                                iconName: "save"
+                                onClicked: pluginRoot.saveResultToFile()
+                                enabled: pluginRoot.resultText !== "" && !pluginRoot.isScanning
+                                backgroundColor: Theme.surfaceContainerHigh
+                                textColor: Theme.surfaceText
                             }
                         }
                     }
