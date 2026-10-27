@@ -99,7 +99,7 @@ Item {
 
     Column {
         id: layout
-        anchors.fill: parent
+        width: parent.width
         spacing: Theme.spacingXS
 
         // ── Label Row ─────────────────────────────────────────────────────────
