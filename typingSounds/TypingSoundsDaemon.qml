@@ -4,6 +4,7 @@ import Quickshell.Io
 import qs.Common
 import qs.Services
 import qs.Modules.Plugins
+import "./shared"
 
 PluginComponent {
     id: root
@@ -40,10 +41,10 @@ PluginComponent {
     property var soundMap: ({})
     property bool isPreparing: false
 
-    property bool inputToolMissing: false
-    property bool mouseToolMissing: false
-    property bool notInInputGroup: false
-    readonly property string requiredTool: selectedDevicePath === "all" ? "libinput" : "evtest"
+    readonly property bool inputToolMissing: inputListener.inputToolMissing
+    readonly property bool mouseToolMissing: inputListener.mouseToolMissing
+    readonly property bool notInInputGroup: inputListener.notInInputGroup
+    readonly property string requiredTool: inputListener.requiredTool
 
     function usableDefines(defines) {
         const result = {};
@@ -111,51 +112,10 @@ PluginComponent {
         verifyAndLoadPack();
     }
 
-    onSelectedDevicePathChanged: {
-        inputProc.running = false;
-        inputRestartTimer.restart();
-    }
 
-    Timer {
-        id: inputRestartTimer
-        interval: 200
-        onTriggered: inputProc.running = true
-    }
 
     function checkTools() {
-        toolCheck.running = false;
-        toolCheck.running = true;
-        groupCheck.running = false;
-        groupCheck.running = true;
-        mouseToolCheck.running = false;
-        mouseToolCheck.running = true;
-    }
-
-    Process {
-        id: toolCheck
-        command: ["sh", "-c", "command -v " + root.requiredTool + " >/dev/null 2>&1"]
-        running: false
-        onExited: (exitCode) => {
-            root.inputToolMissing = (exitCode !== 0);
-        }
-    }
-
-    Process {
-        id: mouseToolCheck
-        command: ["sh", "-c", "command -v libinput >/dev/null 2>&1"]
-        running: false
-        onExited: (exitCode) => {
-            root.mouseToolMissing = (exitCode !== 0);
-        }
-    }
-
-    Process {
-        id: groupCheck
-        command: ["sh", "-c", "id -nG | tr ' ' '\n' | grep -qx input"]
-        running: false
-        onExited: (exitCode) => {
-            root.notInInputGroup = (exitCode !== 0);
-        }
+        inputListener.checkPermissionsAndTools();
     }
 
     FileView {
@@ -345,65 +305,19 @@ if not cache_is_valid:
         root.triggerKeySound("30");
     }
 
-    // Input monitoring process
-    Process {
-        id: inputProc
-        command: {
-            const cmd = selectedDevicePath === "all"
-                ? ["libinput", "debug-events", "--show-keycodes"]
-                : ["evtest", selectedDevicePath];
-            console.log("[TypingSounds] Starting input process:", JSON.stringify(cmd));
-            return cmd;
+    // Input monitoring listener
+    InputEventListener {
+        id: inputListener
+        enabled: root.soundEnabled
+        selectedDevicePath: root.selectedDevicePath
+        monitorMouse: root.mouseEnabled
+
+        onKeyPressed: (keyName, keyCode) => {
+            root.triggerKeySound(keyCode);
         }
-        running: root.soundEnabled && !root.inputToolMissing
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => {
-                if (data.includes("EV_KEY")) {
-                    const keyMatch = data.match(/code\s+(\d+)/);
-                    if (keyMatch && data.includes("value 1")) {
-                        const code = parseInt(keyMatch[1]);
-                        if (code >= 272 && code <= 287) {
-                            if (root.mouseEnabled) {
-                                root.triggerMouseSound();
-                            }
-                        } else {
-                            root.triggerKeySound(code);
-                        }
-                    }
-                } else if (data.includes("KEYBOARD_KEY")) {
-                    const keyMatch = data.match(/\((\d+)\)/);
-                    if (keyMatch && data.includes("pressed")) {
-                        root.triggerKeySound(keyMatch[1]);
-                    }
-                } else if (root.mouseEnabled && data.includes("POINTER_BUTTON")) {
-                    if (data.includes("pressed")) {
-                        root.triggerMouseSound();
-                    }
-                }
-            }
+        onMousePressed: (btnName, btnCode) => {
+            root.triggerMouseSound();
         }
-
-        stderr: StdioCollector {}
-    }
-
-    // Mouse monitoring process for specific device selection
-    Process {
-        id: mouseProc
-        command: ["libinput", "debug-events"]
-        running: root.soundEnabled && root.mouseEnabled && root.selectedDevicePath !== "all" && !root.mouseToolMissing
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => {
-                if (data.includes("POINTER_BUTTON") && data.includes("pressed")) {
-                    root.triggerMouseSound();
-                }
-            }
-        }
-
-        stderr: StdioCollector {}
     }
 
     function saveSetting(key, value) {

@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Io
 import Quickshell.X11
 import qs.Common
 import qs.DCommon.Widgets
@@ -34,82 +33,19 @@ PluginComponent {
 
     // Surface silent input-monitor failures (missing CLI tool / missing
     // input group) instead of leaving the cat motionless without a hint.
-    property bool inputToolMissing: false
-    property bool notInInputGroup: false
-    readonly property bool inputBroken: inputToolMissing || notInInputGroup
-    readonly property string requiredTool: selectedDevicePath === "all" ? "libinput" : "evtest"
-
-    onRequiredToolChanged: {
-        toolCheck.running = false;
-        toolCheck.running = true;
-        clearMouseState();
-        refreshMouseToolCheck();
-    }
-
-    Process {
-        id: toolCheck
-        command: ["sh", "-c", "command -v " + root.requiredTool + " >/dev/null 2>&1"]
-        running: true
-        onExited: (exitCode, exitStatus) => {
-            root.inputToolMissing = (exitCode !== 0);
-        }
-    }
-
-    // When a specific keyboard is selected, its evtest stream contains no
-    // mouse events — those still come from libinput.
+    readonly property bool inputToolMissing: inputListener.inputToolMissing
+    readonly property bool notInInputGroup: inputListener.notInInputGroup
+    readonly property bool inputBroken: inputListener.inputBroken
+    readonly property string requiredTool: inputListener.requiredTool
     readonly property bool mouseBroken: mouseEnabled && selectedDevicePath !== "all" && mouseToolMissing
-    property bool mouseToolMissing: false
+    readonly property bool mouseToolMissing: inputListener.mouseToolMissing
 
     onMouseEnabledChanged: {
         clearMouseState();
-        refreshMouseToolCheck();
     }
 
-    function refreshMouseToolCheck() {
-        if (mouseEnabled && selectedDevicePath !== "all") {
-            mouseToolCheck.running = false;
-            mouseToolCheck.running = true;
-        }
-    }
-
-    Process {
-        id: mouseToolCheck
-        command: ["sh", "-c", "command -v libinput >/dev/null 2>&1"]
-        running: true
-        onExited: (exitCode, exitStatus) => {
-            root.mouseToolMissing = (exitCode !== 0);
-        }
-    }
-
-    Process {
-        id: mouseProc
-        command: ["libinput", "debug-events"]
-        running: root.mouseEnabled && root.selectedDevicePath !== "all" && !root.mouseToolMissing
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => {
-                if (data.includes("POINTER_BUTTON") || data.includes("POINTER_SCROLL")) {
-                    root.handlePointerLine(data);
-                }
-            }
-        }
-
-        stderr: StdioCollector {}
-    }
-
-    Process {
-        id: groupCheck
-        command: ["sh", "-c", "id -nG | tr ' ' '\n' | grep -qx input"]
-        running: true
-        onExited: (exitCode, exitStatus) => {
-            root.notInInputGroup = (exitCode !== 0);
-        }
-    }
     onSelectedDevicePathChanged: {
         console.log("[BongoCat] Device selection changed to:", selectedDevicePath);
-        inputProc.running = false;
-        inputRestartTimer.restart();
         resetMetrics();
     }
 
@@ -508,66 +444,27 @@ PluginComponent {
     }
 
     function fetchDevices() {
-        // Devices whose lowercase name matches this regex are always included,
-        // even if they would otherwise be filtered by the exclude list.
-        const includePattern = "kanata";
-
-        const excludePattern = [
-            "power button", "video bus", "speaker", "headphone",
-            "lid switch", "touchpad", "extra buttons", "uinput",
-            "server", "hitune", "inphic", "instant"
-        ].join("|");
-
-        const awkScript = `
-            /^N: Name=/ {
-                name = $0
-                sub(/^N: Name="/, "", name)
-                sub(/"$/, "", name)
-            }
-            /^H: Handlers=/ {
-                lower = tolower(name)
-                include = (lower ~ /${includePattern}/)
-                exclude = (lower ~ /${excludePattern}/)
-                if ($0 ~ /kbd/ && (include || ($0 !~ /mouse/ && !exclude))) {
-                    for (i = 1; i <= NF; i++) {
-                        if ($i ~ /^event[0-9]+$/) {
-                            print name "|/dev/input/" $i
-                            next
-                        }
-                    }
-                }
-            }
-        `;
-        const cmd = `awk '${awkScript}' /proc/bus/input/devices`;
-        
-        Proc.runCommand("bongoCat.fetchDevices", ["bash", "-c", cmd], (stdout, exitCode) => {
-            if (exitCode !== 0) return;
-            const output = stdout.trim();
-            if (!output) return;
-
+        InputDeviceScanner.scanKeyboards("bongoCat.fetchDevices", (devices) => {
             let options = ["All Keyboards (Auto)"];
             let map = { "All Keyboards (Auto)": "all" };
             let seenPaths = new Set();
             seenPaths.add("all");
 
-            output.split("\n").forEach(line => {
-                const parts = line.split("|");
-                if (parts.length === 2) {
-                    const name = parts[0].trim();
-                    const path = parts[1].trim();
-                    if (seenPaths.has(path)) return;
-                    seenPaths.add(path);
+            for (let i = 0; i < devices.length; i++) {
+                const name = devices[i].label;
+                const path = devices[i].value;
+                if (seenPaths.has(path)) continue;
+                seenPaths.add(path);
 
-                    let uniqueName = name;
-                    let i = 2;
-                    while (options.includes(uniqueName)) {
-                        uniqueName = name + " (" + i + ")";
-                        i++;
-                    }
-                    options.push(uniqueName);
-                    map[uniqueName] = path;
+                let uniqueName = name;
+                let counter = 2;
+                while (options.includes(uniqueName)) {
+                    uniqueName = name + " (" + counter + ")";
+                    counter++;
                 }
-            });
+                options.push(uniqueName);
+                map[uniqueName] = path;
+            }
             root.deviceOptions = options;
             root.deviceMap = map;
         });
@@ -599,58 +496,28 @@ PluginComponent {
         root.triggerPopout();
     }
 
-    Process {
-        id: inputProc
-        command: {
-            // --show-keycodes makes libinput emit real key names (otherwise masked
-            // as "***"), which lets us classify keystrokes for metrics and detect
-            // big-hit keys in Auto mode.
-            const cmd = selectedDevicePath === "all"
-                ? ["libinput", "debug-events", "--show-keycodes"]
-                : ["evtest", selectedDevicePath];
-            console.log("[BongoCat] Starting input process with command:", JSON.stringify(cmd));
-            return cmd;
+    InputEventListener {
+        id: inputListener
+        enabled: true
+        selectedDevicePath: root.selectedDevicePath
+        monitorMouse: root.mouseEnabled
+
+        onKeyPressed: (keyName, keyCode) => {
+            const isBigHit = root.doubleSlam && (keyName === "KEY_SPACE" || keyName === "KEY_ENTER" || keyName === "KEY_KPENTER");
+            root.recordKeystroke(keyName);
+            root.onKeyPress(isBigHit);
         }
-        running: true
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => {
-                if (data.includes("EV_KEY")) {
-                    const keyMatch = data.match(/(KEY_[A-Z0-9_]+)/);
-                    const keyName = keyMatch ? keyMatch[1] : "";
-                    const isBigHit = root.doubleSlam && (keyName === "KEY_SPACE" || keyName === "KEY_ENTER" || keyName === "KEY_KPENTER");
-                    if (data.includes("value 1")) {
-                        root.recordKeystroke(keyName);
-                        root.onKeyPress(isBigHit);
-                    } else if (data.includes("value 0")) {
-                        root.onKeyRelease(isBigHit);
-                    } else if (data.includes("value 2")) {
-                        root.onKeyRepeat(isBigHit);
-                    }
-                } else if (root.mouseEnabled && (data.includes("POINTER_BUTTON") || data.includes("POINTER_SCROLL"))) {
-                    root.handlePointerLine(data);
-                } else if (data.includes("KEYBOARD_KEY")) {
-                    const keyMatch = data.match(/(KEY_[A-Z0-9_]+)/);
-                    const keyName = keyMatch ? keyMatch[1] : "";
-                    const isBigHit = root.doubleSlam && (keyName === "KEY_SPACE" || keyName === "KEY_ENTER" || keyName === "KEY_KPENTER");
-                    if (data.includes("pressed")) {
-                        root.recordKeystroke(keyName);
-                        root.onKeyPress(isBigHit);
-                    } else if (data.includes("released")) {
-                        root.onKeyRelease(isBigHit);
-                    } else if (data.includes("repeat")) {
-                        root.onKeyRepeat(isBigHit);
-                    }
-                }
-            }
+        onKeyReleased: (keyName, keyCode) => {
+            const isBigHit = root.doubleSlam && (keyName === "KEY_SPACE" || keyName === "KEY_ENTER" || keyName === "KEY_KPENTER");
+            root.onKeyRelease(isBigHit);
         }
-
-        stderr: StdioCollector {}
-
-        onExited: exitCode => {
-            if (exitCode !== 0) {
-                console.warn("[BongoCat] evtest failed. Error code:", exitCode);
+        onKeyRepeated: (keyName, keyCode) => {
+            const isBigHit = root.doubleSlam && (keyName === "KEY_SPACE" || keyName === "KEY_ENTER" || keyName === "KEY_KPENTER");
+            root.onKeyRepeat(isBigHit);
+        }
+        onRawLineReceived: line => {
+            if (root.mouseEnabled && (line.includes("POINTER_BUTTON") || line.includes("POINTER_SCROLL"))) {
+                root.handlePointerLine(line);
             }
         }
     }

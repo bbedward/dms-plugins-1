@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import qs.Services
 import qs.Modules.Plugins
+import "./shared"
 import "keyMapper.js" as KeyMapper
 
 PluginComponent {
@@ -79,11 +80,11 @@ PluginComponent {
     property bool altActive: false
     property bool superActive: false
 
-    // Required tools check
-    property bool inputToolMissing: false
-    property bool notInInputGroup: false
-    readonly property bool inputBroken: inputToolMissing || notInInputGroup
-    readonly property string requiredTool: selectedDevicePath === "all" ? "libinput" : "evtest"
+    // Required tools check & Input listener
+    readonly property bool inputToolMissing: inputListener.inputToolMissing
+    readonly property bool notInInputGroup: inputListener.notInInputGroup
+    readonly property bool inputBroken: inputListener.inputBroken
+    readonly property string requiredTool: inputListener.requiredTool
 
     Component.onCompleted: {
         if (root.pluginData.enabled === false) {
@@ -96,18 +97,6 @@ PluginComponent {
             newInstances[pluginId] = root;
             pluginService.pluginInstances = newInstances;
         }
-        checkTools();
-    }
-
-    onSelectedDevicePathChanged: {
-        inputProc.running = false;
-        inputRestartTimer.restart();
-    }
-
-    Timer {
-        id: inputRestartTimer
-        interval: 200
-        onTriggered: inputProc.running = true
     }
 
     property bool isExiting: false
@@ -141,28 +130,7 @@ PluginComponent {
     }
 
     function checkTools() {
-        toolCheck.running = false;
-        toolCheck.running = true;
-        groupCheck.running = false;
-        groupCheck.running = true;
-    }
-
-    Process {
-        id: toolCheck
-        command: ["sh", "-c", "command -v " + root.requiredTool + " >/dev/null 2>&1"]
-        running: false
-        onExited: (exitCode) => {
-            root.inputToolMissing = (exitCode !== 0);
-        }
-    }
-
-    Process {
-        id: groupCheck
-        command: ["sh", "-c", "id -nG | tr ' ' '\n' | grep -qx input"]
-        running: false
-        onExited: (exitCode) => {
-            root.notInInputGroup = (exitCode !== 0);
-        }
+        inputListener.checkPermissionsAndTools();
     }
 
     function getActiveModifiersString() {
@@ -303,54 +271,22 @@ PluginComponent {
         root.addKeystroke(buttonName, false);
     }
 
-    // Input monitoring process
-    Process {
-        id: inputProc
-        command: {
-            const cmd = selectedDevicePath === "all"
-                ? ["libinput", "debug-events", "--show-keycodes"]
-                : ["evtest", selectedDevicePath];
-            console.log("[Screenkey] Starting input process:", JSON.stringify(cmd));
-            return cmd;
-        }
-        running: root.enabled && !root.inputToolMissing
+    // Input monitoring listener
+    InputEventListener {
+        id: inputListener
+        enabled: root.enabled
+        selectedDevicePath: root.selectedDevicePath
+        monitorMouse: root.showMouseClicks
 
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => {
-                if (data.includes("EV_KEY")) {
-                    const keyMatch = data.match(/(KEY_[A-Z0-9_]+)/);
-                    if (keyMatch) {
-                        const keyName = keyMatch[1];
-                        if (data.includes("value 1")) {
-                            root.handleKeyPress(keyName);
-                        } else if (data.includes("value 0")) {
-                            root.handleKeyRelease(keyName);
-                        }
-                    }
-                } else if (data.includes("KEYBOARD_KEY")) {
-                    const keyMatch = data.match(/(KEY_[A-Z0-9_]+)/);
-                    if (keyMatch) {
-                        const keyName = keyMatch[1];
-                        if (data.includes("pressed")) {
-                            root.handleKeyPress(keyName);
-                        } else if (data.includes("released")) {
-                            root.handleKeyRelease(keyName);
-                        }
-                    }
-                } else if (root.showMouseClicks && data.includes("POINTER_BUTTON")) {
-                    if (data.includes("pressed")) {
-                        let btnName = "Mouse Click";
-                        if (data.includes("BTN_LEFT") || data.includes("(272)")) btnName = "LMB Click";
-                        else if (data.includes("BTN_RIGHT") || data.includes("(273)")) btnName = "RMB Click";
-                        else if (data.includes("BTN_MIDDLE") || data.includes("(274)")) btnName = "MMB Click";
-                        root.handleMouseClick(btnName);
-                    }
-                }
-            }
+        onKeyPressed: (keyName, keyCode) => {
+            if (keyName) root.handleKeyPress(keyName);
         }
-
-        stderr: StdioCollector {}
+        onKeyReleased: (keyName, keyCode) => {
+            if (keyName) root.handleKeyRelease(keyName);
+        }
+        onMousePressed: (btnName, btnCode) => {
+            root.handleMouseClick(btnName);
+        }
     }
 
     // Floating overlay window instance
