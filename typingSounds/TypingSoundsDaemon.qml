@@ -141,7 +141,10 @@ PluginComponent {
                 const config = JSON.parse(text());
                 if (!config) return;
                 
-                const packId = config.id || "default_pack";
+                // Use unique folder name as packId to avoid collision across soundpacks
+                const trimmedPath = root.selectedPackPath.replace(/\/+$/, "");
+                const folderName = trimmedPath.substring(trimmedPath.lastIndexOf("/") + 1);
+                const packId = folderName || config.id || "default_pack";
                 const homeCache = Paths.expandTilde("~/.cache/dms-typing-sounds") + "/" + packId;
                 
                 root.currentPackId = packId;
@@ -245,9 +248,10 @@ cache_base = sys.argv[2]
 slice_script = sys.argv[3]
 sys.path.insert(0, os.path.dirname(slice_script))
 try:
+    folder_name = os.path.basename(os.path.normpath(pack_dir))
     with open(os.path.join(pack_dir, 'config.json')) as f:
         cfg = json.load(f)
-        pack_id = cfg.get('id', 'pack')
+        pack_id = folder_name or cfg.get('id', 'pack')
 except:
     sys.exit(0)
 cache_dir = os.path.join(cache_base, pack_id)
