@@ -6,6 +6,7 @@ import qs.Common
 import qs.DCommon.Widgets
 import qs.Services
 import qs.Modules.Plugins
+import "./shared"
 
 PluginComponent {
     id: root
@@ -53,7 +54,7 @@ PluginComponent {
     ccWidgetIsActive: daemon ? daemon.visualizerEnabled : false
     ccDetailHeight: {
         const hasWarning = !!(root.daemon && (root.daemon.inputToolMissing || root.daemon.notInInputGroup));
-        return hasWarning ? 420 : 360;
+        return hasWarning ? 320 : 260;
     }
 
     onCcWidgetToggled: {
@@ -111,14 +112,245 @@ PluginComponent {
                     }
                 }
 
-                // ── Keyboard Device Card ─────────────────────────────────────
-                Rectangle {
+                // ── M3E Segmented Display Modes Strip (DCard + DToggle) ─────
+                Row {
+                    id: optionsRow
                     width: parent.width
-                    height: deviceCol.implicitHeight + Theme.spacingM * 2
-                    radius: Theme.cornerRadius
+                    spacing: Theme.groupedListGap
+
+                    readonly property var optionsList: [
+                        { id: "showShortcuts", label: I18n.tr("Shortcuts"), icon: "keyboard_command_key", val: root.daemon ? root.daemon.showShortcuts : true },
+                        { id: "showNormalKeys", label: I18n.tr("All Keys"), icon: "keyboard", val: root.daemon ? root.daemon.showNormalKeys : false },
+                        { id: "showMouseClicks", label: I18n.tr("Mouse"), icon: "mouse", val: root.daemon ? root.daemon.showMouseClicks : false },
+                        { id: "showModifierStatus", label: I18n.tr("Modifiers"), icon: "touch_app", val: root.daemon ? root.daemon.showModifierStatus : false }
+                    ]
+
+                    Repeater {
+                        model: optionsRow.optionsList
+
+                        delegate: DCard {
+                            id: optCard
+                            required property var modelData
+                            required property int index
+
+                            width: (optionsRow.width - Theme.groupedListGap * (optionsRow.optionsList.length - 1)) / optionsRow.optionsList.length
+                            height: 60
+                            pad: 0
+
+                            topLeftRadius: index === 0 ? Theme.groupedListOuterRadius : Theme.groupedListInnerRadius
+                            bottomLeftRadius: index === 0 ? Theme.groupedListOuterRadius : Theme.groupedListInnerRadius
+                            topRightRadius: index === optionsRow.optionsList.length - 1 ? Theme.groupedListOuterRadius : Theme.groupedListInnerRadius
+                            bottomRightRadius: index === optionsRow.optionsList.length - 1 ? Theme.groupedListOuterRadius : Theme.groupedListInnerRadius
+
+                            readonly property bool isSelected: modelData.val
+                            readonly property bool hovered: mouseArea.containsMouse
+
+                            color: isSelected ? Theme.primaryContainer : (hovered ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh)
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: M3E.effectsFastMs
+                                }
+                            }
+
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 3
+
+                                DIcon {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    name: optCard.modelData.icon
+                                    size: 16
+                                    color: optCard.isSelected ? Theme.onPrimaryContainer : Theme.surfaceVariantText
+                                }
+
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: optCard.modelData.label
+                                    font.pixelSize: Theme.fontSizeExtraSmall
+                                    font.weight: optCard.isSelected ? Font.Bold : Font.Normal
+                                    color: optCard.isSelected ? Theme.onPrimaryContainer : Theme.surfaceText
+                                }
+                            }
+
+                            MouseArea {
+                                id: mouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    if (root.daemon)
+                                        root.daemon.saveSetting(optCard.modelData.id, !optCard.isSelected);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // ── M3E Position Card (Mock Screen Picker theo phong cách OSD DMS) ──
+                DCard {
+                    id: positionCard
+                    width: parent.width
+                    height: 106
+                    pad: 0
+                    restRadius: Theme.cornerRadiusL
                     color: Theme.surfaceContainerHigh
-                    border.color: Theme.withAlpha(Theme.outline, 0.08)
-                    border.width: 1
+
+                    readonly property string curPos: root.daemon?.position ?? "bottom_center"
+                    readonly property var positionsList: [
+                        { id: "top_left", col: 0, row: 0, label: I18n.tr("Top Left") },
+                        { id: "top_center", col: 1, row: 0, label: I18n.tr("Top Center") },
+                        { id: "top_right", col: 2, row: 0, label: I18n.tr("Top Right") },
+                        { id: "bottom_left", col: 0, row: 1, label: I18n.tr("Bottom Left") },
+                        { id: "bottom_center", col: 1, row: 1, label: I18n.tr("Bottom Center") },
+                        { id: "bottom_right", col: 2, row: 1, label: I18n.tr("Bottom Right") }
+                    ]
+
+                    function positionLabel(pos) {
+                        for (let i = 0; i < positionsList.length; i++) {
+                            if (positionsList[i].id === pos) return positionsList[i].label;
+                        }
+                        return I18n.tr("Bottom Center");
+                    }
+
+                    Row {
+                        anchors.fill: parent
+                        anchors.margins: Theme.spacingM
+                        spacing: Theme.spacingM
+
+                        // Left label & current active info
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: parent.width - mockScreen.width - Theme.spacingM
+                            spacing: 4
+
+                            Row {
+                                spacing: Theme.spacingS
+                                DIcon {
+                                    name: "place"
+                                    size: Theme.iconSizeSmall
+                                    color: Theme.surfaceVariantText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                StyledText {
+                                    text: I18n.tr("Position")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    font.weight: Font.SemiBold
+                                    color: Theme.surfaceText
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            StyledText {
+                                text: positionCard.positionLabel(positionCard.curPos)
+                                font.pixelSize: Theme.fontSizeExtraSmall
+                                color: Theme.primary
+                                font.weight: Font.Medium
+                            }
+                        }
+
+                        // Right: Interactive Mini Screen Canvas
+                        Rectangle {
+                            id: mockScreen
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 124
+                            height: 74
+                            radius: Theme.cornerRadiusS
+                            color: Theme.surfaceContainerHighest
+                            border.width: 1
+                            border.color: Theme.withAlpha(Theme.outline, 0.2)
+
+                            readonly property real slotW: 32
+                            readonly property real slotH: 14
+                            readonly property real inset: 6
+
+                            function slotX(col) {
+                                if (col === 0) return inset;
+                                if (col === 2) return mockScreen.width - slotW - inset;
+                                return (mockScreen.width - slotW) / 2;
+                            }
+
+                            function slotY(row) {
+                                if (row === 0) return inset;
+                                return mockScreen.height - slotH - inset;
+                            }
+
+                            // Active indicator with smooth motion animation
+                            Rectangle {
+                                readonly property var activeItem: {
+                                    for (let i = 0; i < positionCard.positionsList.length; i++) {
+                                        if (positionCard.positionsList[i].id === positionCard.curPos)
+                                            return positionCard.positionsList[i];
+                                    }
+                                    return { col: 1, row: 1 };
+                                }
+                                width: mockScreen.slotW
+                                height: mockScreen.slotH
+                                radius: Theme.cornerRadiusXXS
+                                color: Theme.primary
+
+                                x: mockScreen.slotX(activeItem.col)
+                                y: mockScreen.slotY(activeItem.row)
+
+                                Behavior on x {
+                                    NumberAnimation {
+                                        duration: M3E.spatialFastMs
+                                        easing.type: Easing.BezierSpline
+                                        easing.bezierCurve: M3E.curveFastSpatial
+                                    }
+                                }
+                                Behavior on y {
+                                    NumberAnimation {
+                                        duration: M3E.spatialFastMs
+                                        easing.type: Easing.BezierSpline
+                                        easing.bezierCurve: M3E.curveFastSpatial
+                                    }
+                                }
+                            }
+
+                            // Slots for all 6 positions
+                            Repeater {
+                                model: positionCard.positionsList
+
+                                delegate: Rectangle {
+                                    id: slotRect
+                                    required property var modelData
+                                    x: mockScreen.slotX(modelData.col)
+                                    y: mockScreen.slotY(modelData.row)
+                                    width: mockScreen.slotW
+                                    height: mockScreen.slotH
+                                    radius: Theme.cornerRadiusXXS
+
+                                    readonly property bool isSelected: positionCard.curPos === modelData.id
+                                    readonly property bool hovered: slotMouse.containsMouse
+
+                                    color: isSelected ? "transparent" : (hovered ? Theme.withAlpha(Theme.outline, 0.25) : Theme.withAlpha(Theme.outline, 0.12))
+
+                                    Behavior on color { ColorAnimation { duration: M3E.effectsFastMs } }
+
+                                    MouseArea {
+                                        id: slotMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            if (root.daemon)
+                                                root.daemon.saveSetting("position", slotRect.modelData.id);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // ── M3E Keyboard Device Card ─────────────────────────────────
+                DCard {
+                    width: parent.width
+                    implicitHeight: deviceCol.implicitHeight + Theme.spacingM * 2
+                    pad: 0
+                    restRadius: Theme.cornerRadiusL
+                    color: Theme.surfaceContainerHigh
 
                     Column {
                         id: deviceCol
@@ -140,7 +372,7 @@ PluginComponent {
 
                             StyledText {
                                 text: I18n.tr("Keyboard Device")
-                                font.pixelSize: Theme.fontSizeMedium
+                                font.pixelSize: Theme.fontSizeSmall
                                 font.weight: Font.Medium
                                 color: Theme.surfaceText
                                 anchors.verticalCenter: parent.verticalCenter
@@ -163,174 +395,6 @@ PluginComponent {
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-
-                // ── Display Options Card ─────────────────────────────────────
-                Rectangle {
-                    width: parent.width
-                    height: displayCol.implicitHeight + Theme.spacingM * 2
-                    radius: Theme.cornerRadius
-                    color: Theme.surfaceContainerHigh
-                    border.color: Theme.withAlpha(Theme.outline, 0.08)
-                    border.width: 1
-
-                    Column {
-                        id: displayCol
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.margins: Theme.spacingM
-                        spacing: Theme.spacingS
-
-                        Row {
-                            spacing: Theme.spacingS
-
-                            DIcon {
-                                name: "tune"
-                                size: Theme.iconSizeSmall
-                                color: Theme.surfaceVariantText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            StyledText {
-                                text: I18n.tr("Display Options")
-                                font.pixelSize: Theme.fontSizeMedium
-                                font.weight: Font.Medium
-                                color: Theme.surfaceText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-
-                        Grid {
-                            width: parent.width
-                            columns: 2
-                            spacing: Theme.spacingS
-                            rowSpacing: Theme.spacingXS
-
-                            DToggle {
-                                width: (parent.width - parent.spacing) / 2
-                                text: I18n.tr("Shortcuts")
-                                Binding on checked {
-                                    value: root.daemon ? root.daemon.showShortcuts : true
-                                }
-                                onToggled: (checked) => {
-                                    if (root.daemon)
-                                        root.daemon.saveSetting("showShortcuts", checked);
-                                }
-                            }
-
-                            DToggle {
-                                width: (parent.width - parent.spacing) / 2
-                                text: I18n.tr("Normal Keys")
-                                Binding on checked {
-                                    value: root.daemon ? root.daemon.showNormalKeys : false
-                                }
-                                onToggled: (checked) => {
-                                    if (root.daemon)
-                                        root.daemon.saveSetting("showNormalKeys", checked);
-                                }
-                            }
-
-                            DToggle {
-                                width: (parent.width - parent.spacing) / 2
-                                text: I18n.tr("Mouse Clicks")
-                                Binding on checked {
-                                    value: root.daemon ? root.daemon.showMouseClicks : false
-                                }
-                                onToggled: (checked) => {
-                                    if (root.daemon)
-                                        root.daemon.saveSetting("showMouseClicks", checked);
-                                }
-                            }
-
-                            DToggle {
-                                width: (parent.width - parent.spacing) / 2
-                                text: I18n.tr("Held Modifiers")
-                                Binding on checked {
-                                    value: root.daemon ? root.daemon.showModifierStatus : false
-                                }
-                                onToggled: (checked) => {
-                                    if (root.daemon)
-                                        root.daemon.saveSetting("showModifierStatus", checked);
-                                }
-                            }
-
-                            DToggle {
-                                width: (parent.width - parent.spacing) / 2
-                                text: I18n.tr("macOS Symbols")
-                                Binding on checked {
-                                    value: root.daemon ? root.daemon.macSymbols : false
-                                }
-                                onToggled: (checked) => {
-                                    if (root.daemon)
-                                        root.daemon.saveSetting("macSymbols", checked);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // ── Visualizer Overlay & Settings Card ───────────────────────
-                Rectangle {
-                    width: parent.width
-                    height: 50
-                    radius: Theme.cornerRadius
-                    color: Theme.surfaceContainerHigh
-                    border.color: Theme.withAlpha(Theme.outline, 0.08)
-                    border.width: 1
-
-                    Row {
-                        anchors.left: parent.left
-                        anchors.leftMargin: Theme.spacingM
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: Theme.spacingM
-
-                        DIcon {
-                            name: (root.daemon?.visualizerEnabled ?? false) ? "visibility" : "visibility_off"
-                            size: Theme.iconSizeSmall
-                            color: (root.daemon?.visualizerEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Behavior on color { ColorAnimation { duration: Theme.shortDuration } }
-                        }
-
-                        StyledText {
-                            text: I18n.tr("Visualizer Overlay")
-                            font.pixelSize: Theme.fontSizeMedium
-                            font.weight: Font.Medium
-                            color: Theme.surfaceText
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        DToggle {
-                            id: visualizerToggle
-                            hideText: true
-                            anchors.verticalCenter: parent.verticalCenter
-                            Binding on checked {
-                                value: root.daemon ? root.daemon.visualizerEnabled : false
-                            }
-                            onToggled: (checked) => {
-                                if (root.daemon)
-                                    root.daemon.saveSetting("visualizerEnabled", checked);
-                            }
-                        }
-                    }
-
-                    DActionButton {
-                        anchors.right: parent.right
-                        anchors.rightMargin: Theme.spacingM
-                        anchors.verticalCenter: parent.verticalCenter
-                        iconName: "settings"
-                        buttonSize: 32
-                        iconSize: 18
-                        iconColor: Theme.surfaceVariantText
-                        tooltipText: I18n.tr("Settings")
-                        tooltipSide: "bottom"
-                        onClicked: {
-                            PopoutService.closeControlCenter();
-                            PopoutService.openSettingsWithTab("plugins");
                         }
                     }
                 }
