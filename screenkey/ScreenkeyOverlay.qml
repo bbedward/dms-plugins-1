@@ -189,12 +189,8 @@ PanelWindow {
 
         Column {
             id: contentColumn
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: cardContainer.isLeft ? parent.left : undefined
-            anchors.leftMargin: cardContainer.isLeft ? Theme.spacingXL : 0
-            anchors.right: cardContainer.isRight ? parent.right : undefined
-            anchors.rightMargin: cardContainer.isRight ? Theme.spacingXL : 0
-            anchors.horizontalCenter: cardContainer.isCentered ? parent.horizontalCenter : undefined
+            x: Theme.spacingXL
+            y: Theme.spacingL
             spacing: Theme.spacingS
 
             Repeater {
@@ -202,9 +198,11 @@ PanelWindow {
                 delegate: Row {
                     id: historyRow
                     spacing: (daemon && daemon.macSymbols) ? Theme.spacingXS : Theme.spacingS
-                    anchors.left: cardContainer.isLeft ? parent.left : undefined
-                    anchors.right: cardContainer.isRight ? parent.right : undefined
-                    anchors.horizontalCenter: cardContainer.isCentered ? parent.horizontalCenter : undefined
+                    x: {
+                        if (cardContainer.isRight) return contentColumn.width - width;
+                        if (cardContainer.isLeft) return 0;
+                        return (contentColumn.width - width) / 2;
+                    }
 
                     readonly property string lineText: modelData.text
                     readonly property bool isCombo: modelData.isCombo
@@ -353,9 +351,11 @@ PanelWindow {
                 visible: daemon && daemon.showModifierStatus && (daemon.ctrlActive || daemon.altActive || daemon.shiftActive || daemon.superActive)
                 spacing: Theme.spacingS
                 layoutDirection: cardContainer.isRight ? Qt.RightToLeft : Qt.LeftToRight
-                anchors.left: cardContainer.isLeft ? parent.left : undefined
-                anchors.right: cardContainer.isRight ? parent.right : undefined
-                anchors.horizontalCenter: cardContainer.isCentered ? parent.horizontalCenter : undefined
+                x: {
+                    if (cardContainer.isRight) return contentColumn.width - width;
+                    if (cardContainer.isLeft) return 0;
+                    return (contentColumn.width - width) / 2;
+                }
 
                 // Ctrl Pill
                 StyledRect {
