@@ -90,15 +90,21 @@ PanelWindow {
         height: contentColumn.implicitHeight + Theme.spacingL * 2
         
         readonly property real mSize: daemon ? daemon.marginSize : 24
-        anchors.top: (daemon && daemon.position.includes("top")) ? parent.top : undefined
-        anchors.topMargin: (daemon && daemon.position.includes("top")) ? mSize : 0
-        anchors.bottom: (daemon && daemon.position.includes("bottom")) ? parent.bottom : undefined
-        anchors.bottomMargin: (daemon && daemon.position.includes("bottom")) ? mSize : 0
-        anchors.left: (daemon && daemon.position.includes("left")) ? parent.left : undefined
-        anchors.leftMargin: (daemon && daemon.position.includes("left")) ? mSize : 0
-        anchors.right: (daemon && daemon.position.includes("right")) ? parent.right : undefined
-        anchors.rightMargin: (daemon && daemon.position.includes("right")) ? mSize : 0
-        anchors.horizontalCenter: isCentered ? parent.horizontalCenter : undefined
+        readonly property string pos: daemon ? daemon.position : "bottom_center"
+        readonly property bool isTop: pos.startsWith("top")
+        readonly property bool isLeft: pos.endsWith("left")
+        readonly property bool isRight: pos.endsWith("right")
+
+        x: {
+            if (isLeft) return mSize;
+            if (isRight) return parent.width - width - mSize;
+            return (parent.width - width) / 2;
+        }
+
+        y: {
+            if (isTop) return mSize;
+            return parent.height - height - mSize;
+        }
 
         radius: Theme.cornerRadius
         color: overlayWindow.resolvedBgColor
