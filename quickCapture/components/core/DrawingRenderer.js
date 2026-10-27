@@ -724,8 +724,8 @@ function drawStroke(ctx, stroke, Helpers, Qt, Theme, config) {
         const len = Math.sqrt(dx * dx + dy * dy);
 
         if (len > 0) {
-            const SPREAD_ANGLE = Math.PI / 7;
-            const MIN_HEAD_LENGTH = 15;
+            const SPREAD_ANGLE = Math.PI / 6;
+            const MIN_HEAD_LENGTH = 16;
             const HEAD_LENGTH_MULTIPLIER = 4;
             const BASE_FACTOR = Math.cos(SPREAD_ANGLE);
             const angle = Math.atan2(dy, dx);
