@@ -94,6 +94,7 @@ PanelWindow {
         readonly property bool isTop: pos.startsWith("top")
         readonly property bool isLeft: pos.endsWith("left")
         readonly property bool isRight: pos.endsWith("right")
+        readonly property bool isCentered: !isLeft && !isRight
 
         x: {
             if (isLeft) return mSize;
@@ -188,7 +189,12 @@ PanelWindow {
 
         Column {
             id: contentColumn
-            anchors.centerIn: parent
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: cardContainer.isLeft ? parent.left : undefined
+            anchors.leftMargin: cardContainer.isLeft ? Theme.spacingXL : 0
+            anchors.right: cardContainer.isRight ? parent.right : undefined
+            anchors.rightMargin: cardContainer.isRight ? Theme.spacingXL : 0
+            anchors.horizontalCenter: cardContainer.isCentered ? parent.horizontalCenter : undefined
             spacing: Theme.spacingS
 
             Repeater {
@@ -196,7 +202,9 @@ PanelWindow {
                 delegate: Row {
                     id: historyRow
                     spacing: (daemon && daemon.macSymbols) ? Theme.spacingXS : Theme.spacingS
-                    anchors.horizontalCenter: isCentered ? parent.horizontalCenter : undefined
+                    anchors.left: cardContainer.isLeft ? parent.left : undefined
+                    anchors.right: cardContainer.isRight ? parent.right : undefined
+                    anchors.horizontalCenter: cardContainer.isCentered ? parent.horizontalCenter : undefined
 
                     readonly property string lineText: modelData.text
                     readonly property bool isCombo: modelData.isCombo
@@ -335,6 +343,7 @@ PanelWindow {
             // Divider between history and active modifiers
             Separator {
                 id: modifierDivider
+                width: parent.width
                 visible: daemon && daemon.showModifierStatus && (daemon.ctrlActive || daemon.altActive || daemon.shiftActive || daemon.superActive) && daemon.historyList.length > 0
             }
 
@@ -343,7 +352,10 @@ PanelWindow {
                 id: modifierStatusRow
                 visible: daemon && daemon.showModifierStatus && (daemon.ctrlActive || daemon.altActive || daemon.shiftActive || daemon.superActive)
                 spacing: Theme.spacingS
-                anchors.horizontalCenter: isCentered ? parent.horizontalCenter : undefined
+                layoutDirection: cardContainer.isRight ? Qt.RightToLeft : Qt.LeftToRight
+                anchors.left: cardContainer.isLeft ? parent.left : undefined
+                anchors.right: cardContainer.isRight ? parent.right : undefined
+                anchors.horizontalCenter: cardContainer.isCentered ? parent.horizontalCenter : undefined
 
                 // Ctrl Pill
                 StyledRect {
