@@ -139,10 +139,11 @@ print(json.dumps(devs))
         SectionTitle {
             text: I18n.tr("Layout & Animations")
             icon: "display_settings"
-            showReset: positionSetting.isDirty || animationTypeSetting.isDirty || keycapStyleSetting.isDirty || roundedKeycapsSetting.isDirty || overlayOpacitySetting.isDirty || marginSizeSetting.isDirty || charLimitSetting.isDirty || textColorSetting.isDirty || keycapTextColorSetting.isDirty || historyLimitSetting.isDirty || bgColorSetting.isDirty || customSeparatorSetting.isDirty
+            showReset: positionSetting.isDirty || entryAnimationSetting.isDirty || exitAnimationSetting.isDirty || keycapStyleSetting.isDirty || roundedKeycapsSetting.isDirty || overlayOpacitySetting.isDirty || marginSizeSetting.isDirty || charLimitSetting.isDirty || textColorSetting.isDirty || keycapTextColorSetting.isDirty || historyLimitSetting.isDirty || bgColorSetting.isDirty || customSeparatorSetting.isDirty
             onResetClicked: {
                 positionSetting.resetToDefault();
-                animationTypeSetting.resetToDefault();
+                entryAnimationSetting.resetToDefault();
+                exitAnimationSetting.resetToDefault();
                 keycapStyleSetting.resetToDefault();
                 roundedKeycapsSetting.resetToDefault();
                 overlayOpacitySetting.resetToDefault();
@@ -173,14 +174,25 @@ print(json.dumps(devs))
 
         Separator {}
 
-        SelectionSettingPlus {
-            id: animationTypeSetting
-            settingKey: "animationType"
-            label: I18n.tr("Animation Style")
+        ButtonGroupSettingPlus {
+            id: entryAnimationSetting
+            settingKey: "entryAnimation"
+            label: I18n.tr("Entry Animation")
             options: [
                 { label: I18n.tr("Zoom"), value: "zoom" },
                 { label: I18n.tr("Fade Only"), value: "fade" },
-                { label: I18n.tr("Slide"), value: "slide" },
+                { label: I18n.tr("None"), value: "none" }
+            ]
+            defaultValue: "none"
+        }
+
+        ButtonGroupSettingPlus {
+            id: exitAnimationSetting
+            settingKey: "exitAnimation"
+            label: I18n.tr("Exit Animation")
+            options: [
+                { label: I18n.tr("Zoom"), value: "zoom" },
+                { label: I18n.tr("Fade Only"), value: "fade" },
                 { label: I18n.tr("None"), value: "none" }
             ]
             defaultValue: "none"
