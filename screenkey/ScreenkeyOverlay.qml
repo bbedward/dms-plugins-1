@@ -339,9 +339,12 @@ PanelWindow {
             }
 
             // Divider between history and active modifiers
-            Separator {
+            Rectangle {
                 id: modifierDivider
-                width: parent.width
+                height: 1
+                color: Theme.outline
+                opacity: 0.2
+                width: contentColumn.width
                 visible: daemon && daemon.showModifierStatus && (daemon.ctrlActive || daemon.altActive || daemon.shiftActive || daemon.superActive) && daemon.historyList.length > 0
             }
 
