@@ -107,13 +107,13 @@ print(json.dumps(res))
         scanDevices();
     }
 
-    ccWidgetIcon: "keyboard"
+    ccWidgetIcon: "volume_up"
     ccWidgetPrimaryText: I18n.tr("Typing Sounds")
-    ccWidgetSecondaryText: daemon && daemon.soundEnabled ? I18n.tr("Enabled") : I18n.tr("Disabled")
+    ccWidgetSecondaryText: daemon && daemon.soundEnabled ? I18n.tr("Active") : I18n.tr("Disabled")
     ccWidgetIsActive: daemon ? daemon.soundEnabled : false
     ccDetailHeight: {
         const hasWarning = !!(root.daemon && (root.daemon.inputToolMissing || root.daemon.notInInputGroup));
-        return hasWarning ? 400 : 345;
+        return hasWarning ? 380 : 320;
     }
 
     onCcWidgetToggled: {
@@ -172,14 +172,13 @@ print(json.dumps(res))
                     }
                 }
 
-                // ── Volume Card ──────────────────────────────────────────────
-                Rectangle {
+                // ── M3E Volume Slider Card ───────────────────────────────────
+                DCard {
                     width: parent.width
-                    height: volumeCol.implicitHeight + Theme.spacingM * 2
-                    radius: Theme.cornerRadius
+                    implicitHeight: volumeCol.implicitHeight + Theme.spacingM * 2
+                    pad: 0
+                    restRadius: Theme.cornerRadiusL
                     color: Theme.surfaceContainerHigh
-                    border.color: Theme.withAlpha(Theme.outline, 0.08)
-                    border.width: 1
 
                     Column {
                         id: volumeCol
@@ -204,25 +203,25 @@ print(json.dumps(res))
                                     size: Theme.iconSizeSmall
                                     color: (root.daemon?.soundEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
                                     anchors.verticalCenter: parent.verticalCenter
+                                    Behavior on color { ColorAnimation { duration: M3E.effectsFastMs } }
                                 }
 
                                 StyledText {
                                     text: I18n.tr("Volume")
-                                    font.pixelSize: Theme.fontSizeMedium
+                                    font.pixelSize: Theme.fontSizeSmall
                                     font.weight: Font.Medium
                                     color: Theme.surfaceText
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                             }
 
-                            StyledText {
+                            NumericText {
                                 id: volValueText
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: (root.daemon ? root.daemon.volume : 100) + "%"
-                                font.pixelSize: Theme.fontSizeMedium
+                                font.pixelSize: Theme.fontSizeSmall
                                 font.weight: Font.SemiBold
-                                font.features: { "tnum": 1 }
                                 color: (root.daemon?.soundEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
                             }
                         }
@@ -244,125 +243,124 @@ print(json.dumps(res))
                     }
                 }
 
-                // ── Sound & Device Selectors Card ───────────────────────────
-                Rectangle {
+                // ── M3E Soundpack Selector Card (with Test Sound Button) ─────
+                DCard {
                     width: parent.width
-                    height: selectorCol.implicitHeight + Theme.spacingM * 2
-                    radius: Theme.cornerRadius
+                    implicitHeight: packCol.implicitHeight + Theme.spacingM * 2
+                    pad: 0
+                    restRadius: Theme.cornerRadiusL
                     color: Theme.surfaceContainerHigh
-                    border.color: Theme.withAlpha(Theme.outline, 0.08)
-                    border.width: 1
 
                     Column {
-                        id: selectorCol
+                        id: packCol
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.margins: Theme.spacingM
-                        spacing: Theme.spacingM
+                        spacing: Theme.spacingS
 
-                        // Sound Pack Section
-                        Column {
+                        Item {
                             width: parent.width
-                            spacing: Theme.spacingS
-
-                            Item {
-                                width: parent.width
-                                height: 20
-
-                                Row {
-                                    anchors.left: parent.left
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: Theme.spacingS
-
-                                    DIcon {
-                                        name: "library_music"
-                                        size: Theme.iconSizeSmall
-                                        color: Theme.surfaceVariantText
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-
-                                    StyledText {
-                                        text: I18n.tr("Sound Pack")
-                                        font.pixelSize: Theme.fontSizeMedium
-                                        font.weight: Font.Medium
-                                        color: Theme.surfaceText
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                }
-
-                                StyledText {
-                                    anchors.right: parent.right
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: root.daemon?.isPreparing ? I18n.tr("Preparing…") : (root.packOptions.length > 0 ? I18n.tr("%1 packs").arg(root.packOptions.length) : "")
-                                    font.pixelSize: Theme.fontSizeSmall
-                                    color: root.daemon?.isPreparing ? Theme.warning : Theme.surfaceVariantText
-                                }
-                            }
-
-                            DDropdown {
-                                width: parent.width
-                                height: 38
-                                compactMode: true
-                                currentValue: root.currentPackLabel
-                                options: root.packOptions.map(function(o) { return o.label; })
-                                onValueChanged: (newValue) => {
-                                    for (var i = 0; i < root.packOptions.length; i++) {
-                                        if (root.packOptions[i].label === newValue) {
-                                            if (root.daemon)
-                                                root.daemon.saveSetting("selectedPackPath", root.packOptions[i].value);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // Divider
-                        Rectangle {
-                            width: parent.width
-                            height: 1
-                            color: Theme.withAlpha(Theme.outline, 0.06)
-                        }
-
-                        // Keyboard Device Section
-                        Column {
-                            width: parent.width
-                            spacing: Theme.spacingS
+                            height: 28
 
                             Row {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
                                 spacing: Theme.spacingS
 
                                 DIcon {
-                                    name: "keyboard_alt"
+                                    name: "library_music"
                                     size: Theme.iconSizeSmall
                                     color: Theme.surfaceVariantText
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 StyledText {
-                                    text: I18n.tr("Keyboard Device")
-                                    font.pixelSize: Theme.fontSizeMedium
+                                    text: I18n.tr("Sound Pack")
+                                    font.pixelSize: Theme.fontSizeSmall
                                     font.weight: Font.Medium
                                     color: Theme.surfaceText
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                             }
 
-                            DDropdown {
-                                width: parent.width
-                                height: 38
-                                compactMode: true
-                                currentValue: root.currentDeviceLabel
-                                options: root.deviceOptions.map(function(o) { return o.label; })
-                                onValueChanged: (newValue) => {
-                                    for (var i = 0; i < root.deviceOptions.length; i++) {
-                                        if (root.deviceOptions[i].label === newValue) {
-                                            if (root.daemon)
-                                                root.daemon.saveSetting("selectedDevicePath", root.deviceOptions[i].value);
-                                            break;
+                            Rectangle {
+                                id: testPlayBtn
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                height: 26
+                                width: testBtnRow.implicitWidth + 16
+                                radius: Theme.cornerRadiusXXS
+
+                                readonly property bool hovered: testMouse.containsMouse
+                                readonly property bool pressed: testMouse.pressed
+
+                                color: (root.daemon?.soundEnabled ?? false)
+                                    ? (hovered ? Theme.primary : Theme.withAlpha(Theme.primary, 0.15))
+                                    : (hovered ? Theme.surfaceContainerHighest : Theme.surfaceContainer)
+
+                                scale: pressed ? M3E.rowPressScale : 1.0
+
+                                Behavior on scale {
+                                    NumberAnimation {
+                                        duration: M3E.spatialFastMs
+                                        easing.type: Easing.BezierSpline
+                                        easing.bezierCurve: M3E.curveFastSpatial
+                                    }
+                                }
+                                Behavior on color { ColorAnimation { duration: M3E.effectsFastMs } }
+
+                                Row {
+                                    id: testBtnRow
+                                    anchors.centerIn: parent
+                                    spacing: 4
+
+                                    DIcon {
+                                        name: "play_arrow"
+                                        size: 14
+                                        color: (root.daemon?.soundEnabled ?? false)
+                                            ? (testPlayBtn.hovered ? Theme.onPrimary : Theme.primary)
+                                            : Theme.surfaceText
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    StyledText {
+                                        text: I18n.tr("Test")
+                                        font.pixelSize: Theme.fontSizeExtraSmall
+                                        font.weight: Font.SemiBold
+                                        color: (root.daemon?.soundEnabled ?? false)
+                                            ? (testPlayBtn.hovered ? Theme.onPrimary : Theme.primary)
+                                            : Theme.surfaceText
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: testMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        if (root.daemon) {
+                                            root.daemon.triggerKeySound(57); // Spacebar sound test
                                         }
+                                    }
+                                }
+                            }
+                        }
+
+                        DDropdown {
+                            width: parent.width
+                            height: 38
+                            compactMode: true
+                            currentValue: root.currentPackLabel
+                            options: root.packOptions.map(function(o) { return o.label; })
+                            onValueChanged: (newValue) => {
+                                for (var i = 0; i < root.packOptions.length; i++) {
+                                    if (root.packOptions[i].label === newValue) {
+                                        if (root.daemon)
+                                            root.daemon.saveSetting("selectedPackPath", root.packOptions[i].value);
+                                        break;
                                     }
                                 }
                             }
@@ -370,14 +368,68 @@ print(json.dumps(res))
                     }
                 }
 
-                // ── Mouse Interaction & Settings Card ───────────────────────
-                Rectangle {
+                // ── M3E Keyboard Device Card ─────────────────────────────────
+                DCard {
                     width: parent.width
-                    height: 50
-                    radius: Theme.cornerRadius
+                    implicitHeight: deviceCol.implicitHeight + Theme.spacingM * 2
+                    pad: 0
+                    restRadius: Theme.cornerRadiusL
                     color: Theme.surfaceContainerHigh
-                    border.color: Theme.withAlpha(Theme.outline, 0.08)
-                    border.width: 1
+
+                    Column {
+                        id: deviceCol
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.margins: Theme.spacingM
+                        spacing: Theme.spacingS
+
+                        Row {
+                            width: parent.width
+                            spacing: Theme.spacingS
+
+                            DIcon {
+                                name: "keyboard_alt"
+                                size: Theme.iconSizeSmall
+                                color: Theme.surfaceVariantText
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            StyledText {
+                                text: I18n.tr("Keyboard Device")
+                                font.pixelSize: Theme.fontSizeSmall
+                                font.weight: Font.Medium
+                                color: Theme.surfaceText
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        DDropdown {
+                            width: parent.width
+                            height: 38
+                            compactMode: true
+                            currentValue: root.currentDeviceLabel
+                            options: root.deviceOptions.map(function(o) { return o.label; })
+                            onValueChanged: (newValue) => {
+                                for (var i = 0; i < root.deviceOptions.length; i++) {
+                                    if (root.deviceOptions[i].label === newValue) {
+                                        if (root.daemon)
+                                            root.daemon.saveSetting("selectedDevicePath", root.deviceOptions[i].value);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // ── M3E Mouse Click Audio Toggle Card ────────────────────────
+                DCard {
+                    width: parent.width
+                    height: 48
+                    pad: 0
+                    restRadius: Theme.cornerRadiusL
+                    color: Theme.surfaceContainerHigh
 
                     Row {
                         anchors.left: parent.left
@@ -391,42 +443,28 @@ print(json.dumps(res))
                             color: (root.daemon?.mouseEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
                             anchors.verticalCenter: parent.verticalCenter
 
-                            Behavior on color { ColorAnimation { duration: Theme.shortDuration } }
+                            Behavior on color { ColorAnimation { duration: M3E.effectsFastMs } }
                         }
 
                         StyledText {
-                            text: I18n.tr("Mouse Clicks")
-                            font.pixelSize: Theme.fontSizeMedium
+                            text: I18n.tr("Mouse Click Sounds")
+                            font.pixelSize: Theme.fontSizeSmall
                             font.weight: Font.Medium
                             color: Theme.surfaceText
                             anchors.verticalCenter: parent.verticalCenter
                         }
-
-                        DToggle {
-                            id: mouseToggle
-                            hideText: true
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: root.daemon ? root.daemon.mouseEnabled : false
-                            onToggled: (checked) => {
-                                if (root.daemon)
-                                    root.daemon.saveSetting("mouseEnabled", checked);
-                            }
-                        }
                     }
 
-                    DActionButton {
+                    DToggle {
+                        id: mouseToggle
+                        hideText: true
                         anchors.right: parent.right
                         anchors.rightMargin: Theme.spacingM
                         anchors.verticalCenter: parent.verticalCenter
-                        iconName: "settings"
-                        buttonSize: 32
-                        iconSize: 18
-                        iconColor: Theme.surfaceVariantText
-                        tooltipText: I18n.tr("Settings")
-                        tooltipSide: "bottom"
-                        onClicked: {
-                            PopoutService.closeControlCenter();
-                            PopoutService.openSettingsWithTab("plugins");
+                        checked: root.daemon ? root.daemon.mouseEnabled : false
+                        onToggled: (checked) => {
+                            if (root.daemon)
+                                root.daemon.saveSetting("mouseEnabled", checked);
                         }
                     }
                 }
