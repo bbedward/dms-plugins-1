@@ -208,7 +208,7 @@ print(json.dumps(res))
 
                                 StyledText {
                                     text: I18n.tr("Volume")
-                                    font.pixelSize: Theme.fontSizeSmall
+                                    font.pixelSize: Theme.fontSizeMedium
                                     font.weight: Font.Medium
                                     color: Theme.surfaceText
                                     anchors.verticalCenter: parent.verticalCenter
@@ -220,7 +220,7 @@ print(json.dumps(res))
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: (root.daemon ? root.daemon.volume : 100) + "%"
-                                font.pixelSize: Theme.fontSizeSmall
+                                font.pixelSize: Theme.fontSizeMedium
                                 font.weight: Font.SemiBold
                                 color: (root.daemon?.soundEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
                             }
@@ -262,25 +262,13 @@ print(json.dumps(res))
                             width: parent.width
                             height: 28
 
-                            Row {
+                            StyledText {
+                                text: I18n.tr("Sound Pack")
+                                font.pixelSize: Theme.fontSizeMedium
+                                font.weight: Font.Medium
+                                color: Theme.surfaceText
                                 anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: Theme.spacingS
-
-                                DIcon {
-                                    name: "library_music"
-                                    size: Theme.iconSizeSmall
-                                    color: Theme.surfaceVariantText
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-
-                                StyledText {
-                                    text: I18n.tr("Sound Pack")
-                                    font.pixelSize: Theme.fontSizeSmall
-                                    font.weight: Font.Medium
-                                    color: Theme.surfaceText
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
                             }
 
                             Rectangle {
@@ -325,7 +313,7 @@ print(json.dumps(res))
 
                                     StyledText {
                                         text: I18n.tr("Test")
-                                        font.pixelSize: Theme.fontSizeExtraSmall
+                                        font.pixelSize: Theme.fontSizeSmall
                                         font.weight: Font.SemiBold
                                         color: (root.daemon?.soundEnabled ?? false)
                                             ? (testPlayBtn.hovered ? Theme.onPrimary : Theme.primary)
@@ -383,24 +371,11 @@ print(json.dumps(res))
                         anchors.margins: Theme.spacingM
                         spacing: Theme.spacingS
 
-                        Row {
-                            width: parent.width
-                            spacing: Theme.spacingS
-
-                            DIcon {
-                                name: "keyboard_alt"
-                                size: Theme.iconSizeSmall
-                                color: Theme.surfaceVariantText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            StyledText {
-                                text: I18n.tr("Keyboard Device")
-                                font.pixelSize: Theme.fontSizeSmall
-                                font.weight: Font.Medium
-                                color: Theme.surfaceText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
+                        StyledText {
+                            text: I18n.tr("Keyboard Device")
+                            font.pixelSize: Theme.fontSizeMedium
+                            font.weight: Font.Medium
+                            color: Theme.surfaceText
                         }
 
                         DDropdown {
@@ -430,28 +405,14 @@ print(json.dumps(res))
                     restRadius: Theme.cornerRadiusL
                     color: Theme.surfaceContainerHigh
 
-                    Row {
+                    StyledText {
                         anchors.left: parent.left
                         anchors.leftMargin: Theme.spacingM
                         anchors.verticalCenter: parent.verticalCenter
-                        spacing: Theme.spacingM
-
-                        DIcon {
-                            name: "mouse"
-                            size: Theme.iconSizeSmall
-                            color: (root.daemon?.mouseEnabled ?? false) ? Theme.primary : Theme.surfaceVariantText
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Behavior on color { ColorAnimation { duration: M3E.effectsFastMs } }
-                        }
-
-                        StyledText {
-                            text: I18n.tr("Mouse Click Sounds")
-                            font.pixelSize: Theme.fontSizeSmall
-                            font.weight: Font.Medium
-                            color: Theme.surfaceText
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
+                        text: I18n.tr("Mouse Click Sounds")
+                        font.pixelSize: Theme.fontSizeMedium
+                        font.weight: Font.Medium
+                        color: Theme.surfaceText
                     }
 
                     DToggle {

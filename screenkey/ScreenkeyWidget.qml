@@ -155,20 +155,20 @@ PluginComponent {
 
                             Column {
                                 anchors.centerIn: parent
-                                spacing: 3
+                                spacing: 4
 
                                 DIcon {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     name: optCard.modelData.icon
-                                    size: 16
+                                    size: 18
                                     color: optCard.isSelected ? Theme.onPrimaryContainer : Theme.surfaceVariantText
                                 }
 
                                 StyledText {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: optCard.modelData.label
-                                    font.pixelSize: Theme.fontSizeExtraSmall
-                                    font.weight: optCard.isSelected ? Font.Bold : Font.Normal
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    font.weight: optCard.isSelected ? Font.SemiBold : Font.Normal
                                     color: optCard.isSelected ? Theme.onPrimaryContainer : Theme.surfaceText
                                 }
                             }
@@ -224,26 +224,16 @@ PluginComponent {
                             width: parent.width - mockScreen.width - Theme.spacingM
                             spacing: 4
 
-                            Row {
-                                spacing: Theme.spacingS
-                                DIcon {
-                                    name: "place"
-                                    size: Theme.iconSizeSmall
-                                    color: Theme.surfaceVariantText
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                                StyledText {
-                                    text: I18n.tr("Position")
-                                    font.pixelSize: Theme.fontSizeSmall
-                                    font.weight: Font.SemiBold
-                                    color: Theme.surfaceText
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
+                            StyledText {
+                                text: I18n.tr("Position")
+                                font.pixelSize: Theme.fontSizeMedium
+                                font.weight: Font.Medium
+                                color: Theme.surfaceText
                             }
 
                             StyledText {
                                 text: positionCard.positionLabel(positionCard.curPos)
-                                font.pixelSize: Theme.fontSizeExtraSmall
+                                font.pixelSize: Theme.fontSizeSmall
                                 color: Theme.primary
                                 font.weight: Font.Medium
                             }
@@ -360,23 +350,11 @@ PluginComponent {
                         anchors.margins: Theme.spacingM
                         spacing: Theme.spacingS
 
-                        Row {
-                            spacing: Theme.spacingS
-
-                            DIcon {
-                                name: "keyboard"
-                                size: Theme.iconSizeSmall
-                                color: Theme.surfaceVariantText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            StyledText {
-                                text: I18n.tr("Keyboard Device")
-                                font.pixelSize: Theme.fontSizeSmall
-                                font.weight: Font.Medium
-                                color: Theme.surfaceText
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
+                        StyledText {
+                            text: I18n.tr("Keyboard Device")
+                            font.pixelSize: Theme.fontSizeMedium
+                            font.weight: Font.Medium
+                            color: Theme.surfaceText
                         }
 
                         DDropdown {
