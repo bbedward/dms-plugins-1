@@ -226,18 +226,17 @@ print(json.dumps(res))
                             }
                         }
 
-                        DankSliderPlus {
+                        DSlider {
                             width: parent.width
-                            height: 32
                             value: root.daemon ? root.daemon.volume : 100
                             minimum: 0
                             maximum: 200
-                            unit: "%"
-                            showValue: false
+                            step: 1
                             wheelEnabled: true
-                            onSliderValueChanged: (newValue) => {
-                                if (root.daemon)
-                                    root.daemon.saveSetting("volume", newValue);
+                            showValue: false
+                            onValueChanged: {
+                                if (root.daemon && Math.round(value) !== root.daemon.volume)
+                                    root.daemon.saveSetting("volume", Math.round(value));
                             }
                         }
                     }
