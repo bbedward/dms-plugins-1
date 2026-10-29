@@ -37,6 +37,7 @@ dms ipc call emojiPicker close
 | Backspace / Delete in grid | Clear the search and return focus to the search bar when the queue is empty |
 | Typing anywhere | Focus search and type into it |
 | Down / Tab from search | Focus the first emoji |
+| Ctrl+Tab / Ctrl+Shift+Tab | Select the next / previous category |
 | Left / Right on categories | Move between categories |
 | Down from categories | Focus the first emoji |
 | Arrow keys | Navigate the emoji grid |

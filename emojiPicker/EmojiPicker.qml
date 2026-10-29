@@ -497,6 +497,13 @@ PluginComponent {
                 });
             }
 
+            function cycleCategory(direction) {
+                const currentIndex = root.categoryOrder.indexOf(root.selectedCategory);
+                const categoryCount = root.categoryOrder.length;
+                const nextIndex = (currentIndex + direction + categoryCount) % categoryCount;
+                pickerView.selectCategory(root.categoryOrder[nextIndex]);
+            }
+
             function categoryForShortcut(event) {
                 if (!(event.modifiers & Qt.ControlModifier))
                     return "";
@@ -515,7 +522,17 @@ PluginComponent {
             }
 
             function handleCommonShortcuts(event) {
-                if (!(event.modifiers & Qt.ControlModifier) || (event.modifiers & (Qt.ShiftModifier | Qt.AltModifier | Qt.MetaModifier)))
+                if (!(event.modifiers & Qt.ControlModifier) || (event.modifiers & (Qt.AltModifier | Qt.MetaModifier)))
+                    return false;
+
+                if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+                    const reverse = event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier);
+                    pickerView.cycleCategory(reverse ? -1 : 1);
+                    event.accepted = true;
+                    return true;
+                }
+
+                if (event.modifiers & Qt.ShiftModifier)
                     return false;
 
                 if (event.key === Qt.Key_F) {
