@@ -153,6 +153,15 @@ PluginComponent {
     }
 
     function _entryFor(widget) {
+        let host = widget?.parent;
+        let section = host?.sectionContext;
+        let occurrenceOrder = host?.occurrenceOrder;
+        if (section?.entryRepeater && Number.isInteger(occurrenceOrder)) {
+            let entry = section.entryRepeater.itemAt(occurrenceOrder);
+            if (entry)
+                return entry;
+        }
+
         if (!widget || !widget.parent || !widget.parent.parent || !widget.parent.parent.parent)
             return null;
         return widget.parent.parent.parent;
@@ -218,7 +227,6 @@ PluginComponent {
         if (!pluginRoot.parentScreen)
             return ;
 
-        let myScreen = pluginRoot.parentScreen.name;
         let mySection = pluginRoot.section;
         if (!pluginRoot.parent || !pluginRoot.parent.parent || !pluginRoot.parent.parent.parent)
             return ;
@@ -228,10 +236,17 @@ PluginComponent {
             return ;
 
         let myPos = pluginRoot.isVertical ? myEntry.y : myEntry.x;
-        let allIds = BarWidgetService.getRegisteredWidgetIds();
+        let repeater = myEntry.sectionContext?.entryRepeater;
+        if (!repeater)
+            return;
+
         let candidates = [];
-        for (let i = 0; i < allIds.length; i++) {
-            let id = allIds[i];
+        for (let i = 0; i < repeater.count; i++) {
+            let entry = repeater.itemAt(i);
+            let widget = entry?.widgetItem;
+            let id = entry?.itemData?.widgetId;
+            if (!widget || !id)
+                continue;
             if (id === pluginRoot.pluginId)
                 continue;
 
@@ -246,26 +261,23 @@ PluginComponent {
 
             }
 
-            let widget = BarWidgetService.getWidget(id, myScreen);
-            let entry = widget ? _entryFor(widget) : null;
-            if (widget && widget.section === mySection && entry) {
-                let widgetPos = pluginRoot._resolvePos(id, entry);
-                let shouldManage = false;
-                if (mySection === "right")
-                    shouldManage = (widgetPos < myPos);
-                else if (mySection === "left")
-                    shouldManage = (widgetPos > myPos);
-                else if (mySection === "center")
-                    shouldManage = true;
-                if (shouldManage)
-                    candidates.push({
+            let widgetPos = pluginRoot._resolvePos(id, entry);
+            let shouldManage = false;
+            if (mySection === "right")
+                shouldManage = (widgetPos < myPos);
+            else if (mySection === "left")
+                shouldManage = (widgetPos > myPos);
+            else if (mySection === "center")
+                shouldManage = true;
+            if (shouldManage)
+                candidates.push({
                     "id": id,
                     "widget": widget,
+                    "entry": entry,
                     "dist": Math.abs(widgetPos - myPos),
                     "pos": widgetPos
                 });
 
-            }
         }
         candidates.sort((a, b) => {
             return a.dist - b.dist;
@@ -279,16 +291,13 @@ PluginComponent {
         hiddenCandidates.sort((a, b) => {
             return a.pos - b.pos;
         });
-        let newHiddenIds = [];
-        for (let k = 0; k < hiddenCandidates.length; k++) {
-            newHiddenIds.push(hiddenCandidates[k].id);
-        }
+        let newHiddenIds = hiddenCandidates.map(candidate => candidate.id);
         let totalSize = 0;
         let newManaged = [];
         for (let j = 0; j < candidates.length; j++) {
             let c = candidates[j];
-            let slot = pluginRoot._entryFor(c.widget);
-            let shouldBeHidden = newHiddenIds.indexOf(c.id) !== -1;
+            let slot = c.entry;
+            let shouldBeHidden = hiddenCandidates.includes(c);
             if (shouldBeHidden) {
                 let currentSize = pluginRoot.isVertical ? (c.widget.implicitHeight || c.widget.height || 0) : (c.widget.implicitWidth || c.widget.width || 0);
                 if (currentSize > 0)
@@ -328,12 +337,15 @@ PluginComponent {
         pluginRoot._managedSlots = newManaged;
         pluginRoot.hiddenPluginIds = newHiddenIds;
 
-        // Cleanup cache for unregistered widgets
-        let cacheKeys = Object.keys(pluginRoot._sizeCache);
-        for (let k = 0; k < cacheKeys.length; k++) {
-            if (allIds.indexOf(cacheKeys[k]) === -1)
-                delete pluginRoot._sizeCache[cacheKeys[k]];
-
+        // Cleanup cache for widgets no longer present in this section.
+        const candidateIds = new Set(candidates.map(candidate => candidate.id));
+        for (const id of Object.keys(pluginRoot._sizeCache)) {
+            if (!candidateIds.has(id))
+                delete pluginRoot._sizeCache[id];
+        }
+        for (const id of Object.keys(pluginRoot._managedNaturalSize)) {
+            if (!candidateIds.has(id))
+                delete pluginRoot._managedNaturalSize[id];
         }
         if (totalSize > 0 && !pluginRoot.usePopout) {
             let newSize = totalSize + Theme.spacingM;

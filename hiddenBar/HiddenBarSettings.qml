@@ -13,7 +13,7 @@ PluginSettings {
     NoteCard {
         title: I18n.tr("Note")
         icon: "warning"
-        text: I18n.tr("Please run 'dms restart' after adding widgets to the status bar for changes to take effect.\n\nPopout Overflow: changes to expansion & collapse settings while Popout mode is active may require a DMS restart (dms restart) to fully apply.")
+        text: I18n.tr("Inline mode detects newly added status bar widgets automatically. Popout Overflow changes require restarting DankMaterialShell ('dms restart').")
     }
 
     SettingsCard {
